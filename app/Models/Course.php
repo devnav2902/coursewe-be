@@ -16,4 +16,9 @@ class Course extends Model
         return $this->hasMany(CourseCoupon::class, 'course_id')
             ->where('status', 1);
     }
+
+    function rating()
+    {
+        return $this->hasMany(Rating::class, 'course_id');
+    }
 }
