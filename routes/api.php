@@ -16,12 +16,14 @@ use App\Http\Controllers\UserController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 // COURSE
-Route::get('course', [CourseController::class, 'getCourse']);
+Route::get('/course', [CourseController::class, 'getCourse']);
 
 // USER
-Route::post('user/login', [UserController::class, 'login']);
+Route::post('/user/login', [UserController::class, 'login']);
+Route::post('/user/sign-up', [UserController::class, 'signUp']);
+Route::get('/user', [UserController::class, 'getCurrentUser']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user/logout', [UserController::class, 'logout']);
+});
