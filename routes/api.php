@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\PurchaseHistoryController;
 use App\Http\Controllers\UserController;
 
 /*
@@ -26,4 +27,5 @@ Route::get('/user', [UserController::class, 'getCurrentUser']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/logout', [UserController::class, 'logout']);
+    Route::get('/purchase/history', [PurchaseHistoryController::class, 'purchaseHistory']);
 });
