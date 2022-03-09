@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class InstructorController extends Controller
 {
-    public function index($slug)
+    public function profile($slug)
     {
-        $author = User::with('bio')
-            ->where('slug', $slug)
+        // $slug = $request->input('slug');
+        $author = User
+            // ::with('bio')
+            ::where('slug', $slug)
             ->first(['id', 'avatar', 'fullname']);
 
         if (!$author) return abort(404);
@@ -41,6 +45,6 @@ class InstructorController extends Controller
                 ['title', 'id', 'author_id', 'created_at', 'price', 'slug']
             );
 
-        return view('pages.instructor-bio', compact(['author', 'courses', 'totalStudents', 'totalReviews', 'totalCourses']));
+        return response()->json(compact(['author', 'courses', 'totalStudents', 'totalReviews', 'totalCourses']));
     }
 }
