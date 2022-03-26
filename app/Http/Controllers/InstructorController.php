@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class InstructorController extends Controller
 {
@@ -46,5 +47,19 @@ class InstructorController extends Controller
             );
 
         return response()->json(compact(['author', 'courses', 'totalStudents', 'totalReviews', 'totalCourses']));
+    }
+
+    function getCourseById($id)
+    {
+        $course =  Course::where('author_id', Auth::user()->id)
+            ->with(
+                [
+                    'section',
+                    'lecture',
+                ]
+            )
+            ->firstWhere('id', $id);
+
+        return response(['course' => $course]);
     }
 }
