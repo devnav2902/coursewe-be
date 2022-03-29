@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CourseController extends Controller
 {
@@ -20,10 +21,34 @@ class CourseController extends Controller
 
         return $course;
     }
+    function getCourseByCurrentUser()
+    {
+        $courses = Course::where('author_id', Auth::user()->id)
+            ->where('isPublished', 1)
+            ->get();
 
-    function getCourseBySlug(Request $req){
+        return response(['courses' => $courses]);
+    }
+    function getCourseOfAuthorById($id)
+    {
+
+        $course = Course::where('id', $id)
+            ->with([
+                'lecture',
+                'section'
+            ])
+            ->withCount(['course_bill', 'rating', 'section', 'lecture'])
+            ->firstWhere('author_id', Auth::user()->id);
+
+
+        if (!$course) abort(404);
+
+        return response()->json(['course' => $course]);
+    }
+    function getCourseBySlug(Request $req)
+    {
         $req->validate([
-            'slug'=>'required'
+            'slug' => 'required'
         ]);
 
         $course = Course::where('slug', $req->slug)
