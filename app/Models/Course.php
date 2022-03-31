@@ -9,12 +9,13 @@ class Course extends Model
 {
     use HasFactory;
     protected $table = 'course';
-    protected $fillable = ['author_id', 'title', 'description', 'slug', 'thumbnail', 'video_demo', 'isPublished', 'price', 'discount', 'submit_for_review'];
+    protected $fillable = ['author_id', 'title', 'subtitle', 'description', 'slug', 'thumbnail', 'video_demo', 'isPublished', 'price', 'discount', 'submit_for_review', 'instructional_level_id'];
     protected $with =
     [
         'author',
         'rating',
         'course_bill',
+        'instructional_level'
         // 'price'
     ];
 
@@ -47,6 +48,21 @@ class Course extends Model
     function lecture()
     {
         return $this->hasManyThrough(Lecture::class, Section::class, 'course_id', 'section_id');
+    }
+
+    function instructional_level()
+    {
+        return $this->belongsTo(InstructionalLevel::class, 'instructional_level_id');
+    }
+
+    function course_outcome()
+    {
+        return $this->hasMany(CourseOutcome::class, 'course_id');
+    }
+
+    function course_requirements()
+    {
+        return $this->hasMany(CourseRequirements::class, 'course_id');
     }
     // function price()
     // {
