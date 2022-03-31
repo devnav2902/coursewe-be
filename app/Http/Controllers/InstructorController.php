@@ -56,6 +56,8 @@ class InstructorController extends Controller
                 [
                     'section',
                     'lecture',
+                    'course_outcome',
+                    'course_requirements'
                 ]
             )
             ->firstWhere('id', $id);
