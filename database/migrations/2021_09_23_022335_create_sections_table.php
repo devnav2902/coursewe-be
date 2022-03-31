@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUsersTable extends Migration
+class CreateSectionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,17 +14,11 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('sections', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('role_id')->default(2);
-            $table->string('fullname', 200);
-            $table->string('slug', 100);
-            $table->string('email')->unique();
-            $table->string('avatar');
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('account_status')->default(1);
-            $table->string('password');
-            $table->rememberToken();
+            $table->string("title", 256)->nullable();
+            $table->unsignedInteger("course_id")->nullable();
+            $table->integer('order');
 
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
@@ -38,6 +32,6 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('sections');
     }
 }
