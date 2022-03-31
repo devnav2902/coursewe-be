@@ -3,13 +3,82 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\CourseOutcome;
 use App\Models\Rating;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use stdClass;
 
 class CourseController extends Controller
 {
+    function deleteCourseOutcome($course_id, Request $req)
+    {
+        $delete_course_outcome_order = $req->input('delete_course_outcome_order');
+        CourseOutcome::whereIn('course_id', $course_id)->destroy($delete_course_outcome_order);
+
+        return response('success');
+    }
+
+    function updateCourseOutcome($id, Request $req)
+    {
+        $dataUpdateOutcome = $req->input('course_outcome');
+
+        if ($dataUpdateOutcome) {
+            Validator::make($dataUpdateOutcome, [
+                '*.description' => 'required',
+            ], ['*.description.required' => 'Không được bỏ trống!'])
+                ->validate();
+            // $existed = CourseOutcome::firstWhere('course_id', $id);
+
+            foreach ($dataUpdateOutcome as $outcome) {
+                CourseOutcome::updateOrCreate(
+                    [
+                        'course_id' => $id, 'order' => $outcome['order']
+                    ],
+                    $outcome
+                );
+            }
+            // }
+        }
+
+
+        return response('success');
+    }
+
+    function updateInformation($id, Request $req)
+    {
+        // Thêm validation instructor
+        $data  = $req->only(['author_id', 'title', 'subtitle', 'description', 'slug', 'thumbnail', 'video_demo', 'isPublished', 'instructional_level_id']);
+
+        // $data = collect($req->input())->except(['thumbnail', 'video_demo'])->filter();
+        Course::where('id', $id)->update($data);
+
+        if ($req->hasFile('thumbnail')) {
+            $image = $req->file('thumbnail');
+            $name = $image->getClientOriginalName();
+            $path =  $image->storeAs('thumbnail', time() . $name);
+
+            Course::where('id', $id)
+                ->update(['thumbnail' => $path]);
+        }
+
+        return response('success');
+
+        // CategoriesCourse::where('course_id', $course_id)->delete();
+
+        // if ($request->has('category')) {
+        //     $arr = [];
+
+        //     foreach ($request->input('category') as  $value) {
+        //         $arr[] = ['category_id' => $value, 'course_id' => $course_id];
+        //     }
+
+        //     CategoriesCourse::insert($arr);
+        // }
+
+    }
+
     function getCourse(Request $req)
     {
         $query =  Course::where('isPublished', 1)
