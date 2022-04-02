@@ -3,11 +3,127 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\CourseOutcome;
+use App\Models\CourseRequirements;
+use App\Models\Rating;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use stdClass;
 
 class CourseController extends Controller
 {
+    function deleteCourseOutcome($course_id, Request $req)
+    {
+        if ($req->has('delete_course_outcome_order')) {
+            $delete_course_outcome_order = $req->input('delete_course_outcome_order');
+
+            CourseOutcome::where('course_id', $course_id)
+                ->whereIn('order', $delete_course_outcome_order)
+                ->delete();
+            return response('success');
+        }
+        // return response('fail');
+    }
+
+    function deleteCourseRequirements($course_id, Request $req)
+    {
+        if ($req->has('delete_course_requirements_order')) {
+            $delete_course_requirements_order = $req->input('delete_course_requirements_order');
+
+            CourseRequirements::where('course_id', $course_id)
+                ->whereIn('order', $delete_course_requirements_order)
+                ->delete();
+            return response('success');
+        }
+        // return response('fail');
+    }
+
+    function updateCourseOutcome($id, Request $req)
+    {
+        $dataUpdateOutcome = $req->input('course_outcome');
+
+        if ($dataUpdateOutcome) {
+            Validator::make($dataUpdateOutcome, [
+                '*.description' => 'required',
+            ], ['*.description.required' => 'Không được bỏ trống!'])
+                ->validate();
+            // $existed = CourseOutcome::firstWhere('course_id', $id);
+
+            foreach ($dataUpdateOutcome as $outcome) {
+                CourseOutcome::updateOrCreate(
+                    [
+                        'course_id' => $id, 'order' => $outcome['order']
+                    ],
+                    $outcome
+                );
+            }
+            // }
+        }
+
+
+        return response('success');
+    }
+
+    function updateCourseRequirements($id, Request $req)
+    {
+        $dataUpdateRequirements = $req->input('course_requirements');
+
+        if ($dataUpdateRequirements) {
+            Validator::make($dataUpdateRequirements, [
+                '*.description' => 'required',
+            ], ['*.description.required' => 'Không được bỏ trống!'])
+                ->validate();
+            // $existed = CourseRequirements::firstWhere('course_id', $id);
+
+            foreach ($dataUpdateRequirements as $requirement) {
+                CourseRequirements::updateOrCreate(
+                    [
+                        'course_id' => $id, 'order' => $requirement['order']
+                    ],
+                    $requirement
+                );
+            }
+            // }
+        }
+
+
+        return response('success');
+    }
+
+    function updateInformation($id, Request $req)
+    {
+        // Thêm validation instructor
+        $data  = $req->only(['author_id', 'title', 'subtitle', 'description', 'slug', 'thumbnail', 'video_demo', 'isPublished', 'instructional_level_id']);
+
+        // $data = collect($req->input())->except(['thumbnail', 'video_demo'])->filter();
+        Course::where('id', $id)->update($data);
+
+        if ($req->hasFile('thumbnail')) {
+            $image = $req->file('thumbnail');
+            $name = $image->getClientOriginalName();
+            $path =  $image->storeAs('thumbnail', time() . $name);
+
+            Course::where('id', $id)
+                ->update(['thumbnail' => $path]);
+        }
+
+        return response('success');
+
+        // CategoriesCourse::where('course_id', $course_id)->delete();
+
+        // if ($request->has('category')) {
+        //     $arr = [];
+
+        //     foreach ($request->input('category') as  $value) {
+        //         $arr[] = ['category_id' => $value, 'course_id' => $course_id];
+        //     }
+
+        //     CategoriesCourse::insert($arr);
+        // }
+
+    }
+
     function getCourse(Request $req)
     {
         $query =  Course::where('isPublished', 1)
@@ -45,6 +161,15 @@ class CourseController extends Controller
 
         return response()->json(['course' => $course]);
     }
+    function getCourseById($id)
+    {
+        validator(['id' => $id], ['id' => 'required'])->validate();
+
+        return Course::where('isPublished', 1)
+            ->withAvg('rating', 'rating')
+            ->firstWhere('id', $id);
+    }
+
     function getCourseBySlug(Request $req)
     {
         $req->validate([
@@ -55,7 +180,9 @@ class CourseController extends Controller
             ->where('isPublished', 1)
             ->with([
                 'lecture',
-                'section'
+                'section',
+                'course_requirements',
+                'course_outcome'
                 // 'lecture.progress' => function ($q) {
                 //     $q->where('progress', 1);
                 // }
@@ -66,8 +193,6 @@ class CourseController extends Controller
 
         if (!count($course)) abort(404);
 
-        return $course[0];
-
         // $course->transform(function ($course) {
         //     $course->setRelation('rating', $course->rating()->paginate(10));
 
@@ -77,26 +202,29 @@ class CourseController extends Controller
         //     return $course;
         // });
 
-        // $course = $course[0];
+        $course = $course[0];
 
-        // $isPurchased = false;
+        $hasPurchased = false;
+        $hasCommented = false;
         // $isFree = $course->price->price === 0.0 ? true : false;
 
-        // if (Auth::check()) {
-        //     $result = Auth::user()
-        //         ->enrollment
-        //         ->firstWhere('course_id', $course->id);
+        if (Auth::check()) {
+            $result = Auth::user()
+                ->enrollment
+                ->firstWhere('course_id', $course->id);
 
-        //     $isPurchased = $result ? true : false;
+            $hasPurchased = $result ? true : false;
 
-        //     $course->hasCommented =
-        //         Rating::where('user_id', Auth::user()->id)
-        //         ->select('course_id')
-        //         ->firstWhere('course_id', $course->id);
-        // }
+            $hasCommented =
+                Rating::where('user_id', Auth::user()->id)
+                ->select('course_id')
+                ->firstWhere('course_id', $course->id) ? true : false;
+        }
 
-        // // RATING
-        // $graph = $this->ratingGraph($course);
+        // RATING
+        $graph = $this->ratingGraph($course);
+
+        return response()->json(compact('graph', 'course', 'hasCommented', 'hasPurchased'));
 
         // if ($request->isMethod('GET'))
         //     return view('pages.course-lesson', compact(['graph', 'course', 'isPurchased', 'isFree']));
@@ -128,5 +256,41 @@ class CourseController extends Controller
         //         ['isPurchased', 'course', 'graph', 'coupon', 'couponJSON', 'saleOff', 'isFreeCoupon', 'isFree']
         //     )
         // );
+    }
+
+    private function createObj($rating, $percent)
+    {
+        $obj = new stdClass;
+        $obj->rating = $rating;
+        $obj->percent = $percent;
+        return $obj;
+    }
+
+    private function ratingGraph($course)
+    {
+        $graph = [];
+
+        for ($i = 1; $i <= 4; $i++) {
+            $count_rating = $course
+                ->rating
+                ->where('rating', $i)
+                ->count();
+
+            $percent = 0;
+            if ($course->rating_count) {
+                $percent = ROUND(($count_rating * 100 / $course->rating_count), 1);
+            }
+
+            $graph[] = $this->createObj($i, $percent);
+        }
+
+        $sum = collect($graph)->sum('percent');
+        $rest = 0;
+
+        if (count($course->rating)) $rest = 100 - $sum;
+
+        $graph[] = $this->createObj(5, $rest);
+
+        return $graph;
     }
 }
