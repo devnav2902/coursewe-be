@@ -1,8 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CourseController;
+
 use App\Http\Controllers\InstructionalLevelController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CourseController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CreateCourseController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\OverviewController;
 use App\Http\Controllers\ProfileController;
@@ -31,11 +35,14 @@ Route::get('/course/instructional-level', [InstructionalLevelController::class, 
 Route::get('/course/{id}', [CourseController::class, 'getCourseById']);
 
 // USER
-
 Route::post('/user/login', [UserController::class, 'login']);
 Route::post('/user/sign-up', [UserController::class, 'signUp']);
 Route::get('/user', [UserController::class, 'getCurrentUser']);
 Route::get('/instructor/profile/{slug}', [InstructorController::class, 'profile']);
+
+//ADMIN
+Route::get('/admin/submission-courses-list', [AdminController::class, 'reviewCourses']);
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/revenue', [OverviewController::class, 'chartJSYear']);
@@ -73,4 +80,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/my-learning', [LearningController::class, 'myLearning']);
     Route::get('/instructor/course/{id}', [InstructorController::class, 'getCourseById']);
     Route::get('/get-price', [PriceController::class, 'getPrice']);
+
+    Route::post('/create-course', [CreateCourseController::class, 'create']);
 });

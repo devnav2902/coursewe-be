@@ -69,5 +69,4 @@ class UserController extends Controller
             'user' => Auth::user()
         ];
     }
-   
 }
