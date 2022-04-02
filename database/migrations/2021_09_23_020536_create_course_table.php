@@ -24,7 +24,7 @@ class CreateCourseTable extends Migration
             $table->unsignedInteger('price_id');
             $table->boolean('submit_for_review')->default(0);
             $table->text("description")->nullable();
-            $table->string("slug", 256);
+            $table->string("slug", 256)->nullable();
             $table->string("thumbnail", 256)->nullable();
             $table->string("video_demo", 256)->nullable();
 
