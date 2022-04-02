@@ -5,6 +5,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\InstructionalLevelController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\LearningController;
+use App\Http\Controllers\PriceController;
 use App\Http\Controllers\PurchaseHistoryController;
 use App\Http\Controllers\UserController;
 
@@ -37,9 +38,15 @@ Route::middleware('auth:sanctum')->group(function () {
         [CourseController::class, 'deleteCourseOutcome']
     );
     Route::patch('/course/update-course-outcome/{id}', [CourseController::class, 'updateCourseOutcome']);
+    Route::delete(
+        '/course/delete-course-requirements/{id}',
+        [CourseController::class, 'deleteCourseRequirements']
+    );
+    Route::patch('/course/update-course-requirements/{id}', [CourseController::class, 'updateCourseRequirements']);
     Route::post('/course/update-information/{id}', [CourseController::class, 'updateInformation']);
     Route::get('/user/logout', [UserController::class, 'logout']);
     Route::get('/purchase/history', [PurchaseHistoryController::class, 'purchaseHistory']);
     Route::get('/my-learning', [LearningController::class, 'myLearning']);
     Route::get('/instructor/course/{id}', [InstructorController::class, 'getCourseById']);
+    Route::get('/get-price', [PriceController::class, 'getPrice']);
 });

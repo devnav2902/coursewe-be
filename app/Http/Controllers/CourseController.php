@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\CourseOutcome;
+use App\Models\CourseRequirements;
 use App\Models\Rating;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,10 +15,28 @@ class CourseController extends Controller
 {
     function deleteCourseOutcome($course_id, Request $req)
     {
-        $delete_course_outcome_order = $req->input('delete_course_outcome_order');
-        CourseOutcome::whereIn('course_id', $course_id)->destroy($delete_course_outcome_order);
+        if ($req->has('delete_course_outcome_order')) {
+            $delete_course_outcome_order = $req->input('delete_course_outcome_order');
 
-        return response('success');
+            CourseOutcome::where('course_id', $course_id)
+                ->whereIn('order', $delete_course_outcome_order)
+                ->delete();
+            return response('success');
+        }
+        // return response('fail');
+    }
+
+    function deleteCourseRequirements($course_id, Request $req)
+    {
+        if ($req->has('delete_course_requirements_order')) {
+            $delete_course_requirements_order = $req->input('delete_course_requirements_order');
+
+            CourseRequirements::where('course_id', $course_id)
+                ->whereIn('order', $delete_course_requirements_order)
+                ->delete();
+            return response('success');
+        }
+        // return response('fail');
     }
 
     function updateCourseOutcome($id, Request $req)
@@ -37,6 +56,32 @@ class CourseController extends Controller
                         'course_id' => $id, 'order' => $outcome['order']
                     ],
                     $outcome
+                );
+            }
+            // }
+        }
+
+
+        return response('success');
+    }
+
+    function updateCourseRequirements($id, Request $req)
+    {
+        $dataUpdateRequirements = $req->input('course_requirements');
+
+        if ($dataUpdateRequirements) {
+            Validator::make($dataUpdateRequirements, [
+                '*.description' => 'required',
+            ], ['*.description.required' => 'Không được bỏ trống!'])
+                ->validate();
+            // $existed = CourseRequirements::firstWhere('course_id', $id);
+
+            foreach ($dataUpdateRequirements as $requirement) {
+                CourseRequirements::updateOrCreate(
+                    [
+                        'course_id' => $id, 'order' => $requirement['order']
+                    ],
+                    $requirement
                 );
             }
             // }
@@ -112,7 +157,9 @@ class CourseController extends Controller
             ->where('isPublished', 1)
             ->with([
                 'lecture',
-                'section'
+                'section',
+                'course_requirements',
+                'course_outcome'
                 // 'lecture.progress' => function ($q) {
                 //     $q->where('progress', 1);
                 // }

@@ -15,8 +15,8 @@ class Course extends Model
         'author',
         'rating',
         'course_bill',
-        'instructional_level'
-        // 'price'
+        'instructional_level',
+        'price'
     ];
 
     function author()
@@ -64,8 +64,9 @@ class Course extends Model
     {
         return $this->hasMany(CourseRequirements::class, 'course_id');
     }
-    // function price()
-    // {
-    //     return $this->belongsTo(Price::class, 'price_id');
-    // }
+
+    function price()
+    {
+        return $this->belongsTo(Price::class, 'price_id');
+    }
 }

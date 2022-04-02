@@ -32,7 +32,7 @@ class RegistrationSeeder extends Seeder
 
             $price = DB::table('price')
                 ->where('id', $course->price_id)
-                ->first()->price;
+                ->first()->original_price;
 
             DB::table('course_bill')
                 ->insert([

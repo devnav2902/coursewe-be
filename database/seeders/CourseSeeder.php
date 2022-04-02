@@ -108,7 +108,7 @@ class CourseSeeder extends Seeder
                     'instructional_level_id' => $levelId,
                     'subtitle' => $course_subtitle,
                     'author_id' => $author_id,
-                    'price_id' => random_int(1, 20),
+                    'price_id' => random_int(1, 19),
                     'title' => $course['title'],
                     'description' => $description,
                     'slug' => Str::slug($course['title']),

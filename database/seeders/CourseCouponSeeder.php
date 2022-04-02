@@ -30,7 +30,7 @@ class CourseCouponSeeder extends Seeder
                     'course_id' => $i,
                     'coupon_id' => $coupon_id,
                     'status' => 1,
-                    'discount_price' => $price->price - 3,
+                    'discount_price' => $price->format_price,
                     'expires' => Carbon::now()->addDays(31)
                 ]
             );

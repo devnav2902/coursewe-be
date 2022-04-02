@@ -14,18 +14,34 @@ class PriceSeeder extends Seeder
      */
     public function run()
     {
-        $delta = 5;
-        $default = 12.99;
 
         db::table('price')->insert([
-            'price' => 0
+            'original_price' => 0,
+            'format_price' => 0
         ]);
+        $original_delta = 100000;
+        $format_delta = 100;
 
-        for ($i = 1; $i <= 20; $i++) {
-            $default += $delta;
+        $original_data49 = 249000;
+        $original_data99 = 299000;
+        $format_data49 = 249;
+        $format_data99 = 299;
+
+        for ($i = 1; $i <= 9; $i++) {
+            $original_data49 += $original_delta;
+            $original_data99 += $original_delta;
+            $format_data49 += $format_delta;
+            $format_data99 += $format_delta;
 
             db::table('price')->insert([
-                'price' => $default
+                [
+                    'original_price' => $original_data49,
+                    'format_price' => number_format($format_data49, 3, '.', '.')
+                ],
+                [
+                    'original_price' => $original_data99,
+                    'format_price' => number_format($format_data99, 3, '.', '.')
+                ]
             ]);
         }
     }

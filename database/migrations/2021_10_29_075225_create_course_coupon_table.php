@@ -16,7 +16,7 @@ class CreateCourseCouponTable extends Migration
         Schema::create('course_coupon', function (Blueprint $table) {
             $table->string('code', 20);
             $table->unsignedInteger('course_id');
-            $table->float('discount_price')->default(0.0);
+            $table->char('discount_price')->default(0);
             $table->string('coupon_id');
             $table->boolean('status')->default(1);
             $table->integer('enrollment_limit')->nullable();
