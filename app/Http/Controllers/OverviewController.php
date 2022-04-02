@@ -14,7 +14,7 @@ class OverviewController extends Controller
 {
     function getOverview()
     {
-       
+
 
         $instructorRevenuePercentage = 1;
 
@@ -31,10 +31,12 @@ class OverviewController extends Controller
         $numberOfStudentsInMonth = $this->numberOfStudentsInMonth();
         $totalRevenue = $this->getCourseBill()->sum('purchase');
         $totalRevenue = $totalRevenue * $instructorRevenuePercentage;
+        $totalRevenue = number_format($totalRevenue, 0, '.', '.');
 
 
         $totalRevenueInMonth = $this->getRevenueInMonth();
         $totalRevenueInMonth = $totalRevenueInMonth * $instructorRevenuePercentage;
+        $totalRevenueInMonth = number_format($totalRevenueInMonth, 0, '.', '.');
 
         $ratingCourses = $this->getRatingByInstructorId()->avg('rating');
         $numberOfRatingsInMonth = $this->numberOfRatingsInMonth();
@@ -133,7 +135,7 @@ class OverviewController extends Controller
             $monthRegistration[] = $total;
         }
 
-        return response()->json(['chartData'=>$monthRegistration]);
+        return response()->json(['chartData' => $monthRegistration]);
     }
     function chartEnrollments(Request $request)
     {
@@ -155,7 +157,7 @@ class OverviewController extends Controller
             $monthRegistration[] = $total;
         }
 
-        return response()->json(['chartEnrollments'=>$monthRegistration]);
+        return response()->json(['chartEnrollments' => $monthRegistration]);
     }
     function chartRating(Request $request)
     {
@@ -177,7 +179,7 @@ class OverviewController extends Controller
             $monthRating[] = $total;
         }
 
-        return response()->json(['chartRating'=>$monthRating]);
+        return response()->json(['chartRating' => $monthRating]);
     }
 
     public function getAllCoursesInMonth()
@@ -226,7 +228,6 @@ class OverviewController extends Controller
             $coursesInMonth[] = $total;
         }
 
-        return response()->json(['chartCourses'=>$coursesInMonth]);
+        return response()->json(['chartCourses' => $coursesInMonth]);
     }
-
 }
