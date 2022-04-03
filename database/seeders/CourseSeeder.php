@@ -131,16 +131,16 @@ class CourseSeeder extends Seeder
             );
 
             foreach ($course['category'] as $cat) {
-                $cat_id = db::table('category')
+                $cat_id = db::table('categories')
                     ->where('slug', 'LIKE', '%' . $cat . '%')
-                    ->first('id');
+                    ->first('category_id');
 
                 if ($cat_id) {
                     db::table('categories_course')
                         ->insert(
                             [
                                 'course_id' => $id,
-                                'category_id' => $cat_id->id
+                                'category_id' => $cat_id->category_id
                             ]
                         );
                 }
