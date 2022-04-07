@@ -69,4 +69,9 @@ class Course extends Model
     {
         return $this->belongsTo(Price::class, 'price_id');
     }
+
+    function categories()
+    {
+        return $this->belongsToMany(Categories::class, CategoriesCourse::class, 'course_id', 'category_id');
+    }
 }
