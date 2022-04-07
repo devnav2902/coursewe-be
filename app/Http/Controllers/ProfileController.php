@@ -13,16 +13,18 @@ class ProfileController extends Controller
 {
     public function uploadAvatar(Request $request)
     {
-        $request->validate(['change-avatar' => 'required|image']);
 
-        if ($request->hasFile('change-avatar')) {
-            $file = $request->file('change-avatar');
+        $request->validate(['file' => 'required|image']);
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
             $user = Auth::user();
             $filename = $user->id . '_avatar' . time() . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('profile_picture', $filename);
-            // Storage::delete('file.jpg');
+
 
             User::where('id', $user->id)->update(['avatar' => $path]);
+
+            return $path;
         } else {
             return back()
                 ->withErrors(
@@ -115,8 +117,9 @@ class ProfileController extends Controller
         Bio::create($data);
         return back();
     }
-    public function getBio(){
-        $bio = Bio::where('user_id',Auth::user()->id)->first();
-        return response(['bio'=>$bio]);
+    public function getBio()
+    {
+        $bio = Bio::where('user_id', Auth::user()->id)->first();
+        return response(['bio' => $bio]);
     }
 }
