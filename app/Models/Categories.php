@@ -9,4 +9,10 @@ class Categories extends Model
 {
     use HasFactory;
     protected $table = 'categories';
+    protected $primaryKey = 'category_id';
+
+    function course()
+    {
+        return $this->belongsToMany(Course::class, CategoriesCourse::class, 'category_id', 'course_id');
+    }
 }

@@ -34,7 +34,10 @@ Route::post('/course', [CourseController::class, 'getCourseBySlug']);
 Route::get('/instructor/course/{id}', [CourseController::class, 'getCourseOfAuthorById']);
 Route::get('/course/instructional-level', [InstructionalLevelController::class, 'get']);
 Route::get('/course/{id}', [CourseController::class, 'getCourseById']);
-Route::get('/get-categories', [CategoriesController::class, 'getCategories']);
+
+// CATEGORY
+Route::get('/categories', [CategoriesController::class, 'getCategories']);
+Route::get('/categories/get-courses/{slug}', [CategoriesController::class, 'getCoursesByCategorySlug']);
 
 // USER
 Route::post('/user/login', [UserController::class, 'login']);
