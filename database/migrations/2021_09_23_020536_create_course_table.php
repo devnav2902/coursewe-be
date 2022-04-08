@@ -19,7 +19,7 @@ class CreateCourseTable extends Migration
             $table->unsignedInteger('author_id');
             $table->unsignedInteger('instructional_level_id');
             $table->unsignedInteger('price_id');
-            $table->string("title", 60);
+            $table->string("title", 160);
             $table->string("subtitle", 120)->nullable();
             $table->boolean('isPublished')->default(0);
             $table->boolean('submit_for_review')->default(0);

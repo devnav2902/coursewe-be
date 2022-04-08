@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class CategoriesController extends Controller
 {
+
     private function queryCategory($where)
     {
         return "SELECT t1.title AS level1,t1.slug AS level1_slug,
@@ -21,19 +22,8 @@ class CategoriesController extends Controller
 
     function getCoursesByCategorySlug($slug)
     {
-        $where = "t1.slug = '" . $slug . "' OR " . "t2.slug = '" . $slug . "' OR " . "t3.slug = '" . $slug . "'";
-        $category_query = $this->queryCategory($where);
-        $result = DB::select($category_query);
-
-        $topics_slug = collect($result)->pluck('level3_slug')->filter();
-
-        $courses = Course::whereHas('categories', function ($query) use ($topics_slug) {
-            $query->whereIn('slug', $topics_slug);
-        })
-            ->withCount(['course_bill', 'rating', 'section', 'lecture'])
-            ->withAvg('rating', 'rating')
-            ->with('course_outcome')
-            ->paginate(5);
+        $helper = new HelperController();
+        $courses = $helper->getCoursesByCategorySlug($slug);
 
         return response()->json(compact('courses'));
     }

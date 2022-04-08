@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\HelperController;
 use App\Models\Categories;
 use App\Models\Course;
+use App\Models\InstructionalLevel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -185,19 +188,62 @@ Route::get('/get-topics/{slug}', function ($slug) {
     $category_query = queryCategory($where);
     $result = DB::select($category_query);
 
-    $topics_slug = collect($result)->pluck('level3_slug')->filter();
+    $topics_slug = collect($result)->map(function ($level) {
+        if ($level->level3_slug)
+            return $level->level3_slug;
 
-    $courses = Course::whereHas('categories', function ($query) use ($topics_slug) {
-        $query->whereIn('slug', $topics_slug);
-    })->withCount(['course_bill', 'rating', 'section', 'lecture'])
-        ->withAvg('rating', 'rating')
+        return $level->level2_slug;
+    });
 
-        ->paginate(5);
+    // $courses = Course::whereHas('categories', function ($query) use ($topics_slug) {
+    //     $query->whereIn('slug', $topics_slug);
+    // })
+    //     ->withCount(['course_bill', 'rating', 'section', 'lecture'])
+    //     ->withAvg('rating', 'rating')
 
+    //     ->paginate(5);
+    DB::enableQueryLog();
+    $courses = Course::whereHas('categories', function ($query) {
+        $query->whereIn('categories_course.category_id', [23, 32]);
+    })
+        // ->withCount(['course_bill', 'rating', 'section', 'lecture'])
+        // ->withAvg('rating', 'rating')
 
+        // ->paginate(5);
+        ->setEagerLoads([])
+        ->select('id')
+        ->get();
+    return DB::getQueryLog();
+
+    // return DB::select('SELECT * FROM `categories_course` WHERE category_id IN (23,32)');
     return $courses;
     // return $topics_slug;
     // $courses->setRelation('course', $courses->course()->paginate(10));
 
     return $topics_slug;
+});
+
+Route::get('/level/{slug}', function ($slug) {
+    $helperController = new HelperController();
+    $coursesBySlug = $helperController->getCoursesByCategorySlug($slug, false);
+
+    $levels = InstructionalLevel::get();
+    $levelInCourses = $coursesBySlug->pluck('instructional_level');
+    $countCoursesByLevel = $levelInCourses->countBy('level');
+
+    $levels->transform(function ($level) use ($countCoursesByLevel) {
+        $name = $level['level'];
+        $amount = 0;
+
+        $data = ['name' => $name, 'id' => $level['id'], 'amount' => $amount];
+
+        if (isset($countCoursesByLevel[$name])) {
+            $amount = $countCoursesByLevel[$name];
+            $data['amount'] = $amount;
+        }
+
+        return $data;
+    });
+
+    return $levels;
 });
