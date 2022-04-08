@@ -5,7 +5,6 @@ use App\Http\Controllers\InstructionalLevelController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\CourseController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CreateCourseController;
 use App\Http\Controllers\InstructorController;
@@ -15,7 +14,6 @@ use App\Http\Controllers\LearningController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\PurchaseHistoryController;
 use App\Http\Controllers\UserController;
-use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,6 +46,8 @@ Route::get('/instructor/profile/{slug}', [InstructorController::class, 'profile'
 //ADMIN
 Route::get('/admin/submission-courses-list', [AdminController::class, 'reviewCourses']);
 
+// INSTRUCTIONAL LEVEL
+Route::get('/instructional-level/amount-courses/{slug}', [InstructionalLevelController::class, 'amountCoursesByInstructionalLevel']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/revenue', [OverviewController::class, 'chartJSYear']);
