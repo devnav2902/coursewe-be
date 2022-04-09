@@ -5,8 +5,10 @@ use App\Http\Controllers\HelperController;
 use App\Models\Categories;
 use App\Models\Course;
 use App\Models\InstructionalLevel;
+use App\Models\Price;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -71,7 +73,7 @@ Route::get('/category-managing', function () {
             ],
         ],
     ];
-
+    dd($sample);
     // $categories = $grouped_categories->map(function ($top_level, $key) use ($slug_categories) {
 
     //     $slug_top_level = $slug_categories[$key];
@@ -246,4 +248,26 @@ Route::get('/level/{slug}', function ($slug) {
     });
 
     return $levels;
+});
+
+Route::get('/price/{slug}', function ($slug) {
+    $helperController = new HelperController();
+    $courses = $helperController->getCoursesByCategorySlug($slug, false);
+    $priceArr = $courses->pluck('price');
+
+    $amountCoursesByTypesPrice = [
+        'free' => ['amount' => 0, 'price_id' => null],
+        'paid' => ['amount' => 0]
+    ];
+
+    foreach ($priceArr as $value) {
+        if (intval($value['original_price']) !== 0)
+            $amountCoursesByTypesPrice['paid']['amount'] += 1;
+        else {
+            $amountCoursesByTypesPrice['free']['amount'] += 1;
+            $amountCoursesByTypesPrice['free']['price_id'] = $value['id'];
+        }
+    }
+
+    return response()->json(compact('amountCoursesByTypesPrice'));
 });
