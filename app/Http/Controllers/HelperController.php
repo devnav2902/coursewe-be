@@ -11,12 +11,35 @@ use Illuminate\Support\Facades\DB;
 
 class HelperController extends Controller
 {
+    function getCategoriesByCourseId($courses_id)
+    {
+        return DB::select('SELECT t1.title AS topic_title,t1.category_id AS topic_id,
+        t2.title  AS subcategory_title,t2.category_id AS subcategory_id,
+        t3.title AS category_title,t3.category_id AS category_id
+        FROM (SELECT * FROM categories WHERE category_id IN (' . implode(', ', $courses_id) . ') ) as t1
+        LEFT JOIN categories AS t2 ON t1.parent_id = t2.category_id
+        LEFT JOIN categories AS t3 ON t2.parent_id = t3.category_id');
+    }
+
+    function getTopLevelCategories($categories_id, $limit)
+    {
+        $categories = $this->getCategoriesByCourseId($categories_id);
+
+        $top_level = collect($categories)->map(function ($level) {
+            if ($level->category_id)
+                return ['top_level_id' => $level->category_id, 'name' => $level->category_title];
+
+            return ['top_level_id' => $level->subcategory_id, 'name' => $level->subcategory_title];
+        });
+
+        return $top_level->unique()->values();
+    }
 
     function queryCategory($where)
     {
-        return "SELECT t1.title AS level1,t1.slug AS level1_slug,
-                t2.title  AS level2,t2.slug AS level2_slug,
-                t3.title AS level3,t3.slug AS level3_slug
+        return "SELECT t1.title AS level1,t1.slug AS level1_slug,t1.category_id AS category_id,
+                t2.title  AS level2,t2.slug AS level2_slug,t2.category_id  AS subcategory_id,
+                t3.title AS level3,t3.slug AS level3_slug, t3.category_id AS topic_id
             FROM categories as t1
             LEFT JOIN categories AS t2 ON t1.category_id = t2.parent_id
             LEFT JOIN categories AS t3 ON t2.category_id = t3.parent_id WHERE " . $where;
@@ -42,7 +65,7 @@ class HelperController extends Controller
         })
             ->withCount(['course_bill', 'rating', 'section', 'lecture'])
             ->withAvg('rating', 'rating')
-            ->with('course_outcome');
+            ->with(['categories:category_id,parent_id,title,slug', 'course_outcome']);
 
         if ($pagination) {
             $courses = $queryGetCourses->paginate(5);
