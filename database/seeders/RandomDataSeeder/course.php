@@ -1,65 +1,235 @@
 <?php
 function course()
 {
-  [
-    'ngoai-ngu' => [
-      'title' => [
-        'Tiếng Trung cơ bản 1',
-        'Tiếng Anh cho người mất gốc',
-        'Luyện thi TOEIC 500+ từ con số 0',
-        'IELTS Writing 6.0 cho người mới',
-        'Tiếng Anh cho người mới bắt đầu',
-        'Tạo dựng mối quan hệ bằng tiếng Anh',
-        'IELTS Academic - Module Speaking',
-        'Tiếng Trung cho doanh nhân',
-        'IELTS through BBC',
-        'Học tiếng Nhật - Hướng dẫn cách giải và dịch đề thi JLPT N5',
-        'Tiếng Anh giao tiếp với giáo viên bản ngữ về chủ đề âm nhạc và điện ảnh',
-        'Khóa học tiếng Nhật cơ bản',
-        'Tiếng Hàn BIGMAXX Online - Trung cấp 2',
-        'Tiếng Hàn TOPIK 3',
-        'Tự học tiếng Hàn - sơ cấp 2',
-        'Mỗi ngày một ngữ pháp tiếng Hàn'
-      ],
-
-      'thumbnail' => [
-        'https://edumall.vn/_next/image?url=%2Fapi%2Fimageproxy%3Furl%3Dhttps%253A%252F%252Fcdn2.topica.vn%252F191ab4fd-9c62-4494-b209-51f86a3924d3%252Fproduct%252F613c5f5ce818b400255e3bd5&w=1920&q=50',
-        'https://edumall.vn/_next/image?url=%2Fapi%2Fimageproxy%3Furl%3Dhttps%253A%252F%252Fcdn2.topica.vn%252F191ab4fd-9c62-4494-b209-51f86a3924d3%252Fproduct%252F60c1c0a0e1383a0025b58b4d&w=1920&q=50',
-        'https://edumall.vn/_next/image?url=%2Fapi%2Fimageproxy%3Furl%3Dhttps%253A%252F%252Fcdn2.topica.vn%252F191ab4fd-9c62-4494-b209-51f86a3924d3%252Fproduct%252F613ccef4e818b400255e407b&w=1920&q=50',
-        'https://edumall.vn/_next/image?url=%2Fapi%2Fimageproxy%3Furl%3Dhttps%253A%252F%252Fcdn2.topica.vn%252F5a7a63749f7bfc459700033e%252Fproduct%252F6004ef9d44d203002598c209&w=1920&q=50',
-        'https://edumall.vn/_next/image?url=%2Fapi%2Fimageproxy%3Furl%3Dhttps%253A%252F%252Fcdn2.topica.vn%252F99e8262a-7b95-4050-a1a0-d6977c9d98ed%252Fproduct%252F60052a4c132cb60024b0288d&w=1920&q=50',
-        'https://edumall.vn/_next/image?url=%2Fapi%2Fimageproxy%3Furl%3Dhttps%253A%252F%252Fcdn2.topica.vn%252F99e8262a-7b95-4050-a1a0-d6977c9d98ed%252Fproduct%252F600511b444d203002598c298&w=1920&q=50',
-        'https://edumall.vn/_next/image?url=%2Fapi%2Fimageproxy%3Furl%3Dhttps%253A%252F%252Fcdn2.topica.vn%252F191ab4fd-9c62-4494-b209-51f86a3924d3%252Fproduct%252F6076602d31b9ae0024d5da96&w=1920&q=50',
-        'https://edumall.vn/_next/image?url=%2Fapi%2Fimageproxy%3Furl%3Dhttps%253A%252F%252Fcdn2.topica.vn%252F5a7a63749f7bfc459700033e%252Fproduct%252F60010a7844d203002598bde8&w=1920&q=50',
-        'https://edumall.vn/_next/image?url=%2Fapi%2Fimageproxy%3Furl%3Dhttps%253A%252F%252Fcdn2.topica.vn%252F5a7a63749f7bfc459700033e%252Fproduct%252F600009fe44d203002598bc1f&w=1920&q=50',
-        'https://edumall.vn/_next/image?url=%2Fapi%2Fimageproxy%3Furl%3Dhttps%253A%252F%252Fcdn2.topica.vn%252F99e8262a-7b95-4050-a1a0-d6977c9d98ed%252Fproduct%252F6001522d44d203002598c01d&w=1920&q=50',
-        'https://edumall.vn/_next/image?url=%2Fapi%2Fimageproxy%3Furl%3Dhttps%253A%252F%252Fcdn2.topica.vn%252F5a7a63749f7bfc459700033e%252Fproduct%252F6001826244d203002598c16c&w=1920&q=50',
-        'https://edumall.vn/_next/image?url=%2Fapi%2Fimageproxy%3Furl%3Dhttps%253A%252F%252Fcdn2.topica.vn%252F5a7a63749f7bfc459700033e%252Fproduct%252F600008b344d203002598bc0f&w=1920&q=50'
-      ]
+  return [
+    [
+      'title' => 'Tiếng Trung cơ bản 1',
+      'category' => ['tieng-trung-giao-tiep']
     ],
-    'phat-trien-ban-than' => [
-      'title' => [
-        'Kỹ năng giao tiếp trong công sở',
-        'Bí quyết giao tiếp để thành công',
-        'Làm chủ kỹ năng giao tiếp trong vòng 7 ngày',
-        'Kỹ năng giao tiếp qua các tình huống',
-        'Tư duy phản biện - giải quyết đến tận cùng vấn đề',
-        'Khóa học ý thức tư duy và liên tưởng',
-        'Làm chủ tư duy thay đổi vận mệnh',
-        'Học làm lãnh đạo',
-        'Bậc thầy lãnh đạo',
-        'Nhà Lãnh đạo phải biết đào tạo',
-        'Học để trở thành lãnh đạo cấp cao',
-        'Quản trị tài chính cá nhân hiệu quả',
-        'Khóa học quản lý tài chính cá nhân một cách hiệu quả'
-      ],
-
-      'thumbnail' => [
-        'https://edumall.vn/_next/image?url=%2Fapi%2Fimageproxy%3Furl%3Dhttps%253A%252F%252Fcdn2.topica.vn%252F191ab4fd-9c62-4494-b209-51f86a3924d3%252Fproduct%252F6076989731b9ae0024d5dba8&w=1920&q=50',
-        'https://edumall.vn/_next/image?url=%2Fapi%2Fimageproxy%3Furl%3Dhttps%253A%252F%252Fcdn2.topica.vn%252F191ab4fd-9c62-4494-b209-51f86a3924d3%252Fproduct%252F60a24305d12b64002515b0be&w=1920&q=50',
-        'https://edumall.vn/_next/image?url=%2Fapi%2Fimageproxy%3Furl%3Dhttps%253A%252F%252Fcdn2.topica.vn%252F191ab4fd-9c62-4494-b209-51f86a3924d3%252Fproduct%252F60754a0b31b9ae0024d5d6f8&w=1920&q=50',
-        'https://edumall.vn/_next/image?url=%2Fapi%2Fimageproxy%3Furl%3Dhttps%253A%252F%252Fcdn2.topica.vn%252F99e8262a-7b95-4050-a1a0-d6977c9d98ed%252Fproduct%252F5ffff55044d203002598bbc7&w=1920&q=50', 'https://edumall.vn/_next/image?url=%2Fapi%2Fimageproxy%3Furl%3Dhttps%253A%252F%252Fcdn2.topica.vn%252F191ab4fd-9c62-4494-b209-51f86a3924d3%252Fproduct%252F609badf9d12b640025159f94&w=1920&q=50'
-      ]
+    [
+      'title' => 'Tiếng Anh cho người mất gốc',
+      'category' => ['ngu-phap-tieng-anh']
+    ],
+    [
+      'title' => 'Luyện thi TOEIC 500+ từ con số 0',
+      'category' => ['toeic']
+    ],
+    [
+      'title' => 'Luyện thi TOEIC mục tiêu 450-650+',
+      'category' => ['toeic']
+    ],
+    [
+      'title' => 'Ngữ pháp tiếng Anh cho người mới bắt đầu',
+      'category' => ['ngu-phap-tieng-anh']
+    ],
+    [
+      'title' => 'Ngữ pháp tiếng Anh cho người mới bắt đầu về chủ đề danh từ số ít và số nhiều',
+      'category' => ['ngu-phap-tieng-anh']
+    ],
+    [
+      'title' => 'Đạt 700 điểm TOEIC là chuyện nhỏ',
+      'category' => ['toeic']
+    ],
+    [
+      'title' => 'IELTS Writing 6.0 cho người mới',
+      'category' => ['ielts']
+    ],
+    [
+      'title' => 'IELTS Academic - Module Speaking',
+      'category' => ['ielts']
+    ],
+    [
+      'title' => 'Tiếng Trung cho doanh nhân',
+      'category' => ['tieng-trung-giao-tiep']
+    ],
+    [
+      'title' => 'IELTS through BBC',
+      'category' => ['ielts']
+    ],
+    [
+      'title' => 'Học tiếng Nhật - Hướng dẫn cách giải và dịch đề thi JLPT N5',
+      'category' => ['chung-chi-tieng-nhat']
+    ],
+    [
+      'title' => 'Học tiếng Nhật không khó như bạn nghĩ',
+      'category' => ['tieng-nhat-co-ban']
+    ],
+    [
+      'title' =>
+      'Tiếng Anh giao tiếp với giáo viên bản ngữ về chủ đề âm nhạc và điện ảnh',
+      'category' => ['tieng-anh-giao-tiep']
+    ],
+    [
+      'title' => 'Khóa học tiếng Nhật cơ bản',
+      'category' => ['tieng-nhat-co-ban']
+    ],
+    [
+      'title' => 'Tiếng Hàn BIGMAXX Online - Trung cấp 2',
+      'category' => ['tu-hoc-tieng-han']
+    ],
+    [
+      'title' => 'Tiếng Hàn TOPIK 3',
+      'category' => ['tieng-han']
+    ],
+    [
+      'title' => 'Tiếng Hàn sơ cấp cho người mới bắt đầu',
+      'category' => ['tu-hoc-tieng-han']
+    ],
+    [
+      'title' => 'Tự học tiếng Hàn - sơ cấp 2',
+      'category' => ['tu-hoc-tieng-han']
+    ],
+    [
+      'title' => 'Mỗi ngày một ngữ pháp tiếng Hàn',
+      'category' => ['tu-hoc-tieng-han']
+    ],
+    [
+      'title' => 'Kỹ năng giao tiếp trong công sở',
+      'category' => ['ky-nang-giao-tiep']
+    ],
+    [
+      'title' => 'Bí quyết giao tiếp để thành công',
+      'category' => ['ky-nang-giao-tiep']
+    ],
+    [
+      'title' => 'Làm chủ kỹ năng giao tiếp trong vòng 7 ngày',
+      'category' => ['ky-nang-giao-tiep']
+    ],
+    [
+      'title' => 'Kỹ năng giao tiếp qua các tình huống',
+      'category' => ['ky-nang-giao-tiep']
+    ],
+    [
+      'title' => 'Tư duy phản biện - giải quyết đến tận cùng vấn đề',
+      'category' => ['tu-duy']
+    ],
+    [
+      'title' => 'Khóa học ý thức tư duy và liên tưởng',
+      'category' => ['tu-duy']
+    ],
+    [
+      'title' => 'Làm chủ tư duy thay đổi vận mệnh',
+      'category' => ['tu-duy']
+    ],
+    [
+      'title' => 'Học làm lãnh đạo',
+      'category' => ['lanh-dao']
+    ],
+    [
+      'title' => 'Bậc thầy lãnh đạo',
+      'category' => ['lanh-dao']
+    ],
+    [
+      'title' => 'Nhà Lãnh đạo phải biết đào tạo',
+      'category' => ['lanh-dao']
+    ],
+    [
+      'title' => 'Học để trở thành lãnh đạo cấp cao',
+      'category' => ['lanh-dao']
+    ],
+    [
+      'title' => 'Quản trị tài chính cá nhân hiệu quả',
+      'category' => ['ca-nhan']
+    ],
+    [
+      'title' => 'Khóa học quản lý tài chính cá nhân một cách hiệu quả',
+      'category' => ['ca-nhan']
+    ],
+    [
+      'title' => 'KHÓA HỌC ANGULAR & TYPESCRIPT (FRONT END)',
+      'category' => ['angular', 'typescript'],
+    ],
+    [
+      'title' => 'Khóa học NodeJS căn bản',
+      'category' => ['nodejs'],
+    ],
+    [
+      'title' => 'Khóa học Lập trình Angular',
+      'category' => ['angular'],
+    ],
+    [
+      'title' => 'Khóa học vue js master',
+      'category' => ['vuejs'],
+    ],
+    [
+      'title' => 'Lập trình Front-End VueJS',
+      'category' => ['vuejs'],
+    ],
+    [
+      'title' => 'Khoá học Lập trình web Vue.js căn bản',
+      'category' => ['vuejs'],
+    ],
+    [
+      'title' => 'Khóa học lập trình NodeJS',
+      'category' => ['nodejs'],
+    ],
+    [
+      'title' => 'KHÓA HỌC LẬP TRÌNH PHP NÂNG CAO',
+      'category' => ['php'],
+    ],
+    [
+      'title' => 'Khóa Học Lập Trình Laravel Từ A Đến Z',
+      'category' => ['laravel'],
+    ],
+    [
+      'title' => 'Khóa học lập trình miễn phí Vue 3 & NestJS',
+      'category' => ['vuejs', 'nestjs'],
+    ],
+    [
+      'title' => 'Lập trình web nâng cao với LARAVEL FRAMEWORK',
+      'category' => ['laravel'],
+    ],
+    [
+      'title' => 'Khóa học Lập trình web HTML5, CSS3, jQuery, Bootstrap',
+      'category' => ['html', 'css', 'jquery', 'bootstrap'],
+    ],
+    [
+      'title' => 'Khóa học HTML và CSS cơ bản',
+      'category' => ['html', 'css'],
+    ],
+    [
+      'title' => 'ReactJS cho người mới bắt đầu',
+      'category' => ['react'],
+    ],
+    [
+      'title' => 'Học Javascript với 9 chuyên đề từ dễ đến khó',
+      'category' => ['javascript'],
+    ],
+    [
+      'title' => 'JavaScript Cơ Bản',
+      'category' => ['javascript'],
+    ],
+    [
+      'title' => 'Hacker mũ trắng và bảo mật thông tin',
+      'category' => ['mang-may-tinh'],
+    ],
+    [
+      'title' => 'Quản trị hệ thống mạng Windows Server MCSA',
+      'category' => ['mang-may-tinh'],
+    ],
+    [
+      'title' => 'Thành thạo Illustrator từ cơ bản đến nâng cao',
+      'category' => ['adobe-illustrator'],
+    ],
+    [
+      'title' => 'Thiết kế với Illustrator CC 2019',
+      'category' => ['adobe-illustrator'],
+    ],
+    [
+      'title' => '10 kỹ năng Adobe Illustrator cần biết',
+      'category' => ['adobe-illustrator'],
+    ],
+    [
+      'title' => 'Học thiết kế web cùng photoshop',
+      'category' => ['photoshop'],
+    ],
+    [
+      'title' => '22 bí kíp giúp người mới học thành thạo Photoshop',
+      'category' => ['photoshop'],
+    ],
+    [
+      'title' => 'Thiết kế banner bằng illustrator và photoshop',
+      'category' => ['photoshop', 'adobe-illustrator'],
     ],
   ];
 }
