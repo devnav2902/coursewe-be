@@ -13,6 +13,27 @@ use stdClass;
 
 class CourseController extends Controller
 {
+    function getLatestCourses()
+    {
+        $query = Course::without(['section', 'course_bill'])
+            ->where('isPublished', 1)
+            ->orderBy('created_at', 'desc')
+            ->select('title', 'id', 'author_id', 'slug', 'price_id', 'thumbnail', 'created_at', 'instructional_level_id', 'subtitle')
+            ->withCount(['course_bill', 'rating'])
+            ->withAvg('rating', 'rating')
+            ->take(15);
+
+        $queryLatestCourses = clone $query;
+        $latestCourses = $queryLatestCourses
+            ->get()
+            ->map(function ($course) {
+                $course->course_outcome = $course->course_outcome->take(3);
+                return $course;
+            });
+
+        return response()->json(compact('latestCourses'));
+    }
+
     function deleteCourseOutcome($course_id, Request $req)
     {
         if ($req->has('delete_course_outcome_order')) {
