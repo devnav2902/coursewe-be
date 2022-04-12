@@ -16,7 +16,8 @@ class Course extends Model
         'rating',
         'course_bill',
         'instructional_level',
-        'price'
+        'price',
+        'course_outcome'
     ];
 
     function author()

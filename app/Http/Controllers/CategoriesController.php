@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categories;
+use App\Models\CategoriesCourse;
 use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -10,14 +11,77 @@ use Illuminate\Support\Facades\DB;
 class CategoriesController extends Controller
 {
 
-    private function queryCategory($where)
+    private $helperController;
+
+    function __construct()
     {
-        return "SELECT t1.title AS level1,t1.slug AS level1_slug,
-                t2.title  AS level2,t2.slug AS level2_slug,
-                t3.title AS level3,t3.slug AS level3_slug
-            FROM categories as t1
-            LEFT JOIN categories AS t2 ON t1.category_id = t2.parent_id
-            LEFT JOIN categories AS t3 ON t2.category_id = t3.parent_id WHERE " . $where;
+        $this->helperController = new HelperController();
+    }
+
+    function featuredCoursesByCategoryId($topLevelCategoryId)
+    {
+        $where = "t1.category_id = " . $topLevelCategoryId;
+        $category_query = $this->helperController->queryCategory($where);
+        $result = DB::select($category_query);
+
+        $topics_id = collect($result)->map(function ($level) {
+            if ($level->topic_id) return $level->topic_id;
+
+            return $level->subcategory_id;
+        });
+
+        $queryGetCourses = Course::whereHas('categories', function ($query) use ($topics_id) {
+            $query->whereIn('categories_course.category_id', $topics_id);
+        })
+            ->withCount(['course_bill', 'rating', 'section', 'lecture'])
+            ->withAvg('rating', 'rating')
+            ->having('rating_avg_rating', ">=", 4.0)
+            ->with(['categories:category_id,parent_id,title,slug', 'course_outcome'])
+            ->take(10);
+
+        return response()->json(['courses' => $queryGetCourses->get()]);
+    }
+
+    function featuredCourses($limit)
+    {
+        $queryGetCourses = Course::withCount(['course_bill', 'rating', 'section', 'lecture'])
+            ->withAvg('rating', 'rating')
+            ->having('rating_avg_rating', '>=', 4.0)
+            ->take($limit);
+
+        $courses = $queryGetCourses->get();
+
+        return response()->json(compact('courses'));
+    }
+
+    function featuredCategories($limit)
+    {
+        $queryGetCourses = CategoriesCourse::whereHas(
+            'course',
+            function ($q) {
+                $q
+                    ->setEagerLoads([])
+                    ->select('id', 'title')
+                    ->withAvg('rating', 'rating')
+                    ->having('rating_avg_rating', '>=', 4.0);
+            }
+        );
+
+        $featured_courses = $queryGetCourses->get();
+
+        $categories_id = $featured_courses
+            ->pluck('category_id')
+            ->unique()
+            ->values()
+            ->toArray();
+        $helperController = new HelperController();
+        $topLevelCategories = $helperController->getTopLevelCategories($categories_id, $limit);
+
+        return response()->json(
+            [
+                'topLevelCategories' => $topLevelCategories
+            ]
+        );
     }
 
     function getCoursesByCategorySlug($slug)
@@ -28,9 +92,40 @@ class CategoriesController extends Controller
         return response()->json(compact('courses'));
     }
 
+    function amountCoursesInTopics($slug)
+    {
+        $helperController = new HelperController();
+        $coursesBySlug = $helperController->getCoursesByCategorySlug($slug, false);
+
+        $arr = $coursesBySlug->pluck('categories');
+
+        $arrCategories = [];
+
+        foreach ($arr as $category) {
+            foreach ($category as $value) array_push($arrCategories, $value);
+        }
+
+        $counted = collect($arrCategories)->countBy(function ($category) {
+            return $category['slug'];
+        });
+
+        $unique = collect($arrCategories)->unique('category_id');
+
+        $topicsWithCourses = $unique
+            ->map(function ($category) use ($counted) {
+                $category['amount'] = $counted[$category['slug']];
+
+                return $category;
+            })
+            ->values();
+
+        return response(compact('topicsWithCourses'));
+    }
+
     function getCategories()
     {
-        $category_query = $this->queryCategory("t1.parent_id IS NULL");
+        $helperController = new HelperController();
+        $category_query = $helperController->queryCategory("t1.parent_id IS NULL");
 
         $result = DB::select($category_query);
 

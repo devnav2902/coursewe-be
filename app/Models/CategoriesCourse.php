@@ -10,4 +10,9 @@ class CategoriesCourse extends Model
     use HasFactory;
 
     protected $table = 'categories_course';
+
+    function course()
+    {
+        return $this->belongsTo(Course::class, 'course_id');
+    }
 }

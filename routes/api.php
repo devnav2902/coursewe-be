@@ -13,6 +13,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LearningController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\PurchaseHistoryController;
+use App\Http\Controllers\RatingController;
 use App\Http\Controllers\UserController;
 
 /*
@@ -27,6 +28,8 @@ use App\Http\Controllers\UserController;
 */
 
 // COURSE
+Route::get('/course/best-selling', [CourseController::class, 'bestSellingCourses']); // !lấy theo tuần
+Route::get('/course/latest', [CourseController::class, 'getLatestCourses']);
 Route::get('/course', [CourseController::class, 'getCourse']);
 Route::post('/course', [CourseController::class, 'getCourseBySlug']);
 Route::get('/instructor/course/{id}', [CourseController::class, 'getCourseOfAuthorById']);
@@ -34,9 +37,13 @@ Route::get('/course/instructional-level', [InstructionalLevelController::class, 
 Route::get('/course/{id}', [CourseController::class, 'getCourseById']);
 
 // CATEGORY
+Route::get('/featured-courses/{limit}', [CategoriesController::class, 'featuredCourses']);
+Route::get('/category/featured-courses/{topLevelCategoryId}', [CategoriesController::class, 'featuredCoursesByCategoryId']);
+Route::get('/featured-categories/{limit}', [CategoriesController::class, 'featuredCategories']);
 Route::get('/categories', [CategoriesController::class, 'getCategories']);
 Route::get('/categories/get-courses/{slug}', [CategoriesController::class, 'getCoursesByCategorySlug']);
 Route::get('/categories/types-price/{slug}', [CategoriesController::class, 'getAmountCoursesByTypesPrice']);
+Route::get('/categories/amount-courses-in-topics/{slug}', [CategoriesController::class, 'amountCoursesInTopics']);
 
 // USER
 Route::post('/user/login', [UserController::class, 'login']);
@@ -49,6 +56,9 @@ Route::get('/admin/submission-courses-list', [AdminController::class, 'reviewCou
 
 // INSTRUCTIONAL LEVEL
 Route::get('/instructional-level/amount-courses/{slug}', [InstructionalLevelController::class, 'amountCoursesByInstructionalLevel']);
+
+// RATING
+Route::get('/rating/filter-rating/{slug}', [RatingController::class, 'filterRatingByCategorySlug']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/revenue', [OverviewController::class, 'chartJSYear']);
