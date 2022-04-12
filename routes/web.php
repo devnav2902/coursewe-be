@@ -354,3 +354,14 @@ Route::get('/courses/{topLevelCategoryId}', function ($topLevelCategoryId) {
 
     return response()->json(['courses' => $queryGetCourses->get()]);
 });
+
+
+Route::get('/best-selling-courses', function () {
+    return Course::select('id')
+        ->orderBy('updated_at', 'desc')
+        ->setEagerLoads([])
+        ->withCount(['course_bill'])
+        ->having('course_bill_count', '>=', 5)
+        ->take(10)
+        ->get();
+});
