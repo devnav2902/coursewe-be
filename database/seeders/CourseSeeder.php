@@ -27,13 +27,17 @@ class CourseSeeder extends Seeder
         $courses = course();
         $sections = [
             [
-                'title' => 'Giới thiệu về ',
+                'title' => 'Giới thiệu',
                 'lecture' => 'Lời giới thiệu, cám ơn và hướng dẫn quan trọng cần nắm'
             ],
             [
-                'title' => 'Bước đầu làm quen với ',
+                'title' => 'Bước đầu làm quen',
                 'lecture' => 'Một số nội dung cần nắm'
             ],
+            [
+                'title' => 'Tổng kết khóa học',
+                'lecture' => 'Lời cảm ơn'
+            ]
         ];
         $course_subtitle = "Khóa học dành cho những bạn mới bắt đầu";
         $description = "<div class='study-benefit__list'><div class='study-benefit__item'><i class='fa fa-check icon'></i>Lượng kiến thức khổng lồ về Javascript được phân bổ hợp lý theo từng video một</div><div class='study-benefit__item'><i class='fa fa-check icon'></i>Có kiến thức nền tảng tốt về Javascript để có thể học cao lên sau này</div><div class='study-benefit__item'><i class='fa fa-check icon'></i>Làm được những chức năng, hiệu ứng trên web từ a-z</div><div class='study-benefit__item'><i class='fa fa-check icon'></i>Biết thế nào là API, xử lý dữ liệu, xử lý logic, tư duy giải quyết vấn đề tốt</div><div class='study-benefit__item'><i class='fa fa-check icon'></i>Mỗi video giải thích kỹ càng và chi tiết, cũng như thời lượng video ngắn giúp bạn học hiệu quả hơn</div><div class='study-benefit__item'><i class='fa fa-check icon'></i>Được chia sẻ nhiều tips, tricks, các nguồn học bổ ích để cải thiện trình độ</div><div class='study-benefit__item'><i class='fa fa-check icon'></i>Và rất nhiều kiến thức khác đang chờ đợi các bạn trong khoá học này</div></div>";
@@ -86,17 +90,10 @@ class CourseSeeder extends Seeder
             }
 
             foreach ($sections as $key => $section) {
-
-                $category = '';
-                foreach ($course['category'] as $key => $value) {
-                    $key !== count($course['category']) - 1
-                        ? $category .= $value . ", "
-                        : $category .= $value;
-                }
                 $sec_id = db::table('sections')->insertGetId(
                     [
                         'course_id' => $id,
-                        'title' => $section['title'] . " " . $category,
+                        'title' => $section['title'],
                         'order' => $key + 1
                     ]
                 );

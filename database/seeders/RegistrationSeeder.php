@@ -16,33 +16,39 @@ class RegistrationSeeder extends Seeder
     {
 
         $courses = DB::table('course')
+            // ->take(40)
             ->get(['id', 'author_id', 'title', 'thumbnail', 'price_id']);
 
         foreach ($courses as $course) {
-            $user = DB::table('users')
-                ->where('id', '<>', $course->author_id)
-                ->get()
-                ->random();
+            for ($i = 0; $i < 8; $i++) {
+                $user = DB::table('users')
+                    ->where('id', '<>', $course->author_id)
+                    ->get()
+                    ->random();
 
-            // DB::table('registration')
-            //     ->insertGetId([
-            //         'course_id' => $course->id,
-            //         'user_id' => $user->id,
-            //     ]);
+                $price = DB::table('price')
+                    ->where('id', $course->price_id)
+                    ->first()->original_price;
 
-            $price = DB::table('price')
-                ->where('id', $course->price_id)
-                ->first()->original_price;
+                $existed = DB::table('course_bill')
+                    ->where('user_id', $user->id)
+                    ->where('course_id', $course->id)
+                    ->first(['user_id', 'course_id']);
 
-            DB::table('course_bill')
-                ->insert([
-                    'course_id' => $course->id,
-                    'user_id' => $user->id,
-                    'title' => $course->title,
-                    'thumbnail' => $course->thumbnail,
-                    'price' => $price,
-                    'purchase' => $price,
-                ]);
+                if (!$existed) {
+                    DB::table('course_bill')->insert(
+                        [
+                            'user_id' => $user->id,
+                            'course_id' => $course->id,
+                            'user_id' => $user->id,
+                            'title' => $course->title,
+                            'thumbnail' => $course->thumbnail,
+                            'price' => $price,
+                            'purchase' => $price,
+                        ]
+                    );
+                }
+            }
         }
     }
 }
