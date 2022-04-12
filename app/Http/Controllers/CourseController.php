@@ -13,6 +13,19 @@ use stdClass;
 
 class CourseController extends Controller
 {
+    function bestSellingCourses()
+    {
+        $courses = Course::without(['course_bill'])
+            ->orderBy('updated_at', 'desc')
+            ->withCount(['course_bill', 'rating'])
+            ->having('course_bill_count', '>=', 5)
+            ->withAvg('rating', 'rating')
+            ->take(10)
+            ->get();
+
+        return response()->json(compact('courses'));
+    }
+
     function getLatestCourses()
     {
         $query = Course::without(['section', 'course_bill'])
