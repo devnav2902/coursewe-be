@@ -28,6 +28,7 @@ use App\Http\Controllers\UserController;
 */
 
 // COURSE
+Route::get('/course/best-selling', [CourseController::class, 'bestSellingCourses']); // !lấy theo tuần
 Route::get('/course/latest', [CourseController::class, 'getLatestCourses']);
 Route::get('/course', [CourseController::class, 'getCourse']);
 Route::post('/course', [CourseController::class, 'getCourseBySlug']);
