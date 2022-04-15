@@ -13,6 +13,33 @@ use stdClass;
 
 class CourseController extends Controller
 {
+    function checkUserHasPurchased($course_id)
+    {
+        $hasPurchased = false;
+        if (Auth::check()) {
+            $result = Auth::user()
+                ->enrollment
+                ->firstWhere('course_id', $course_id);
+
+            $hasPurchased = $result ? true : false;
+        }
+
+        return response(['hasPurchased' => $hasPurchased]);
+    }
+
+    function checkUserHasRated($course_id)
+    {
+        $hasRated = false;
+        if (Auth::check()) {
+            $hasRated =
+                Rating::where('user_id', Auth::user()->id)
+                ->select('course_id')
+                ->firstWhere('course_id', $course_id) ? true : false;
+        }
+
+        return response(['hasRated' => $hasRated]);
+    }
+
     function bestSellingCourses()
     {
         $courses = Course::without(['course_bill'])
