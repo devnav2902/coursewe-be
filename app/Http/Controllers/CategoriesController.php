@@ -208,4 +208,22 @@ class CategoriesController extends Controller
 
         return response()->json(compact('amountCoursesByTypesPrice'));
     }
+    function getPopularInstructors($slug)
+    {
+        $helperController = new HelperController();
+        $courses = $helperController->getCoursesByCategorySlug($slug, false);
+        $collectionCourses = collect($courses)->where("rating_avg_rating", '>=', 4)->values();
+        $author = $collectionCourses->pluck('author')->unique('id')->values();
+        // $authorId = $author->pluck('id');
+
+        $rating = $collectionCourses->groupBy('author_id');
+        $avgRating = $rating->map(function ($course, $key) use ($author, $collectionCourses) {
+            $avgRating = $course->avg('rating_avg_rating');
+            $amountSudents = $course->sum('course_bill_count');
+            $infoAuthor = collect($author)->where('id', $key)->first();
+            $totalCourses = collect($collectionCourses)->where('author_id', $key)->count();
+            return ['infoAuthor' => $infoAuthor, 'avgRating' => $avgRating, 'amountSudents' => $amountSudents, 'totalCourses' => $totalCourses];
+        })->take(10)->values();
+        return response()->json(compact('avgRating'));
+    }
 }

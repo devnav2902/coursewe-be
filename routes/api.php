@@ -43,6 +43,7 @@ Route::get('/featured-categories/{limit}', [CategoriesController::class, 'featur
 Route::get('/categories', [CategoriesController::class, 'getCategories']);
 Route::get('/categories/get-courses/{slug}', [CategoriesController::class, 'getCoursesByCategorySlug']);
 Route::get('/categories/types-price/{slug}', [CategoriesController::class, 'getAmountCoursesByTypesPrice']);
+Route::get('/categories/popular-instructors/{slug}', [CategoriesController::class, 'getPopularInstructors']);
 Route::get('/categories/amount-courses-in-topics/{slug}', [CategoriesController::class, 'amountCoursesInTopics']);
 
 // USER

@@ -7,6 +7,7 @@ use App\Models\CategoriesCourse;
 use App\Models\Course;
 use App\Models\InstructionalLevel;
 use App\Models\Price;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -268,30 +269,30 @@ Route::get('/get-topics/{slug}', function ($slug) {
     return $topics_slug;
 });
 
-// Route::get('/level/{slug}', function ($slug) {
-//     $helperController = new HelperController();
-//     $coursesBySlug = $helperController->getCoursesByCategorySlug($slug, false);
+Route::get('/level/{slug}', function ($slug) {
+    $helperController = new HelperController();
+    $coursesBySlug = $helperController->getCoursesByCategorySlug($slug, false);
 
-//     $levels = InstructionalLevel::get();
-//     $levelInCourses = $coursesBySlug->pluck('instructional_level');
-//     $countCoursesByLevel = $levelInCourses->countBy('level');
+    $levels = InstructionalLevel::get();
+    $levelInCourses = $coursesBySlug->pluck('instructional_level');
+    $countCoursesByLevel = $levelInCourses->countBy('level');
 
-//     $levels->transform(function ($level) use ($countCoursesByLevel) {
-//         $name = $level['level'];
-//         $amount = 0;
+    $levels->transform(function ($level) use ($countCoursesByLevel) {
+        $name = $level['level'];
+        $amount = 0;
 
-//         $data = ['name' => $name, 'id' => $level['id'], 'amount' => $amount];
+        $data = ['name' => $name, 'id' => $level['id'], 'amount' => $amount];
 
-//         if (isset($countCoursesByLevel[$name])) {
-//             $amount = $countCoursesByLevel[$name];
-//             $data['amount'] = $amount;
-//         }
+        if (isset($countCoursesByLevel[$name])) {
+            $amount = $countCoursesByLevel[$name];
+            $data['amount'] = $amount;
+        }
 
-//         return $data;
-//     });
+        return $data;
+    });
 
-//     return $levels;
-// });
+    return $levels;
+});
 
 // Route::get('/price/{slug}', function ($slug) {
 //     $helperController = new HelperController();
@@ -386,4 +387,36 @@ Route::get('/best-selling-courses', function () {
         ->having('course_bill_count', '>=', 5)
         ->take(10)
         ->get();
+});
+Route::get('/best-instructor/{slug}', function ($slug) {
+    $helperController = new HelperController();
+    $courses = $helperController->getCoursesByCategorySlug($slug, false);
+    $collectionCourses = collect($courses)->where("rating_avg_rating", '>=', 4)->values();
+    $author = $collectionCourses->pluck('author')->unique('id')->values();
+    // $authorId = $author->pluck('id');
+    // return $collectionCourses;
+    $rating = $collectionCourses->groupBy('author_id');
+    $avgRating = $rating->map(function ($course, $key) use ($author, $collectionCourses) {
+        $avgRating = $course->avg('rating_avg_rating');
+        $amountSudents = $course->sum('course_bill_count');
+        $infoAuthor = collect($author)->where('id', $key)->first();
+        $totalCourses = collect($collectionCourses)->where('author_id', $key)->count();
+        return ['infoAuthor' => $infoAuthor, 'avgRating' => $avgRating, 'amountSudents' => $amountSudents, 'totalCourses' => $totalCourses];
+    });
+
+    //    $authorAndCourse = User::with(['course'=>function($query){
+    //        return $query->setEagerLoads([])
+    //        ->select('id', 'slug', 'thumbnail','author_id')
+    //        ->withCount(['course_bill'])
+    //        ->withAvg('rating', 'rating');
+    //    }])->whereIn('id',$authorId)->get();
+    //    $courseOfAuthor= $authorAndCourse->pluck('course')->map(function($course){
+    //            $avgRating=$course->avg('rating_avg_rating');
+    //            $amountSudents=$course->sum('course_bill_count');
+    //            return ['avgRating'=>$avgRating,'amountSudents'=>$amountSudents];
+    //    });
+
+
+    return $avgRating->values();
+    return $author;
 });
