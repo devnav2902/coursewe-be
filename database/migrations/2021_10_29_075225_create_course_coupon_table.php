@@ -24,7 +24,7 @@ class CreateCourseCouponTable extends Migration
             $table->timestamp('expires');
             $table->timestamp('created_at')->useCurrent();
 
-            $table->primary(['code', 'course_id']);
+            $table->primary(['code', 'course_id'], 'COURSE_COUPON_PRIMARY');
         });
     }
 
