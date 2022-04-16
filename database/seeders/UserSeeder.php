@@ -40,7 +40,7 @@ class UserSeeder extends Seeder
     {
         $fullname = $user['lastName'] . ' ' . $user['firstName'];
         $email =
-            strtolower(Str::slug($fullname, ''))  . random_int(1, 100) . '@gmail.com';
+            strtolower(Str::slug($fullname, ''))  . random_int(1, 1000) . '@gmail.com';
 
 
         $data = $gender == 'male' ? 'men' : 'women';
