@@ -2,10 +2,14 @@
 
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\HelperController;
+use App\Models\Cart;
+use App\Models\CartType;
 use App\Models\Categories;
 use App\Models\CategoriesCourse;
 use App\Models\Course;
 use App\Models\InstructionalLevel;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -364,4 +368,45 @@ Route::get('/best-selling-courses', function () {
         ->having('course_bill_count', '>=', 5)
         ->take(10)
         ->get();
+});
+
+
+Route::get('/cart/me/{id}', function ($id) {
+    if (!Auth::check()) {
+        return response(null);
+    }
+
+    $cart = Cart::where('user_id', Auth::user()->id)
+        ->setEagerLoads([])
+        ->with(['course' => function ($q) {
+            $q
+                ->select('id', 'author_id', 'price_id', 'slug', 'thumbnail', 'instructional_level_id')
+                ->setEagerLoads([])
+                ->with(['author' => function ($q) {
+                    $q->setEagerLoads([])->select('id', 'fullname', 'slug');
+                }])
+                ->withAvg('rating', 'rating')
+                ->withCount(['rating', 'lecture']);
+        }])
+        ->get(["user_id", "cart_type_id", "course_id", "coupon_code"]);
+
+    $cartType = CartType::get();
+
+    $list = [];
+    $cartType->each(function ($item) use ($cart, &$list) {
+        $data = [];
+
+        $dataCart = $cart->where('cart_type_id', $item->id);
+        $dataCart->each(function ($item) use (&$data) {
+            $filtered = $item->only(['coupon_code']);
+            $course = $item->course->toArray();
+            $merge = array_merge($course, $filtered);
+
+            array_push($data, $merge);
+        });
+
+        $list[] = ['cartType' => $item, 'data' => $data, 'user_id' => Auth::user()->id];
+    });
+
+    return response()->json(['shoppingCart' => $list]);
 });
