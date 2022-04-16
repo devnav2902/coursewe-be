@@ -3,7 +3,9 @@
 
 use App\Http\Controllers\InstructionalLevelController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\CouponController;
 use App\Http\Controllers\CourseController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CreateCourseController;
@@ -15,6 +17,7 @@ use App\Http\Controllers\PriceController;
 use App\Http\Controllers\PurchaseHistoryController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\UserController;
+use App\Models\Coupon;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,7 +34,7 @@ use App\Http\Controllers\UserController;
 Route::get('/course/best-selling', [CourseController::class, 'bestSellingCourses']); // !lấy theo tuần
 Route::get('/course/latest', [CourseController::class, 'getLatestCourses']);
 Route::get('/course', [CourseController::class, 'getCourse']);
-Route::post('/course', [CourseController::class, 'getCourseBySlug']);
+Route::get('/course/get/{slug}', [CourseController::class, 'getCourseBySlug']);
 Route::get('/instructor/course/{id}', [CourseController::class, 'getCourseOfAuthorById']);
 Route::get('/course/instructional-level', [InstructionalLevelController::class, 'get']);
 Route::get('/course/{id}', [CourseController::class, 'getCourseById']);
@@ -60,6 +63,9 @@ Route::get('/instructional-level/amount-courses/{slug}', [InstructionalLevelCont
 
 // RATING
 Route::get('/rating/filter-rating/{slug}', [RatingController::class, 'filterRatingByCategorySlug']);
+
+// COUPON
+Route::post('/coupon/apply-coupon', [CouponController::class, 'checkCoupon']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/revenue', [OverviewController::class, 'chartJSYear']);
@@ -99,4 +105,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/get-price', [PriceController::class, 'getPrice']);
 
     Route::post('/create-course', [CreateCourseController::class, 'create']);
+
+    // CART
+    Route::get('/cart/me', [CartController::class, 'get']);
+    Route::post('/cart', [CartController::class, 'cart']);
+    Route::delete('/cart/{id}', [CartController::class, 'delete']);
+    Route::patch('/saved-for-later', [CartController::class, 'savedForLater']);
 });
