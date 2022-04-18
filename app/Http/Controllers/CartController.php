@@ -7,17 +7,13 @@ use App\Models\CartType;
 use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class CartController extends Controller
 {
     private function getCart()
     {
-        if (!Auth::check()) {
-            return response(null);
-        }
-
-        $cart = Cart::where('user_id', Auth::user()->id)
-            ->setEagerLoads([])
+        $queryGetCart = Cart::setEagerLoads([])
             ->with(['course' => function ($q) {
                 $q
                     ->select('id', 'author_id', 'price_id', 'slug', 'thumbnail', 'instructional_level_id', 'title')
@@ -31,11 +27,21 @@ class CartController extends Controller
                     ])
                     ->withAvg('rating', 'rating')
                     ->withCount(['rating', 'lecture']);
-            }])
-            ->get(["user_id", "cart_type_id", "course_id", "coupon_code"]);
+            }]);
+
+
+        $cart = null;
+        if (!Auth::check()) {
+            $cart = $queryGetCart
+                ->where('session_id', Session::get('anonymous_cart'));
+        } else {
+            $cart = $queryGetCart
+                ->where('user_id', Auth::user()->id);
+        }
+
+        $cart = $cart->get(["user_id", "cart_type_id", "course_id", "coupon_code"]);
 
         $cartType = CartType::get();
-
         $list = [];
         $cartType->each(function ($item) use ($cart, &$list) {
             $data = [];
@@ -49,19 +55,28 @@ class CartController extends Controller
                 array_push($data, $merge);
             });
 
-            $list[] = ['cartType' => $item, 'data' => $data, 'user_id' => Auth::user()->id];
+            $list[] = ['cartType' => $item, 'data' => $data];
         });
 
         return $list;
     }
 
+    private function getCartSession()
+    {
+        return Session::get('anonymous_cart');
+    }
+
     function delete($course_id)
     {
         if (!Auth::check()) {
-            return response(['success' => false], 400);
+            Cart::where('course_id', $course_id)
+                ->where('session_id', $this->getCartSession())
+                ->delete();
+        } else {
+            Cart::where('course_id', $course_id)
+                ->where('user_id', Auth::user()->id)
+                ->delete();
         }
-
-        Cart::where('course_id', $course_id)->where('user_id', Auth::user()->id)->delete();
 
         $list = $this->getCart();
 
@@ -72,31 +87,48 @@ class CartController extends Controller
     {
         $list = $this->getCart();
 
-        return response()->json(['shoppingCart' => $list]);
+        if (!Auth::check())
+            return response()->json(['shoppingCart' => $list]);
+
+        return response()->json(['shoppingCart' => $list, 'user_id' => Auth::user()->id]);
     }
 
     function cart(Request $request)
     {
-        $request->validate([
-            'course_id' => 'required',
-        ]);
+        $request->validate(['course_id' => 'required']);
+
+        if (empty($this->getCartSession())) {
+            Session::put('anonymous_cart', Session::getId());
+        }
 
         $cartType = CartType::firstWhere('type', 'cart');
         $course_id = $request->input('course_id');
 
-        if (!$cartType || !Auth::check()) {
-            return response(['success' => false], 400);
+        if (Auth::check()) {
+            $user_id = Auth::user()->id;
+
+            $existed = Cart::where('course_id', $course_id)->firstWhere('user_id', $user_id);
+        } else {
+            $existed = Cart::where('course_id', $course_id)
+                ->firstWhere('session_id', $this->getCartSession());
         }
 
-        $user_id = Auth::user()->id;
-
-        $existed = Cart::where('course_id', $course_id)->firstWhere('user_id', $user_id);
         if (!$existed) {
-            $idCourseInCart = Cart::create([
-                'course_id' => $course_id,
-                'user_id' => $user_id,
-                'cart_type_id' => $cartType->id
-            ])->course_id;
+            $idCourseInCart = null;
+
+            if (Auth::check()) {
+                $idCourseInCart = Cart::create([
+                    'course_id' => $course_id,
+                    'user_id' => $user_id,
+                    'cart_type_id' => $cartType->id
+                ])->course_id;
+            } else {
+                $idCourseInCart = Cart::create([
+                    'course_id' => $course_id,
+                    'session_id' => $this->getCartSession(),
+                    'cart_type_id' => $cartType->id
+                ])->course_id;
+            }
 
             $courseInCart = Course::setEagerLoads([])
                 ->select('id', 'author_id', 'price_id', 'slug', 'thumbnail', 'instructional_level_id', 'title')
@@ -113,7 +145,9 @@ class CartController extends Controller
                 ->find($idCourseInCart);
 
             return response(['success' => true, 'course' => $courseInCart]);
-        } else {
+        }
+
+        if (Auth::check()) {
             Cart::where('course_id', $course_id)
                 ->where('user_id', $user_id)
                 ->update(
@@ -121,11 +155,19 @@ class CartController extends Controller
                         'cart_type_id' => $cartType->id
                     ]
                 );
-
-            $list = $this->getCart();
-
-            return response(['success' => true, 'shoppingCart' => $list]);
+        } else {
+            Cart::where('course_id', $course_id)
+                ->where('session_id', $this->getCartSession())
+                ->update(
+                    [
+                        'cart_type_id' => $cartType->id
+                    ]
+                );
         }
+
+        $list = $this->getCart();
+
+        return response(['success' => true, 'shoppingCart' => $list]);
     }
 
     function savedForLater(Request $request)
@@ -137,11 +179,15 @@ class CartController extends Controller
         try {
             $type = CartType::firstWhere('type', 'saved_for_later');
 
-            Cart::where('course_id', $request->input('course_id'))
-                ->where('user_id', Auth::user()->id)
-                ->update([
-                    'cart_type_id' => $type->id
-                ]);
+            if (!Auth::check()) {
+                Cart::where('course_id', $request->input('course_id'))
+                    ->where('session_id', $this->getCartSession())
+                    ->update(['cart_type_id' => $type->id]);
+            } else {
+                Cart::where('course_id', $request->input('course_id'))
+                    ->where('user_id', Auth::user()->id)
+                    ->update(['cart_type_id' => $type->id]);
+            }
 
             $list = $this->getCart();
 
