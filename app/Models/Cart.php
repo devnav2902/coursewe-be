@@ -10,7 +10,7 @@ class Cart extends Model
     use HasFactory;
     protected $table = 'cart';
     protected $with = ['cartType', 'course'];
-    protected $fillable = ['user_id', 'course_id', 'cart_type_id', 'coupon_code'];
+    protected $fillable = ['user_id', 'course_id', 'cart_type_id', 'coupon_code', 'session_id'];
 
     function cartType()
     {
