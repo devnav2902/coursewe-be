@@ -7,11 +7,14 @@ use App\Models\CartType;
 use App\Models\Categories;
 use App\Models\CategoriesCourse;
 use App\Models\Course;
+use App\Models\CourseCoupon;
 use App\Models\InstructionalLevel;
+
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 
 /*
 |--------------------------------------------------------------------------
@@ -409,4 +412,47 @@ Route::get('/cart/me/{id}', function ($id) {
     });
 
     return response()->json(['shoppingCart' => $list]);
+});
+
+Route::get('/coupon/check/{code}', function ($coupon_code) {
+    // $request->validate([
+    //     'courses' => 'array|required',
+    //     'coupon_code' => 'required'
+    // ]);
+
+    $courses = [1, 2, 3, 4, 28];
+
+    $dataCourseWithCoupon = CourseCoupon::whereIn('course_id', $courses)
+        ->where('code', $coupon_code)
+        ->where('status', 1)
+        ->get();
+
+
+    if (Auth::check()) {
+        $cartType = CartType::firstWhere('type', 'cart');
+        $cart = Cart::where('user_id', Auth::user()->id)
+            ->where('cart_type_id', $cartType->id)
+            ->get();
+    }
+
+    return $dataCourseWithCoupon->map(function ($item) {
+        return [
+            'coupon_code' => $item->code,
+            'course_id' => $item->course_id,
+            'discount_price' => $item->discount_price
+        ];
+    });
+    return $dataCourseWithCoupon;
+});
+
+
+Route::get('/session', function () {
+    // if (!Session::has('nav')) {
+    // $session_id = Session::getId();
+    // Session::put('anonymous_cart', $session_id);
+    // return Session::get('nav');
+    // return $session_id;
+    //     return ['created' => $session_id];
+    // }
+    return Session::all();
 });

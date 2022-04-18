@@ -66,6 +66,13 @@ Route::get('/rating/filter-rating/{slug}', [RatingController::class, 'filterRati
 
 // COUPON
 Route::post('/coupon/apply-coupon', [CouponController::class, 'checkCoupon']);
+Route::post('/coupon/courses/apply-coupon', [CouponController::class, 'checkCouponWithCourses']);
+
+// CART
+Route::get('/cart/me', [CartController::class, 'get']);
+Route::post('/cart', [CartController::class, 'cart']);
+Route::delete('/cart/{id}', [CartController::class, 'delete']);
+Route::patch('/saved-for-later', [CartController::class, 'savedForLater']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/revenue', [OverviewController::class, 'chartJSYear']);
@@ -105,10 +112,4 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/get-price', [PriceController::class, 'getPrice']);
 
     Route::post('/create-course', [CreateCourseController::class, 'create']);
-
-    // CART
-    Route::get('/cart/me', [CartController::class, 'get']);
-    Route::post('/cart', [CartController::class, 'cart']);
-    Route::delete('/cart/{id}', [CartController::class, 'delete']);
-    Route::patch('/saved-for-later', [CartController::class, 'savedForLater']);
 });
