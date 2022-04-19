@@ -461,12 +461,16 @@ Route::get('/progress/{course_id}', function ($course_id) {
     $course = Course::setEagerLoads([])
         ->with(
             [
+                'lecture',
                 'lecture.progress' => function ($q) {
                     $q->select('lecture_id', 'progress');
                 },
+                'section' => function ($q) {
+                    $q->withCount('progressInLectures');
+                },
             ]
         )
-        ->select('id')
+        // ->select('id')
         ->withCount('lecture')
         ->firstWhere('id', $course_id);
 
@@ -481,6 +485,6 @@ Route::get('/progress/{course_id}', function ($course_id) {
     $complete = count($data_progress);
 
     return response()->json(compact(
-        ['total', 'data_progress', 'complete']
+        ['total', 'data_progress', 'complete', 'course']
     ));
 });

@@ -29,6 +29,13 @@ class Section extends Model
             ->where('progress', 1);
     }
 
+    public function progressInLectures()
+    {
+        return $this->hasManyThrough(Progress::class, Lecture::class, 'section_id', 'lecture_id')
+            ->where('user_id', Auth::user()->id)
+            ->where('progress', 1);
+    }
+
     public function resource()
     {
         return $this->hasManyThrough(Resource::class, Lecture::class, 'section_id', 'lecture_id');
