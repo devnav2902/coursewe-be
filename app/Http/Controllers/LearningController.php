@@ -81,4 +81,33 @@ class LearningController extends Controller
             ['course', 'data_progress', 'author']
         ));
     }
+
+    function getProgress($course_id)
+    {
+        $course = Course::setEagerLoads([])
+            ->with(
+                [
+                    'lecture.progress' => function ($q) {
+                        $q->select('lecture_id', 'progress');
+                    },
+                ]
+            )
+            ->select('id')
+            ->withCount('lecture')
+            ->firstWhere('id', $course_id);
+
+        $data_progress = $course->lecture
+            ->map(function ($lecture) {
+                return $lecture->progress;
+            })
+            ->filter()
+            ->values(); // reset key
+
+        $total = $course->lecture_count;
+        $complete = count($data_progress);
+
+        return response()->json(compact(
+            ['total', 'data_progress', 'complete']
+        ));
+    }
 }
