@@ -14,6 +14,7 @@ use App\Http\Controllers\OverviewController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LearningController;
 use App\Http\Controllers\PriceController;
+use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\PurchaseHistoryController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\UserController;
@@ -117,4 +118,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // LEARNING
     Route::get('/progress/{course_id}', [LearningController::class, 'getProgress']);
     Route::get('/learning/{slug}', [LearningController::class, 'learning']);
+    Route::get('/sections/{course_id}', [LearningController::class, 'getSections']);
+    Route::post('/progress', [ProgressController::class, 'updateProgress']);
 });

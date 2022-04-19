@@ -49,36 +49,38 @@ class LearningController extends Controller
         return response()->json(['courses' => $courses]);
     }
 
-    function learning($url)
+    function getSections($course_id)
     {
         $course = Course::with(
             [
-                'lecture' => function ($q) {
-                    $q->select('lectures.title', 'lectures.id', 'src', 'original_filename', 'lectures.order');
-                },
                 'lecture.progress' => function ($q) {
-                    $q->select('lecture_id', 'progress');
+                    $q->select('lecture_id', 'progress', 'user_id');
                 },
-                'section.countProgress'
+                'section' => function ($q) {
+                    $q->withCount('progressInLectures');
+                },
+                'section.lecture' => function ($q) {
+                    $q->with('progress');
+                }
             ]
         )
             ->without('category', 'course_bill')
-            ->where('slug', $url)
-            ->get();
+            ->firstWhere('id', $course_id);
 
-        if (count($course)) $course = $course[0];
-
-        $author = $course->author;
-
-        $data_progress = $course->lecture
-            ->map(function ($lecture) {
-                return collect($lecture->progress)->all();
-            })
-            ->filter()
-            ->values(); // reset key
+        $sections = $course->section;
 
         return response()->json(compact(
-            ['course', 'data_progress', 'author']
+            ['sections']
+        ));
+    }
+
+    function learning($url)
+    {
+        $course = Course::without('category', 'course_bill')
+            ->firstWhere('slug', $url);
+
+        return response()->json(compact(
+            ['course']
         ));
     }
 
