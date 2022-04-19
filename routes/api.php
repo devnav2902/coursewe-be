@@ -107,9 +107,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/course/update-information/{id}', [CourseController::class, 'updateInformation']);
     Route::get('/user/logout', [UserController::class, 'logout']);
     Route::get('/purchase/history', [PurchaseHistoryController::class, 'purchaseHistory']);
-    Route::get('/my-learning', [LearningController::class, 'myLearning']);
     Route::get('/instructor/course/{id}', [InstructorController::class, 'getCourseById']);
     Route::get('/get-price', [PriceController::class, 'getPrice']);
 
     Route::post('/create-course', [CreateCourseController::class, 'create']);
+
+    // MY LEARNING
+    Route::get('/my-learning', [LearningController::class, 'myLearning']);
+    // LEARNING
+    Route::get('/progress/{course_id}', [LearningController::class, 'getProgress']);
+    Route::get('/learning/{slug}', [LearningController::class, 'learning']);
 });
