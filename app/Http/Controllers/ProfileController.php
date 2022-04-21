@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Bio;
 use App\Models\User;
+use GrahamCampbell\ResultType\Success;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -11,10 +12,10 @@ use Illuminate\Support\Facades\Password;
 
 class ProfileController extends Controller
 {
-    public function uploadAvatar(Request $request)
+    public function uploadAvatar($request)
     {
 
-        $request->validate(['file' => 'required|image']);
+        $request->validate(['file' => 'image']);
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $user = Auth::user();
@@ -24,51 +25,44 @@ class ProfileController extends Controller
 
             User::where('id', $user->id)->update(['avatar' => $path]);
 
-            return $path;
-        } else {
-            return back()
-                ->withErrors(
-                    ['message' => "Haven't selected an avatar yet!"]
-                );
-        }
-        return redirect()->route('profile');
+
+            return response(['success' => true, 'path' => $path]);
+        };
     }
     public function save(Request $request)
     {
+        $this->uploadAvatar($request);
+
         $request->validate([
-            // 'email' => [
-            //     'required',
-            //     'unique:App\Models\User,email',
-            //     'max:255',
-            //     'email:rfc'
-            // ],
+
             'fullname' => [
                 'min:3',
                 'max:256',
                 'string',
-                // 'regex:/[a-z]/'
             ],
 
         ]);
-
         User::where('id', Auth::user()->id)
             ->update([
                 'fullname' => $request->input('fullname'),
-                // 'email' => $request->input('email')
-            ]);
 
-        return back();
+            ]);
+        if ($request->has(['old_password', 'new_password'])) {
+            $this->changePassword($request);
+        }
+        $this->changeBio($request);
+
+        return response(['success' => true]);
     }
 
 
 
-    public function changePassword(Request $request)
+    public function changePassword($request)
     {
         $request->validate([
-            'old_password' => ['required', 'max:30',],
+            'old_password' => ['max:30'],
             'new_password' => [
-                'required',
-                Password::min(1)->mixedCase(),
+                // Password::mixedCase(),
                 'max:30',
             ]
 
@@ -79,7 +73,7 @@ class ProfileController extends Controller
                 ->update([
                     'password' => Hash::make($request->input('new_password')),
                 ]);
-            return back();
+            return response(['success' => true]);
         } else {
             return back()
                 ->withErrors(
@@ -87,7 +81,7 @@ class ProfileController extends Controller
                 );
         }
     }
-    public function changeBio(Request $request)
+    public function changeBio($request)
     {
         $request->validate([
             'bio' => [],
@@ -110,12 +104,14 @@ class ProfileController extends Controller
         if ($user) {
             Bio::where('user_id', $user->user_id)
                 ->update($data);
-            return back();
+            // return back();
+            return response(['success' => true]);
         }
 
         $data['user_id'] = Auth::user()->id;
         Bio::create($data);
-        return back();
+        // return back();
+        return response(['success' => true]);
     }
     public function getBio()
     {

@@ -218,7 +218,7 @@ class CategoriesController extends Controller
 
         $rating = $collectionCourses->groupBy('author_id');
         $avgRating = $rating->map(function ($course, $key) use ($author, $collectionCourses) {
-            $avgRating = $course->avg('rating_avg_rating');
+            $avgRating =  number_format($course->avg('rating_avg_rating'), 1, '.', '.');
             $amountSudents = $course->sum('course_bill_count');
             $infoAuthor = collect($author)->where('id', $key)->first();
             $totalCourses = collect($collectionCourses)->where('author_id', $key)->count();
