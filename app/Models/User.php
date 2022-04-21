@@ -66,4 +66,8 @@ class User extends Authenticatable
     {
         return $this->hasOne(Bio::class, 'user_id');
     }
+    function cart()
+    {
+        return $this->hasOne(Cart::class, 'user_id');
+    }
 }

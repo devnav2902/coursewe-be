@@ -2,14 +2,21 @@
 
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\HelperController;
+use App\Models\Cart;
+use App\Models\CartType;
 use App\Models\Categories;
 use App\Models\CategoriesCourse;
 use App\Models\Course;
+use App\Models\CourseCoupon;
 use App\Models\InstructionalLevel;
 use App\Models\Price;
 use App\Models\User;
+
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 
 
 /*
@@ -419,4 +426,119 @@ Route::get('/best-instructor/{slug}', function ($slug) {
 
     return $avgRating->values();
     return $author;
+});
+
+Route::get('/cart/me/{id}', function ($id) {
+    if (!Auth::check()) {
+        return response(null);
+    }
+
+    $cart = Cart::where('user_id', Auth::user()->id)
+        ->setEagerLoads([])
+        ->with(['course' => function ($q) {
+            $q
+                ->select('id', 'author_id', 'price_id', 'slug', 'thumbnail', 'instructional_level_id')
+                ->setEagerLoads([])
+                ->with(['author' => function ($q) {
+                    $q->setEagerLoads([])->select('id', 'fullname', 'slug');
+                }])
+                ->withAvg('rating', 'rating')
+                ->withCount(['rating', 'lecture']);
+        }])
+        ->get(["user_id", "cart_type_id", "course_id", "coupon_code"]);
+
+    $cartType = CartType::get();
+
+    $list = [];
+    $cartType->each(function ($item) use ($cart, &$list) {
+        $data = [];
+
+        $dataCart = $cart->where('cart_type_id', $item->id);
+        $dataCart->each(function ($item) use (&$data) {
+            $filtered = $item->only(['coupon_code']);
+            $course = $item->course->toArray();
+            $merge = array_merge($course, $filtered);
+
+            array_push($data, $merge);
+        });
+
+        $list[] = ['cartType' => $item, 'data' => $data, 'user_id' => Auth::user()->id];
+    });
+
+    return response()->json(['shoppingCart' => $list]);
+});
+
+Route::get('/coupon/check/{code}', function ($coupon_code) {
+    // $request->validate([
+    //     'courses' => 'array|required',
+    //     'coupon_code' => 'required'
+    // ]);
+
+    $courses = [1, 2, 3, 4, 28];
+
+    $dataCourseWithCoupon = CourseCoupon::whereIn('course_id', $courses)
+        ->where('code', $coupon_code)
+        ->where('status', 1)
+        ->get();
+
+
+    if (Auth::check()) {
+        $cartType = CartType::firstWhere('type', 'cart');
+        $cart = Cart::where('user_id', Auth::user()->id)
+            ->where('cart_type_id', $cartType->id)
+            ->get();
+    }
+
+    return $dataCourseWithCoupon->map(function ($item) {
+        return [
+            'coupon_code' => $item->code,
+            'course_id' => $item->course_id,
+            'discount_price' => $item->discount_price
+        ];
+    });
+    return $dataCourseWithCoupon;
+});
+
+
+Route::get('/session', function () {
+    // if (!Session::has('nav')) {
+    // $session_id = Session::getId();
+    // Session::put('anonymous_cart', $session_id);
+    // return Session::get('nav');
+    // return $session_id;
+    //     return ['created' => $session_id];
+    // }
+    return Session::all();
+});
+
+Route::get('/progress/{course_id}', function ($course_id) {
+    $course = Course::setEagerLoads([])
+        ->with(
+            [
+                'lecture',
+                'lecture.progress' => function ($q) {
+                    $q->select('lecture_id', 'progress');
+                },
+                'section' => function ($q) {
+                    $q->withCount('progressInLectures');
+                },
+            ]
+        )
+        // ->select('id')
+        ->withCount('lecture')
+        ->firstWhere('id', $course_id);
+
+    $data_progress = $course->lecture
+        ->map(function ($lecture) {
+            return $lecture->progress;
+        })
+        ->filter()
+        ->values(); // reset key
+
+    $total = $course->lecture_count;
+    $complete = count($data_progress);
+
+    return response()->json(compact(
+        ['total', 'data_progress', 'complete', 'course']
+    ));
 });

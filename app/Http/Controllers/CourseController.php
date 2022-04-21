@@ -231,13 +231,9 @@ class CourseController extends Controller
             ->firstWhere('id', $id);
     }
 
-    function getCourseBySlug(Request $req)
+    function getCourseBySlug($slug)
     {
-        $req->validate([
-            'slug' => 'required'
-        ]);
-
-        $course = Course::where('slug', $req->slug)
+        $course = Course::where('slug', $slug)
             ->where('isPublished', 1)
             ->with([
                 'lecture',
@@ -265,58 +261,10 @@ class CourseController extends Controller
 
         $course = $course[0];
 
-        $hasPurchased = false;
-        $hasCommented = false;
-        // $isFree = $course->price->price === 0.0 ? true : false;
-
-        if (Auth::check()) {
-            $result = Auth::user()
-                ->enrollment
-                ->firstWhere('course_id', $course->id);
-
-            $hasPurchased = $result ? true : false;
-
-            $hasCommented =
-                Rating::where('user_id', Auth::user()->id)
-                ->select('course_id')
-                ->firstWhere('course_id', $course->id) ? true : false;
-        }
-
         // RATING
         $graph = $this->ratingGraph($course);
 
-        return response()->json(compact('graph', 'course', 'hasCommented', 'hasPurchased'));
-
-        // if ($request->isMethod('GET'))
-        //     return view('pages.course-lesson', compact(['graph', 'course', 'isPurchased', 'isFree']));
-
-        // $code = $request->input('coupon-input');
-
-        // $helper = new HelperController;
-
-        // $coupon = $helper->getCoupon($code, $course->id);
-
-        // $couponJSON = collect($coupon)
-        //     ->only(['course_id', 'coupon_id', 'code', 'discount_price'])->toJson();
-
-        // $saleOff = 100;
-        // $isFreeCoupon = false;
-
-        // if ($coupon) {
-        //     $original_price = $course->price->price;
-        //     $discount_price = $coupon->discount_price;
-
-        //     $total = $original_price - $discount_price;
-        //     if ($total == $original_price) $isFreeCoupon = true;
-        //     else $saleOff = round(($total / $original_price) * 100);
-        // }
-
-        // return view(
-        //     'pages.course-lesson',
-        //     compact(
-        //         ['isPurchased', 'course', 'graph', 'coupon', 'couponJSON', 'saleOff', 'isFreeCoupon', 'isFree']
-        //     )
-        // );
+        return response()->json(compact('graph', 'course'));
     }
 
     private function createObj($rating, $percent)

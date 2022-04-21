@@ -28,6 +28,8 @@ class DatabaseSeeder extends Seeder
             CourseCouponSeeder::class,
             RegistrationSeeder::class,
             RatingSeeder::class,
+            CartTypeSeeder::class,
+            CartSeeder::class
             // CommentSeeder::class,
             // ReplyCommentSeeder::class,
             // LikeSeeder::class,

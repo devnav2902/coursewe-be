@@ -3,7 +3,9 @@
 
 use App\Http\Controllers\InstructionalLevelController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\CouponController;
 use App\Http\Controllers\CourseController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CreateCourseController;
@@ -12,9 +14,11 @@ use App\Http\Controllers\OverviewController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LearningController;
 use App\Http\Controllers\PriceController;
+use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\PurchaseHistoryController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\UserController;
+use App\Models\Coupon;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,7 +35,7 @@ use App\Http\Controllers\UserController;
 Route::get('/course/best-selling', [CourseController::class, 'bestSellingCourses']); // !lấy theo tuần
 Route::get('/course/latest', [CourseController::class, 'getLatestCourses']);
 Route::get('/course', [CourseController::class, 'getCourse']);
-Route::post('/course', [CourseController::class, 'getCourseBySlug']);
+Route::get('/course/get/{slug}', [CourseController::class, 'getCourseBySlug']);
 Route::get('/instructor/course/{id}', [CourseController::class, 'getCourseOfAuthorById']);
 Route::get('/course/instructional-level', [InstructionalLevelController::class, 'get']);
 Route::get('/course/{id}', [CourseController::class, 'getCourseById']);
@@ -66,6 +70,15 @@ Route::get('/rating/filter-rating/{slug}', [RatingController::class, 'filterRati
 //  SEARCH  
 Route::post('/autocomplete/search', [SearchController::class, 'search']);
 Route::get('/search', [SearchController::class, 'index'])->name('search');
+// COUPON
+Route::post('/coupon/apply-coupon', [CouponController::class, 'checkCoupon']);
+Route::post('/coupon/courses/apply-coupon', [CouponController::class, 'checkCouponWithCourses']);
+
+// CART
+Route::get('/cart/me', [CartController::class, 'get']);
+Route::post('/cart', [CartController::class, 'cart']);
+Route::delete('/cart/{id}', [CartController::class, 'delete']);
+Route::patch('/saved-for-later', [CartController::class, 'savedForLater']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/revenue', [OverviewController::class, 'chartJSYear']);
@@ -96,7 +109,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/course/update-information/{id}', [CourseController::class, 'updateInformation']);
     Route::get('/user/logout', [UserController::class, 'logout']);
     Route::get('/purchase/history', [PurchaseHistoryController::class, 'purchaseHistory']);
-    Route::get('/my-learning', [LearningController::class, 'myLearning']);
     Route::get('/instructor/course/{id}', [InstructorController::class, 'getCourseById']);
     Route::get('/get-price', [PriceController::class, 'getPrice']);
 
@@ -104,4 +116,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Purchase
     Route::post('/purchase', [PurchaseController::class, 'purchase']);
+    // MY LEARNING
+    Route::get('/my-learning', [LearningController::class, 'myLearning']);
+    // LEARNING
+    Route::get('/progress/{course_id}', [LearningController::class, 'getProgress']);
+    Route::get('/learning/{slug}', [LearningController::class, 'learning']);
+    Route::get('/sections/{course_id}', [LearningController::class, 'getSections']);
+    Route::post('/progress', [ProgressController::class, 'updateProgress']);
 });
