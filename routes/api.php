@@ -63,6 +63,10 @@ Route::get('/instructional-level/amount-courses/{slug}', [InstructionalLevelCont
 // RATING
 Route::get('/rating/filter-rating/{slug}', [RatingController::class, 'filterRatingByCategorySlug']);
 
+//  SEARCH  
+Route::post('/autocomplete/search', [SearchController::class, 'search']);
+Route::get('/search', [SearchController::class, 'index'])->name('search');
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/revenue', [OverviewController::class, 'chartJSYear']);
     Route::post('/enrollments', [OverviewController::class, 'chartEnrollments']);
@@ -76,13 +80,9 @@ Route::middleware('auth:sanctum')->group(function () {
     //ProFile
     Route::get('/user/profile', [ProfileController::class, 'index'])->name('profile');
     Route::get('/user/bio', [ProfileController::class, 'getBio'])->name('bio');
-    Route::post('/profile', [ProfileController::class, 'save'])->name('saveProfile');
-    Route::post('/change-password', [ProfileController::class, 'changePassword'])
-        ->name('changePassword');
-    Route::post('/change-bio', [ProfileController::class, 'changeBio'])
-        ->name('changeBio');
-    Route::post('/upload-avatar', [ProfileController::class, 'uploadAvatar'])
-        ->name('uploadAvatar');
+    Route::patch('/change-profile', [ProfileController::class, 'save'])->name('saveProfile');
+
+
     Route::delete(
         '/course/delete-course-outcome/{id}',
         [CourseController::class, 'deleteCourseOutcome']
@@ -101,4 +101,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/get-price', [PriceController::class, 'getPrice']);
 
     Route::post('/create-course', [CreateCourseController::class, 'create']);
+
+    // Purchase
+    Route::post('/purchase', [PurchaseController::class, 'purchase']);
 });
