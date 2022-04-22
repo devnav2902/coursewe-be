@@ -160,15 +160,6 @@ class CourseController extends Controller
         // $data = collect($req->input())->except(['thumbnail', 'video_demo'])->filter();
         Course::where('id', $id)->update($data);
 
-        if ($req->hasFile('thumbnail')) {
-            $image = $req->file('thumbnail');
-            $name = $image->getClientOriginalName();
-            $path =  $image->storeAs('thumbnail', time() . $name);
-
-            Course::where('id', $id)
-                ->update(['thumbnail' => $path]);
-        }
-
         return response('success');
 
         // CategoriesCourse::where('course_id', $course_id)->delete();
