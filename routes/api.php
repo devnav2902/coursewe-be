@@ -7,6 +7,8 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\CourseImageController;
+use App\Http\Controllers\CourseVideoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CreateCourseController;
 use App\Http\Controllers\InstructorController;
@@ -76,6 +78,11 @@ Route::delete('/cart/{id}', [CartController::class, 'delete']);
 Route::patch('/saved-for-later', [CartController::class, 'savedForLater']);
 
 Route::middleware('auth:sanctum')->group(function () {
+    // IMAGE COURSE
+    Route::post('/course-image', [CourseImageController::class, 'updateCourseImage']);
+    // IMAGE COURSE
+    Route::post('/course-video', [CourseVideoController::class, 'updateCourseVideo']);
+
     Route::post('/revenue', [OverviewController::class, 'chartJSYear']);
     Route::post('/enrollments', [OverviewController::class, 'chartEnrollments']);
     Route::post('/rating', [OverviewController::class, 'chartRating']);
@@ -109,7 +116,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/logout', [UserController::class, 'logout']);
     Route::get('/purchase/history', [PurchaseHistoryController::class, 'purchaseHistory']);
     Route::get('/instructor/course/{id}', [InstructorController::class, 'getCourseById']);
+
+    // PRICE
     Route::get('/get-price', [PriceController::class, 'getPrice']);
+    Route::patch('/update-price', [PriceController::class, 'updatePrice']);
 
     Route::post('/create-course', [CreateCourseController::class, 'create']);
 
