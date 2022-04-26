@@ -9,7 +9,7 @@ use App\Models\CategoriesCourse;
 use App\Models\Course;
 use App\Models\CourseCoupon;
 use App\Models\InstructionalLevel;
-
+use App\Models\Resource;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -487,4 +487,24 @@ Route::get('/progress/{course_id}', function ($course_id) {
     return response()->json(compact(
         ['total', 'data_progress', 'complete', 'course']
     ));
+});
+
+Route::get('/delete-resource/{courseId}/{lectureId}/{resourceId}', function ($courseId, $lectureId, $resourceId) {
+    $result = Course::where('course.id', $courseId)
+        // ->where('author_id', $userId)
+        ->setEagerLoads([])
+        ->whereHas('lecture', function ($q) use ($lectureId, $resourceId) {
+            $q->where('lectures.id', $lectureId)
+                ->whereHas('resource', function ($q) use ($resourceId) {
+                    $q->where('id', $resourceId);
+                });
+        })
+        ->first();
+
+    if ($result) {
+        // Resource::destroy($resourceId);
+        return response(['success' => true]);
+    }
+
+    return $result ? 'co' : 'khong';
 });

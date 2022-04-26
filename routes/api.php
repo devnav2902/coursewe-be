@@ -19,6 +19,7 @@ use App\Http\Controllers\PriceController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\PurchaseHistoryController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\UserController;
 use App\Models\Coupon;
 
@@ -130,4 +131,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/learning/{slug}', [LearningController::class, 'learning']);
     Route::get('/sections/{course_id}', [LearningController::class, 'getSections']);
     Route::post('/progress', [ProgressController::class, 'updateProgress']);
+    // RESOURCE
+    Route::delete('/user/me/taught-courses/{courseId}/lectures/{lectureId}/resources/{resourceId}/', [ResourceController::class, 'delete']);
+    Route::post('/resources/upload', [ResourceController::class, 'upload']);
+    Route::get('/resources/lecture-id/{lectureId}', [ResourceController::class, 'getByLectureId']);
 });
