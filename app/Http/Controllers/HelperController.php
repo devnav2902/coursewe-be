@@ -150,4 +150,19 @@ class HelperController extends Controller
             ->where('code', $code)
             ->update(['status' => 0]);
     }
+
+
+    function niceBytes($bytes)
+    {
+        $units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+        $l = 0;
+        $n = intval($bytes, 10);
+
+        while ($n >= 1024 && ++$l) {
+            $n = $n / 1024;
+        }
+
+        return (number_format($n, $n < 10 && $l > 0 ? 1 : 0) . ' ' . $units[$l]);
+    }
 }
