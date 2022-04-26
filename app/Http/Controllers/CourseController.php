@@ -102,7 +102,7 @@ class CourseController extends Controller
 
     function updateCourseOutcome($id, Request $req)
     {
-        $dataUpdateOutcome = $req->input('course_outcome');
+        $dataUpdateOutcome = $req->input('outcome_items');
 
         if ($dataUpdateOutcome) {
             Validator::make($dataUpdateOutcome, [
@@ -120,15 +120,14 @@ class CourseController extends Controller
                 );
             }
             // }
+
+            return response('success');
         }
-
-
-        return response('success');
     }
 
     function updateCourseRequirements($id, Request $req)
     {
-        $dataUpdateRequirements = $req->input('course_requirements');
+        $dataUpdateRequirements = $req->input('requirement_items');
 
         if ($dataUpdateRequirements) {
             Validator::make($dataUpdateRequirements, [
@@ -146,10 +145,9 @@ class CourseController extends Controller
                 );
             }
             // }
+
+            return response('success');
         }
-
-
-        return response('success');
     }
 
     function updateInformation($id, Request $req)
