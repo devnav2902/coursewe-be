@@ -103,7 +103,9 @@ class CourseSeeder extends Seeder
                     'section_id' => $sec_id,
                     'order' => $key + 1,
                     'title' => $section['lecture'],
-                    'src' => 'lesson/test.mp4'
+                    'src' => 'lesson/test.mp4',
+                    'playtime_seconds' => '30.2012',
+                    'playtime_string' => '30:02'
                 ]);
             }
 
