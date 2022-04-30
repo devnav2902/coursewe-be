@@ -44,7 +44,8 @@ class CategoriesController extends Controller
 
     function featuredCourses($limit = 10)
     {
-        $queryGetCourses = Course::withCount(['course_bill', 'rating', 'section', 'lecture'])
+        $queryGetCourses = Course::select('title', 'id', 'author_id', 'slug', 'price_id', 'thumbnail', 'created_at', 'instructional_level_id', 'subtitle')
+            ->withCount(['course_bill', 'rating', 'section', 'lecture'])
             ->without(['course_bill', 'rating'])
             ->withAvg('rating', 'rating')
             ->having('rating_avg_rating', '>=', 4.0)

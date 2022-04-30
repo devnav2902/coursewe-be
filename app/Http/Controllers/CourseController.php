@@ -42,8 +42,8 @@ class CourseController extends Controller
 
     function bestSellingCourses()
     {
-        $courses = Course::without(['course_bill'])
-            ->orderBy('updated_at', 'desc')
+        $courses = Course::orderBy('updated_at', 'desc')
+            ->select('title', 'id', 'author_id', 'slug', 'price_id', 'thumbnail', 'created_at', 'instructional_level_id', 'subtitle')
             ->withCount(['course_bill', 'rating'])
             ->having('course_bill_count', '>=', 5)
             ->withAvg('rating', 'rating')
@@ -55,8 +55,7 @@ class CourseController extends Controller
 
     function getLatestCourses()
     {
-        $query = Course::without(['section', 'course_bill'])
-            ->where('isPublished', 1)
+        $query = Course::where('isPublished', 1)
             ->orderBy('created_at', 'desc')
             ->select('title', 'id', 'author_id', 'slug', 'price_id', 'thumbnail', 'created_at', 'instructional_level_id', 'subtitle')
             ->withCount(['course_bill', 'rating'])

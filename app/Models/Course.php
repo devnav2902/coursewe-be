@@ -13,8 +13,6 @@ class Course extends Model
     protected $with =
     [
         'author',
-        'rating',
-        'course_bill',
         'instructional_level',
         'price',
         'course_outcome',

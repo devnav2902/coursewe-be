@@ -63,6 +63,7 @@ class HelperController extends Controller
         $queryGetCourses = Course::whereHas('categories', function ($query) use ($topics_slug) {
             $query->whereIn('slug', $topics_slug);
         })
+            ->select('title', 'id', 'author_id', 'slug', 'price_id', 'thumbnail', 'created_at', 'instructional_level_id', 'subtitle')
             ->withCount(['course_bill', 'rating', 'section', 'lecture'])
             ->withAvg('rating', 'rating')
             ->with(['categories:category_id,parent_id,title,slug', 'course_outcome']);
