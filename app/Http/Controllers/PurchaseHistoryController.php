@@ -10,7 +10,7 @@ class PurchaseHistoryController extends Controller
 {
     function purchaseHistory()
     {
-        $courseBill = CourseBill::with([
+        $courseBills = CourseBill::with([
             'course' => function ($q) {
                 $q->withOnly(['coupon']);
             }
@@ -18,6 +18,6 @@ class PurchaseHistoryController extends Controller
             ->where('user_id', Auth::user()->id)
             ->get();
 
-        return response(['courseBill' => $courseBill]);
+        return response(['courseBills' => $courseBills]);
     }
 }

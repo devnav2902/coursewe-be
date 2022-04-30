@@ -187,14 +187,7 @@ class CourseController extends Controller
 
         return $course;
     }
-    function getCourseByCurrentUser()
-    {
-        $courses = Course::where('author_id', Auth::user()->id)
-            ->where('isPublished', 1)
-            ->get();
 
-        return response(['courses' => $courses]);
-    }
     function getCourseOfAuthorById($id)
     {
 

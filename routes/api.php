@@ -15,6 +15,7 @@ use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\OverviewController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LearningController;
+use App\Http\Controllers\LectureController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\PurchaseHistoryController;
@@ -33,6 +34,8 @@ use App\Models\Coupon;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+// INSTRUCTOR
+
 
 // COURSE
 Route::get('/course/best-selling', [CourseController::class, 'bestSellingCourses']); // !lấy theo tuần
@@ -90,7 +93,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/courses', [OverviewController::class, 'chartCourses']);
 
     Route::get('/instructor/overview', [OverviewController::class, 'getOverview']);
-    Route::get('/user/courses', [CourseController::class, 'getCourseByCurrentUser']);
+    Route::get('/user/courses', [InstructorController::class, 'getCoursesByCurrentUser']);
     Route::get('/user/logout', [UserController::class, 'logout']);
     Route::get('/purchase/history', [PurchaseHistoryController::class, 'purchaseHistory']);
     //ProFile
@@ -135,4 +138,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/user/me/taught-courses/{courseId}/lectures/{lectureId}/resources/{resourceId}/', [ResourceController::class, 'delete']);
     Route::post('/resources/upload', [ResourceController::class, 'upload']);
     Route::get('/resources/lecture-id/{lectureId}', [ResourceController::class, 'getByLectureId']);
+    Route::get('/users/me/subscribed-courses/{courseId}/lectures/{lectureId}/assets/{resourceId}/download', [ResourceController::class, 'download']);
+    // LECTURE
+    Route::get('/lecture/id/{lectureId}', [LectureController::class, 'getByLectureId']);
+    Route::post('/lecture/upload', [LectureController::class, 'upload']);
+    Route::delete('/user/me/taught-courses/{courseId}/lectures/{lectureId}', [LectureController::class, 'delete']);
 });

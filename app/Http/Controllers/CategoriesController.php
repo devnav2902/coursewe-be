@@ -42,9 +42,10 @@ class CategoriesController extends Controller
         return response()->json(['courses' => $queryGetCourses->get()]);
     }
 
-    function featuredCourses($limit)
+    function featuredCourses($limit = 10)
     {
         $queryGetCourses = Course::withCount(['course_bill', 'rating', 'section', 'lecture'])
+            ->without(['course_bill', 'rating'])
             ->withAvg('rating', 'rating')
             ->having('rating_avg_rating', '>=', 4.0)
             ->take($limit);

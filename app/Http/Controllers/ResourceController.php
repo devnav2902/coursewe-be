@@ -9,6 +9,39 @@ use Illuminate\Support\Facades\Auth;
 
 class ResourceController extends Controller
 {
+    function download(Request $request)
+    {
+        $lectureId = $request->route('lectureId');
+        $courseId = $request->route('courseId');
+        $resourceId = $request->route('resourceId');
+        $userId = Auth::user()->id;
+
+        try {
+            $canDownload = Course::where('course.id', $courseId)
+                ->setEagerLoads([])
+                ->orWhere('author_id', $userId)
+                ->orWhereHas('course_bill', function ($q) use ($userId) {
+                    $q->where('user_id', $userId);
+                })
+                ->whereHas('lecture', function ($q) use ($lectureId, $resourceId) {
+                    $q->where('lectures.id', $lectureId)
+                        ->whereHas('resource', function ($q) use ($resourceId) {
+                            $q->where('id', $resourceId);
+                        });
+                })
+                ->first();
+
+            if ($canDownload) {
+                $resource = Resource::find($resourceId);
+
+                return response()->download($resource->src, $resource->original_filename);
+            }
+            return response(['error' => 'Lỗi khi tải file'], 400);
+        } catch (\Throwable $th) {
+            return response(['error' => 'Lỗi khi tải file'], 400);
+        }
+    }
+
     function getByLectureId($lectureId)
     {
         $resources = Resource::where('lecture_id', $lectureId)->get();

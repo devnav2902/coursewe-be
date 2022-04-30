@@ -165,4 +165,15 @@ class HelperController extends Controller
 
         return (number_format($n, $n < 10 && $l > 0 ? 1 : 0) . ' ' . $units[$l]);
     }
+
+    function getDuration($video_path)
+    {
+        $getID3 = new \getID3;
+        $file = $getID3->analyze($video_path);
+
+        return [
+            'playtime_string' => $file['playtime_string'],
+            'playtime_seconds' => $file['playtime_seconds']
+        ];
+    }
 }
