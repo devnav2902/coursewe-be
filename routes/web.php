@@ -8,17 +8,14 @@ use App\Http\Controllers\PurchaseHistoryController;
 use App\Models\Cart;
 use App\Models\CartType;
 use App\Models\Categories;
-use App\Models\CategoriesCourse;
 use App\Models\Course;
-use App\Models\CourseBill;
 use App\Models\CourseCoupon;
 use App\Models\InstructionalLevel;
-use App\Models\Resource;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -127,7 +124,7 @@ Route::get('/category-managing', function () {
             ],
         ],
     ];
-
+    dd($sample);
     // $categories = $grouped_categories->map(function ($top_level, $key) use ($slug_categories) {
 
     //     $slug_top_level = $slug_categories[$key];
@@ -302,31 +299,51 @@ Route::get('/level/{slug}', function ($slug) {
     return $levels;
 });
 
-Route::get('/topics/{slug}', function ($slug) {
-    $helperController = new HelperController();
-    $coursesBySlug = $helperController->getCoursesByCategorySlug($slug, false);
+// Route::get('/price/{slug}', function ($slug) {
+//     $helperController = new HelperController();
+//     $courses = $helperController->getCoursesByCategorySlug($slug, false);
+//     $priceArr = $courses->pluck('price');
 
-    $arr = $coursesBySlug
-        ->pluck('categories');
+//     $amountCoursesByTypesPrice = [
+//         'free' => ['amount' => 0, 'price_id' => null],
+//         'paid' => ['amount' => 0]
+//     ];
 
-    $arrCategories = [];
+//     foreach ($priceArr as $value) {
+//         if (intval($value['original_price']) !== 0)
+//             $amountCoursesByTypesPrice['paid']['amount'] += 1;
+//         else {
+//             $amountCoursesByTypesPrice['free']['amount'] += 1;
+//             $amountCoursesByTypesPrice['free']['price_id'] = $value['id'];
+//         }
+//     }
 
-    foreach ($arr as $category) {
-        foreach ($category as $value) array_push($arrCategories, $value);
-    }
+//     return response()->json(compact('amountCoursesByTypesPrice'));
+// Route::get('/topics/{slug}', function ($slug) {
+//     $helperController = new HelperController();
+//     $coursesBySlug = $helperController->getCoursesByCategorySlug($slug, false);
 
-    $counted = collect($arrCategories)->countBy(function ($category) {
-        return $category['slug'];
-    });
+//     $arr = $coursesBySlug
+//         ->pluck('categories');
 
-    $unique = collect($arrCategories)->unique('category_id');
+//     $arrCategories = [];
 
-    return $unique->map(function ($category) use ($counted) {
-        $category['amount'] = $counted[$category['slug']];
+//     foreach ($arr as $category) {
+//         foreach ($category as $value) array_push($arrCategories, $value);
+//     }
 
-        return $category;
-    })->values();
-});
+//     $counted = collect($arrCategories)->countBy(function ($category) {
+//         return $category['slug'];
+//     });
+
+//     $unique = collect($arrCategories)->unique('category_id');
+
+//     return $unique->map(function ($category) use ($counted) {
+//         $category['amount'] = $counted[$category['slug']];
+
+//         return $category;
+//     })->values();
+// });
 
 Route::get('/courses/featured', function () {
     $queryGetCourses = Course::setEagerLoads([])
@@ -376,7 +393,38 @@ Route::get('/best-selling-courses', function () {
         ->take(10)
         ->get();
 });
+Route::get('/best-instructor/{slug}', function ($slug) {
+    $helperController = new HelperController();
+    $courses = $helperController->getCoursesByCategorySlug($slug, false);
+    $collectionCourses = collect($courses)->where("rating_avg_rating", '>=', 4)->values();
+    $author = $collectionCourses->pluck('author')->unique('id')->values();
+    // $authorId = $author->pluck('id');
+    // return $collectionCourses;
+    $rating = $collectionCourses->groupBy('author_id');
+    $avgRating = $rating->map(function ($course, $key) use ($author, $collectionCourses) {
+        $avgRating = $course->avg('rating_avg_rating');
+        $amountSudents = $course->sum('course_bill_count');
+        $infoAuthor = collect($author)->where('id', $key)->first();
+        $totalCourses = collect($collectionCourses)->where('author_id', $key)->count();
+        return ['infoAuthor' => $infoAuthor, 'avgRating' => $avgRating, 'amountSudents' => $amountSudents, 'totalCourses' => $totalCourses];
+    });
 
+    //    $authorAndCourse = User::with(['course'=>function($query){
+    //        return $query->setEagerLoads([])
+    //        ->select('id', 'slug', 'thumbnail','author_id')
+    //        ->withCount(['course_bill'])
+    //        ->withAvg('rating', 'rating');
+    //    }])->whereIn('id',$authorId)->get();
+    //    $courseOfAuthor= $authorAndCourse->pluck('course')->map(function($course){
+    //            $avgRating=$course->avg('rating_avg_rating');
+    //            $amountSudents=$course->sum('course_bill_count');
+    //            return ['avgRating'=>$avgRating,'amountSudents'=>$amountSudents];
+    //    });
+
+
+    return $avgRating->values();
+    return $author;
+});
 
 Route::get('/cart/me/{id}', function ($id) {
     if (!Auth::check()) {

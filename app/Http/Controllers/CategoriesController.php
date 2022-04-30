@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Categories;
 use App\Models\CategoriesCourse;
 use App\Models\Course;
 use Illuminate\Http\Request;
@@ -186,5 +185,46 @@ class CategoriesController extends Controller
         }
 
         return response()->json(compact('categories'));
+    }
+
+    function getAmountCoursesByTypesPrice($slug)
+    {
+        $helperController = new HelperController();
+        $courses = $helperController->getCoursesByCategorySlug($slug, false);
+        $priceArr = $courses->pluck('price');
+
+        $amountCoursesByTypesPrice = [
+            'free' => ['amount' => 0, 'price_id' => null],
+            'paid' => ['amount' => 0]
+        ];
+
+        foreach ($priceArr as $value) {
+            if (intval($value['original_price']) !== 0)
+                $amountCoursesByTypesPrice['paid']['amount'] += 1;
+            else {
+                $amountCoursesByTypesPrice['free']['amount'] += 1;
+                $amountCoursesByTypesPrice['free']['price_id'] = $value['id'];
+            }
+        }
+
+        return response()->json(compact('amountCoursesByTypesPrice'));
+    }
+    function getPopularInstructors($slug)
+    {
+        $helperController = new HelperController();
+        $courses = $helperController->getCoursesByCategorySlug($slug, false);
+        $collectionCourses = collect($courses)->where("rating_avg_rating", '>=', 4)->values();
+        $author = $collectionCourses->pluck('author')->unique('id')->values();
+        // $authorId = $author->pluck('id');
+
+        $rating = $collectionCourses->groupBy('author_id');
+        $avgRating = $rating->map(function ($course, $key) use ($author, $collectionCourses) {
+            $avgRating =  number_format($course->avg('rating_avg_rating'), 1, '.', '.');
+            $amountSudents = $course->sum('course_bill_count');
+            $infoAuthor = collect($author)->where('id', $key)->first();
+            $totalCourses = collect($collectionCourses)->where('author_id', $key)->count();
+            return ['infoAuthor' => $infoAuthor, 'avgRating' => $avgRating, 'amountSudents' => $amountSudents, 'totalCourses' => $totalCourses];
+        })->take(10)->values();
+        return response()->json(compact('avgRating'));
     }
 }

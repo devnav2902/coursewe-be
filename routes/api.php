@@ -54,6 +54,8 @@ Route::get('/category/featured-courses/{topLevelCategoryId}', [CategoriesControl
 Route::get('/featured-categories/{limit}', [CategoriesController::class, 'featuredCategories']);
 Route::get('/categories', [CategoriesController::class, 'getCategories']);
 Route::get('/categories/get-courses/{slug}', [CategoriesController::class, 'getCoursesByCategorySlug']);
+Route::get('/categories/types-price/{slug}', [CategoriesController::class, 'getAmountCoursesByTypesPrice']);
+Route::get('/categories/popular-instructors/{slug}', [CategoriesController::class, 'getPopularInstructors']);
 Route::get('/categories/amount-courses-in-topics/{slug}', [CategoriesController::class, 'amountCoursesInTopics']);
 
 // USER
@@ -71,6 +73,9 @@ Route::get('/instructional-level/amount-courses/{slug}', [InstructionalLevelCont
 // RATING
 Route::get('/rating/filter-rating/{slug}', [RatingController::class, 'filterRatingByCategorySlug']);
 
+//  SEARCH  
+Route::post('/autocomplete/search', [SearchController::class, 'search']);
+Route::get('/search', [SearchController::class, 'index'])->name('search');
 // COUPON
 Route::post('/coupon/apply-coupon', [CouponController::class, 'checkCoupon']);
 Route::post('/coupon/courses/apply-coupon', [CouponController::class, 'checkCouponWithCourses']);
@@ -99,13 +104,9 @@ Route::middleware('auth:sanctum')->group(function () {
     //ProFile
     Route::get('/user/profile', [ProfileController::class, 'index'])->name('profile');
     Route::get('/user/bio', [ProfileController::class, 'getBio'])->name('bio');
-    Route::post('/profile', [ProfileController::class, 'save'])->name('saveProfile');
-    Route::post('/change-password', [ProfileController::class, 'changePassword'])
-        ->name('changePassword');
-    Route::post('/change-bio', [ProfileController::class, 'changeBio'])
-        ->name('changeBio');
-    Route::post('/upload-avatar', [ProfileController::class, 'uploadAvatar'])
-        ->name('uploadAvatar');
+    Route::patch('/change-profile', [ProfileController::class, 'save'])->name('saveProfile');
+
+
     Route::delete(
         '/course/delete-course-outcome/{id}',
         [CourseController::class, 'deleteCourseOutcome']
@@ -127,6 +128,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/create-course', [CreateCourseController::class, 'create']);
 
+    // Purchase
+    Route::post('/purchase', [PurchaseController::class, 'purchase']);
     // MY LEARNING
     Route::get('/my-learning', [LearningController::class, 'myLearning']);
     // LEARNING
