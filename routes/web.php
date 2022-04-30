@@ -1,12 +1,16 @@
 <?php
 
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\HelperController;
+use App\Http\Controllers\LearningController;
+use App\Http\Controllers\PurchaseHistoryController;
 use App\Models\Cart;
 use App\Models\CartType;
 use App\Models\Categories;
 use App\Models\CategoriesCourse;
 use App\Models\Course;
+use App\Models\CourseBill;
 use App\Models\CourseCoupon;
 use App\Models\InstructionalLevel;
 use App\Models\Resource;
@@ -507,4 +511,35 @@ Route::get('/delete-resource/{courseId}/{lectureId}/{resourceId}', function ($co
     }
 
     return $result ? 'co' : 'khong';
+});
+
+Route::get('/get-user', function () {
+    Auth::attempt(['email' => 'nguyenthithuha577@gmail.com', 'password' => '123']);
+
+    return Auth::user();
+});
+
+Route::get('/get-cart', function () {
+    $cartController = new CartController();
+    return $cartController->get();
+});
+
+Route::get('/featured-courses', function () {
+    $cat = new CategoriesController();
+    return $cat->featuredCourses(5);
+});
+
+Route::get('/featured-categories', function () {
+    $cat = new CategoriesController();
+    return $cat->featuredCategories(5);
+});
+Route::get('/course-bill', function () {
+    $cat = new PurchaseHistoryController();
+    return $cat->purchaseHistory();
+});
+
+Route::get('/learning', function () {
+    $learningController = new LearningController();
+    return $learningController->myLearning();
+    return $learningController->learning('nha-lanh-dao-phai-biet-dao-tao-159');
 });
