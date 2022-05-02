@@ -60,7 +60,7 @@ class CourseController extends Controller
             ->select('title', 'id', 'author_id', 'slug', 'price_id', 'thumbnail', 'created_at', 'instructional_level_id', 'subtitle')
             ->withCount(['course_bill', 'rating'])
             ->withAvg('rating', 'rating')
-            ->take(15);
+            ->take(12);
 
         $queryLatestCourses = clone $query;
         $latestCourses = $queryLatestCourses
