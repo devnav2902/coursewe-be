@@ -109,7 +109,7 @@ class HelperController extends Controller
 
         $queryCourseCoupon = clone $query;
         $courseCoupon = $queryCourseCoupon
-            ->first(['expires', 'enrollment_limit', 'currently_enrolled', 'course_id', 'coupon_id', 'code', 'discount_price', 'status']);
+            ->first(['expires', 'created_at', 'enrollment_limit', 'currently_enrolled', 'course_id', 'coupon_id', 'code', 'discount_price', 'status']);
 
         if (!$courseCoupon) return null;
 
