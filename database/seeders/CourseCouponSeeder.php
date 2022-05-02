@@ -16,7 +16,7 @@ class CourseCouponSeeder extends Seeder
     public function run()
     {
         $coupon_id = DB::table('coupon')
-            ->where('type', 'Custom price')
+            ->where('type', 'CUSTOM_PRICE')
             ->first()
             ->id;
 
