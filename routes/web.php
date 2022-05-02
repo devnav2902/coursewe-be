@@ -4,6 +4,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\HelperController;
 use App\Http\Controllers\LearningController;
+use App\Http\Controllers\PromotionsController;
 use App\Http\Controllers\PurchaseHistoryController;
 use App\Models\Cart;
 use App\Models\CartType;
@@ -590,4 +591,8 @@ Route::get('/learning', function () {
     $learningController = new LearningController();
     return $learningController->myLearning();
     return $learningController->learning('nha-lanh-dao-phai-biet-dao-tao-159');
+});
+Route::get('/get-active-coupons/{courseId}', function ($id) {
+    $Controller = new PromotionsController();
+    return $Controller->getScheduledCoupons($id);
 });

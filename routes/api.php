@@ -18,6 +18,7 @@ use App\Http\Controllers\LearningController;
 use App\Http\Controllers\LectureController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\ProgressController;
+use App\Http\Controllers\PromotionsController;
 use App\Http\Controllers\PurchaseHistoryController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ResourceController;
@@ -128,7 +129,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/create-course', [CreateCourseController::class, 'create']);
 
-    // Purchase
+    // PURCHASE
     Route::post('/purchase', [PurchaseController::class, 'purchase']);
     // MY LEARNING
     Route::get('/my-learning', [LearningController::class, 'myLearning']);
@@ -146,4 +147,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/lecture/id/{lectureId}', [LectureController::class, 'getByLectureId']);
     Route::post('/lecture/upload', [LectureController::class, 'upload']);
     Route::delete('/user/me/taught-courses/{courseId}/lectures/{lectureId}', [LectureController::class, 'delete']);
+    // PROMOTIONS
+    Route::get('/promotions/scheduled-coupons/{courseId}', [PromotionsController::class, 'getScheduledCoupons']);
+    Route::get('/promotions/coupon-types', [PromotionsController::class, 'getCouponTypes']);
+    Route::get('/promotions/information-create-coupon/{courseId}', [PromotionsController::class, 'getInformationCreateCoupon']);
 });
