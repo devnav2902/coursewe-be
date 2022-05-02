@@ -16,8 +16,8 @@ class CreateCouponTable extends Migration
     {
         Schema::create('coupon', function (Blueprint $table) {
             $table->string('id')->primary();
-
-            $table->string('type', 100);
+            $table->enum('type', ['FREE', 'CUSTOM_PRICE']);
+            $table->string('label', 25);
             $table->string('description');
             $table->string('expiration');
             $table->integer('limited_time');
