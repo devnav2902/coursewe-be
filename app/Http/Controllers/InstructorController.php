@@ -11,15 +11,14 @@ class InstructorController extends Controller
 {
     public function profile($slug)
     {
-        // $slug = $request->input('slug');
-        $author = User
-            // ::with('bio')
-            ::where('slug', $slug)
+        $author = User::where('slug', $slug)
+            ->with(['bio'])
             ->first(['id', 'avatar', 'fullname']);
 
         if (!$author) return abort(404);
 
         $course = Course::where('author_id', $author->id)
+            ->without(['rating'])
             ->where('isPublished', 1)
             ->withCount('course_bill')
             ->withCount('rating');
@@ -39,14 +38,14 @@ class InstructorController extends Controller
             ->get(['id'])
             ->sum('rating_count');
 
-        $courses = $course->orderBy('created_at', 'desc')
+        $coursesData = $course->orderBy('created_at', 'desc')
             ->withAvg('rating', 'rating')
             ->paginate(
                 6,
                 ['title', 'id', 'author_id', 'created_at', 'price', 'slug']
             );
 
-        return response()->json(compact(['author', 'courses', 'totalStudents', 'totalReviews', 'totalCourses']));
+        return response()->json(compact(['author', 'coursesData', 'totalStudents', 'totalReviews', 'totalCourses']));
     }
 
     function getCourseById($id)
@@ -63,5 +62,16 @@ class InstructorController extends Controller
             ->firstWhere('id', $id);
 
         return response(['course' => $course]);
+    }
+
+    function getCoursesByCurrentUser()
+    {
+        $data = Course::where('author_id', Auth::user()->id)
+            ->setEagerLoads([])
+            ->with(['author'])
+            ->where('isPublished', 1)
+            ->paginate(6);
+
+        return response(['coursesData' => $data]);
     }
 }

@@ -22,13 +22,6 @@ class Section extends Model
             ->orderBy('order', 'asc');
     }
 
-    public function countProgress()
-    {
-        return $this->hasManyThrough(Progress::class, Lecture::class, 'section_id', 'lecture_id')
-            ->where('user_id', Auth::user()->id)
-            ->where('progress', 1);
-    }
-
     public function progressInLectures()
     {
         return $this->hasManyThrough(Progress::class, Lecture::class, 'section_id', 'lecture_id')

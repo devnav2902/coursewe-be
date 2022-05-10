@@ -63,6 +63,7 @@ class HelperController extends Controller
         $queryGetCourses = Course::whereHas('categories', function ($query) use ($topics_slug) {
             $query->whereIn('slug', $topics_slug);
         })
+            ->select('title', 'id', 'author_id', 'slug', 'price_id', 'thumbnail', 'created_at', 'instructional_level_id', 'subtitle')
             ->withCount(['course_bill', 'rating', 'section', 'lecture'])
             ->withAvg('rating', 'rating')
             ->with(['categories:category_id,parent_id,title,slug', 'course_outcome']);
@@ -108,7 +109,7 @@ class HelperController extends Controller
 
         $queryCourseCoupon = clone $query;
         $courseCoupon = $queryCourseCoupon
-            ->first(['expires', 'enrollment_limit', 'currently_enrolled', 'course_id', 'coupon_id', 'code', 'discount_price', 'status']);
+            ->first(['expires', 'created_at', 'enrollment_limit', 'currently_enrolled', 'course_id', 'coupon_id', 'code', 'discount_price', 'status']);
 
         if (!$courseCoupon) return null;
 
@@ -149,5 +150,31 @@ class HelperController extends Controller
         CourseCoupon::where('course_id', $course_id)
             ->where('code', $code)
             ->update(['status' => 0]);
+    }
+
+
+    function niceBytes($bytes)
+    {
+        $units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+        $l = 0;
+        $n = intval($bytes, 10);
+
+        while ($n >= 1024 && ++$l) {
+            $n = $n / 1024;
+        }
+
+        return (number_format($n, $n < 10 && $l > 0 ? 1 : 0) . ' ' . $units[$l]);
+    }
+
+    function getDuration($video_path)
+    {
+        $getID3 = new \getID3;
+        $file = $getID3->analyze($video_path);
+
+        return [
+            'playtime_string' => $file['playtime_string'],
+            'playtime_seconds' => $file['playtime_seconds']
+        ];
     }
 }

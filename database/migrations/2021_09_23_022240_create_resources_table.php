@@ -18,6 +18,7 @@ class CreateResourcesTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('lecture_id');
             $table->string('src');
+            $table->string('filesize', 60);
             $table->string('original_filename', 100);
             $table->timestamp('created_at')->useCurrent();
         });

@@ -13,7 +13,7 @@ class Lecture extends Model
 
     protected $table = 'lectures';
 
-    protected $fillable = ['title', 'src', 'section_id', 'order', 'original_filename'];
+    protected $fillable = ['title', 'src', 'section_id', 'order', 'original_filename', 'playtime_string', 'playtime_seconds'];
     // protected $withCount = ['resource'];
     protected $with = ['resource'];
 

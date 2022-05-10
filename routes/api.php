@@ -7,12 +7,15 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\CourseImageController;
+use App\Http\Controllers\CourseVideoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CreateCourseController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\OverviewController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LearningController;
+use App\Http\Controllers\LectureController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\ProgressLogsController;
@@ -20,6 +23,8 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PurchaseHistoryController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\PromotionsController;
+use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\UserController;
 use App\Models\Coupon;
 
@@ -33,6 +38,8 @@ use App\Models\Coupon;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+// INSTRUCTOR
+
 
 // COURSE
 Route::get('/course/best-selling', [CourseController::class, 'bestSellingCourses']); // !lấy theo tuần
@@ -84,13 +91,18 @@ Route::delete('/cart/{id}', [CartController::class, 'delete']);
 Route::patch('/saved-for-later', [CartController::class, 'savedForLater']);
 
 Route::middleware('auth:sanctum')->group(function () {
+    // IMAGE COURSE
+    Route::post('/course-image', [CourseImageController::class, 'updateCourseImage']);
+    // IMAGE COURSE
+    Route::post('/course-video', [CourseVideoController::class, 'updateCourseVideo']);
+
     Route::post('/revenue', [OverviewController::class, 'chartJSYear']);
     Route::post('/enrollments', [OverviewController::class, 'chartEnrollments']);
     Route::post('/rating', [OverviewController::class, 'chartRating']);
     Route::post('/courses', [OverviewController::class, 'chartCourses']);
 
     Route::get('/instructor/overview', [OverviewController::class, 'getOverview']);
-    Route::get('/user/courses', [CourseController::class, 'getCourseByCurrentUser']);
+    Route::get('/user/courses', [InstructorController::class, 'getCoursesByCurrentUser']);
     Route::get('/user/logout', [UserController::class, 'logout']);
     Route::get('/purchase/history', [PurchaseHistoryController::class, 'purchaseHistory']);
     //ProFile
@@ -113,11 +125,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/logout', [UserController::class, 'logout']);
     Route::get('/purchase/history', [PurchaseHistoryController::class, 'purchaseHistory']);
     Route::get('/instructor/course/{id}', [InstructorController::class, 'getCourseById']);
+
+    // PRICE
     Route::get('/get-price', [PriceController::class, 'getPrice']);
+    Route::patch('/update-price', [PriceController::class, 'updatePrice']);
 
     Route::post('/create-course', [CreateCourseController::class, 'create']);
 
-    // Purchase
+    // PURCHASE
     Route::post('/purchase', [PurchaseController::class, 'purchase']);
     // MY LEARNING
     Route::get('/my-learning', [LearningController::class, 'myLearning']);
@@ -126,7 +141,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/learning/{slug}', [LearningController::class, 'learning']);
     Route::get('/sections/{course_id}', [LearningController::class, 'getSections']);
     Route::post('/progress', [ProgressController::class, 'updateProgress']);
-    Route::get('/course/{course_slug}/lecture/{lectureId}', [LearningController::class, 'getVideo']);
-    Route::get('/last-watched/{course_id}', [ProgressLogsController::class, 'lastWatchedByCourseId']);
-    Route::get('/last-watched/course/{course_id}/lecture/{lectureId}', [ProgressLogsController::class, 'lastWatchedByLectureId']);
+    // RESOURCE
+    Route::delete('/user/me/taught-courses/{courseId}/lectures/{lectureId}/resources/{resourceId}/', [ResourceController::class, 'delete']);
+    Route::post('/resources/upload', [ResourceController::class, 'upload']);
+    Route::get('/resources/lecture-id/{lectureId}', [ResourceController::class, 'getByLectureId']);
+    Route::get('/users/me/subscribed-courses/{courseId}/lectures/{lectureId}/assets/{resourceId}/download', [ResourceController::class, 'download']);
+    // LECTURE
+    Route::get('/lecture/id/{lectureId}', [LectureController::class, 'getByLectureId']);
+    Route::post('/lecture/upload', [LectureController::class, 'upload']);
+    Route::delete('/user/me/taught-courses/{courseId}/lectures/{lectureId}', [LectureController::class, 'delete']);
+    // PROMOTIONS
+    Route::get('/promotions/scheduled-coupons/{courseId}', [PromotionsController::class, 'getScheduledCoupons']);
+    Route::get('/promotions/coupon-types', [PromotionsController::class, 'getCouponTypes']);
+    Route::get('/promotions/information-create-coupon/{courseId}', [PromotionsController::class, 'getInformationCreateCoupon']);
 });

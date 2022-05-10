@@ -11,28 +11,19 @@ class LearningController extends Controller
 {
     public function myLearning()
     {
-        $courses = Course::withOnly(
-            [
-                'lecture' => function ($q) {
-                    $q->select('lectures.id');
-                },
-                'lecture.progress' => function ($q) {
-                    $q
-                        ->select('lecture_id', 'progress')
-                        ->where('progress', 1);
-                },
-                'author',
-                'rating' => function ($q) {
-                    $q->where('user_id', Auth::user()->id);
-                }
-            ]
-        )
+        $courses = Course::setEagerLoads([])
+            ->with(
+                [
+                    'author',
+                    'rating' => function ($q) {
+                        $q->where('user_id', Auth::user()->id);
+                    },
+                ]
+            )
             ->whereHas(
                 'course_bill',
                 function ($q) {
-                    $q
-                        ->orderBy('created_at', 'desc')
-                        ->where('user_id', Auth::user()->id);
+                    $q->where('user_id', Auth::user()->id);
                 }
             )
             ->paginate(5, ['id', 'title', 'slug', 'author_id', 'thumbnail']);
@@ -78,6 +69,7 @@ class LearningController extends Controller
     function learning($url)
     {
         $course = Course::without('category', 'course_bill')
+            ->with(['author.bio'])
             ->firstWhere('slug', $url);
 
         return response()->json(compact(

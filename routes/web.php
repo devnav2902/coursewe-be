@@ -1,18 +1,17 @@
 <?php
 
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\HelperController;
+use App\Http\Controllers\LearningController;
+use App\Http\Controllers\PromotionsController;
+use App\Http\Controllers\PurchaseHistoryController;
 use App\Models\Cart;
 use App\Models\CartType;
 use App\Models\Categories;
-use App\Models\CategoriesCourse;
 use App\Models\Course;
 use App\Models\CourseCoupon;
 use App\Models\InstructionalLevel;
-use App\Models\Price;
-use App\Models\User;
-
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -541,4 +540,59 @@ Route::get('/progress/{course_id}', function ($course_id) {
     return response()->json(compact(
         ['total', 'data_progress', 'complete', 'course']
     ));
+});
+
+Route::get('/delete-resource/{courseId}/{lectureId}/{resourceId}', function ($courseId, $lectureId, $resourceId) {
+    $result = Course::where('course.id', $courseId)
+        // ->where('author_id', $userId)
+        ->setEagerLoads([])
+        ->whereHas('lecture', function ($q) use ($lectureId, $resourceId) {
+            $q->where('lectures.id', $lectureId)
+                ->whereHas('resource', function ($q) use ($resourceId) {
+                    $q->where('id', $resourceId);
+                });
+        })
+        ->first();
+
+    if ($result) {
+        // Resource::destroy($resourceId);
+        return response(['success' => true]);
+    }
+
+    return $result ? 'co' : 'khong';
+});
+
+Route::get('/get-user', function () {
+    Auth::attempt(['email' => 'nguyenthithuha577@gmail.com', 'password' => '123']);
+
+    return Auth::user();
+});
+
+Route::get('/get-cart', function () {
+    $cartController = new CartController();
+    return $cartController->get();
+});
+
+Route::get('/featured-courses', function () {
+    $cat = new CategoriesController();
+    return $cat->featuredCourses(5);
+});
+
+Route::get('/featured-categories', function () {
+    $cat = new CategoriesController();
+    return $cat->featuredCategories(5);
+});
+Route::get('/course-bill', function () {
+    $cat = new PurchaseHistoryController();
+    return $cat->purchaseHistory();
+});
+
+Route::get('/learning', function () {
+    $learningController = new LearningController();
+    return $learningController->myLearning();
+    return $learningController->learning('nha-lanh-dao-phai-biet-dao-tao-159');
+});
+Route::get('/get-active-coupons/{courseId}', function ($id) {
+    $Controller = new PromotionsController();
+    return $Controller->getScheduledCoupons($id);
 });

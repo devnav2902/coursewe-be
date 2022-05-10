@@ -42,8 +42,8 @@ class CourseController extends Controller
 
     function bestSellingCourses()
     {
-        $courses = Course::without(['course_bill'])
-            ->orderBy('updated_at', 'desc')
+        $courses = Course::orderBy('updated_at', 'desc')
+            ->select('title', 'id', 'author_id', 'slug', 'price_id', 'thumbnail', 'created_at', 'instructional_level_id', 'subtitle')
             ->withCount(['course_bill', 'rating'])
             ->having('course_bill_count', '>=', 5)
             ->withAvg('rating', 'rating')
@@ -55,13 +55,12 @@ class CourseController extends Controller
 
     function getLatestCourses()
     {
-        $query = Course::without(['section', 'course_bill'])
-            ->where('isPublished', 1)
+        $query = Course::where('isPublished', 1)
             ->orderBy('created_at', 'desc')
             ->select('title', 'id', 'author_id', 'slug', 'price_id', 'thumbnail', 'created_at', 'instructional_level_id', 'subtitle')
             ->withCount(['course_bill', 'rating'])
             ->withAvg('rating', 'rating')
-            ->take(15);
+            ->take(12);
 
         $queryLatestCourses = clone $query;
         $latestCourses = $queryLatestCourses
@@ -102,7 +101,7 @@ class CourseController extends Controller
 
     function updateCourseOutcome($id, Request $req)
     {
-        $dataUpdateOutcome = $req->input('course_outcome');
+        $dataUpdateOutcome = $req->input('outcome_items');
 
         if ($dataUpdateOutcome) {
             Validator::make($dataUpdateOutcome, [
@@ -120,15 +119,14 @@ class CourseController extends Controller
                 );
             }
             // }
+
+            return response('success');
         }
-
-
-        return response('success');
     }
 
     function updateCourseRequirements($id, Request $req)
     {
-        $dataUpdateRequirements = $req->input('course_requirements');
+        $dataUpdateRequirements = $req->input('requirement_items');
 
         if ($dataUpdateRequirements) {
             Validator::make($dataUpdateRequirements, [
@@ -146,10 +144,9 @@ class CourseController extends Controller
                 );
             }
             // }
+
+            return response('success');
         }
-
-
-        return response('success');
     }
 
     function updateInformation($id, Request $req)
@@ -159,15 +156,6 @@ class CourseController extends Controller
 
         // $data = collect($req->input())->except(['thumbnail', 'video_demo'])->filter();
         Course::where('id', $id)->update($data);
-
-        if ($req->hasFile('thumbnail')) {
-            $image = $req->file('thumbnail');
-            $name = $image->getClientOriginalName();
-            $path =  $image->storeAs('thumbnail', time() . $name);
-
-            Course::where('id', $id)
-                ->update(['thumbnail' => $path]);
-        }
 
         return response('success');
 
@@ -198,14 +186,7 @@ class CourseController extends Controller
 
         return $course;
     }
-    function getCourseByCurrentUser()
-    {
-        $courses = Course::where('author_id', Auth::user()->id)
-            ->where('isPublished', 1)
-            ->get();
 
-        return response(['courses' => $courses]);
-    }
     function getCourseOfAuthorById($id)
     {
 

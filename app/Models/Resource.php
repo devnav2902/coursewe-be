@@ -9,7 +9,7 @@ class Resource extends Model
 {
     use HasFactory;
     protected $table = 'resources';
-    protected $fillable = ['lecture_id', 'original_filename', 'src'];
+    protected $fillable = ['lecture_id', 'original_filename', 'src', 'filesize'];
 
     public $timestamps = false;
 }
