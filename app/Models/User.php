@@ -28,7 +28,7 @@ class User extends Authenticatable
         'email_verified_at',
         'trangthai_taikhoan',
         'role_id',
-        'created_at'
+        'created_at',
     ];
 
     /**
@@ -69,5 +69,9 @@ class User extends Authenticatable
     function cart()
     {
         return $this->hasOne(Cart::class, 'user_id');
+    }
+    function progress_logs()
+    {
+        return $this->hasMany(ProgressLogs::class, 'user_id');
     }
 }
