@@ -15,8 +15,11 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LearningController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\ProgressController;
+use App\Http\Controllers\ProgressLogsController;
+use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PurchaseHistoryController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UserController;
 use App\Models\Coupon;
 
@@ -123,4 +126,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/learning/{slug}', [LearningController::class, 'learning']);
     Route::get('/sections/{course_id}', [LearningController::class, 'getSections']);
     Route::post('/progress', [ProgressController::class, 'updateProgress']);
+    Route::get('/course/{course_slug}/lecture/{lectureId}', [LearningController::class, 'getVideo']);
+    Route::get('/last-watched/{course_id}', [ProgressLogsController::class, 'lastWatchedByCourseId']);
+    Route::get('/last-watched/course/{course_id}/lecture/{lectureId}', [ProgressLogsController::class, 'lastWatchedByLectureId']);
 });
