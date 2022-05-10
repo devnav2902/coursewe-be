@@ -11,6 +11,7 @@ class PurchaseController extends Controller
 {
     function purchase(Request $request)
     {
+        return $request->all();
         $request->validate(['courses' => 'required|json']);
 
         $courses = json_decode($request->input('courses'));

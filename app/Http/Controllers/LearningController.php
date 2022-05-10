@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Lecture;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -111,5 +112,26 @@ class LearningController extends Controller
         return response()->json(compact(
             ['total', 'data_progress', 'complete']
         ));
+    }
+    function getVideo($course_slug, $lectureId)
+    {
+        $video = Course::setEagerLoads([])
+            ->with(
+                [
+                    'lecture' => function ($query) use ($lectureId) {
+                        $query->without('resource')
+                            ->where('lectures.id', $lectureId)
+                            ->select('lectures.id', 'src', 'lectures.title');
+                    }
+
+                ]
+            )
+            ->select(['id'])
+            ->firstWhere('slug', $course_slug);
+
+        $lecture = $video->lecture;
+        if (!count($lecture)) return response(['message' => 'Không có bài giảng này!'], 404);
+
+        return response(['lecture' => $lecture[0]]);
     }
 }
