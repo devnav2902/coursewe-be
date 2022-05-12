@@ -34,8 +34,8 @@ class CourseCoupon extends Model
     //     return Carbon::parse($expires)->isoFormat('DD/MM/YYYY HH:mm A');
     // }
 
-    function getCreatedAtAttribute($created_at)
-    {
-        return Carbon::parse($created_at)->isoFormat('DD/MM/YYYY HH:mm A');
-    }
+    // function getCreatedAtAttribute($created_at)
+    // {
+    //     return Carbon::parse($created_at)->isoFormat('DD/MM/YYYY HH:mm A');
+    // }
 }

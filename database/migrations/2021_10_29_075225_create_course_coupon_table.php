@@ -19,7 +19,7 @@ class CreateCourseCouponTable extends Migration
             $table->char('discount_price')->default(0);
             $table->string('coupon_id');
             $table->boolean('status')->default(1);
-            $table->integer('enrollment_limit')->nullable();
+            // $table->integer('enrollment_limit')->nullable();
             $table->integer('currently_enrolled')->default(0);
             $table->timestamp('expires');
             $table->timestamp('created_at')->useCurrent();
