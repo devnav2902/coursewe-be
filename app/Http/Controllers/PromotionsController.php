@@ -5,48 +5,115 @@ namespace App\Http\Controllers;
 use App\Models\Coupon;
 use App\Models\Course;
 use App\Models\CourseCoupon;
+use App\Models\Price;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class PromotionsController extends Controller
 {
     private $helper;
     private $maxCouponInAMonth = 3;
+    private $discountConst = 50000; // giá trị sử dụng để tính giảm giá. vd khoảng giảm giá là [349.000, 549.000]=> khuyến mãi trong khoảng [299.000, 499.000]
 
     function __construct()
     {
         $this->helper = new HelperController();
     }
 
+    function createCoupon(Request $request)
+    {
+        $request->validate([
+            'course_id' => 'required',
+            'code' => ['required', 'regex:/[A-Z0-9\-\.\_]/', 'min:6', 'max:20'],
+            'start-date' => 'required|date',
+            'end-date' => 'required|date',
+        ]);
+
+        $input = array_filter($request
+            ->only(
+                ['code', 'coupon_type', 'discount_price', 'end-date', 'start-date']
+            ));
+
+        $course = Course::setEagerLoads([])
+            ->where('author_id', Auth::user()->id)
+            ->with(['price'])
+            ->find(
+                $request->input('course_id'),
+                ['id', 'price_id']
+            );
+
+        if (!$course) return response(['message' => 'Khóa học không tồn tại!'], 400);
+
+        $format_price = $course->price->format_price;
+
+        Validator::make($input, [
+            'discount_price' => [
+                'regex:/^(\d{1}\.\d{3}\.0{3})$|^(\d{3}\.0{3})$/',
+                'lt:' . $format_price,
+                'numeric',
+                'gt:0'
+            ],
+        ])->validate();
+
+        // $coupon_type = Coupon::where('id', $input['coupon_type'])->first();
+
+        $isValid = $this->checkToCreateCoupon($course->id);
+        if (!$isValid)  return response(['success' => false, 'Lỗi trong quá trình tạo mã giảm giá!'], 400);
+
+        $discount_price =
+            isset($input['discount_price'])
+            ? $input['discount_price']
+            : 0;
+
+        $startDate = Carbon::parse($input['start-date']);
+        $endDate =  Carbon::parse($input['end-date']);
+
+        CourseCoupon::create([
+            'code' => $input['code'],
+            'coupon_id' => $input['coupon_type'],
+            'status' => 1,
+            'course_id' => $course->id,
+            'discount_price' => $discount_price,
+            'created_at' => $startDate,
+            'expires' => $endDate,
+        ]);
+
+        return response(['success' => true]);
+    }
+
+    function getExpiredCoupons($course_id)
+    {
+        $expiredCoupons = CourseCoupon::where('course_id', $course_id)
+            ->where('status', 0)
+            ->get();
+
+        return response(['expiredCoupons' => $expiredCoupons]);
+    }
+
     function getScheduledCoupons($course_id)
     {
-        $query = CourseCoupon::without('coupon')
-            ->where('course_id', $course_id)
-            ->where('status', 1);
-
-        $queryCoupons = clone $query;
-        $arrCoupons = $queryCoupons->get();
-
-        $active_coupons  = [];
-        foreach ($arrCoupons as $item) {
-            $active_coupons[] =
-                $this->helper->getCoupon($item->code, $course_id);
-        }
-
-        $active_coupons = collect($active_coupons)
+        $active_coupons = CourseCoupon::where('course_id', $course_id)
+            ->where('status', 1)
+            ->get()
             ->map(function ($coupon) {
-                $expires = $coupon->expires;
-                $time_remaining = Carbon::now()->diffInDays(
-                    $expires,
-                    false
-                );
+                $expires = Carbon::parse($coupon->expires);
+                $startDate = Carbon::parse($coupon->created_at);
 
-                if ($time_remaining <= $coupon->coupon->limited_time)
-                    $coupon->time_remaining = $time_remaining;
+                // Ngày mã giảm giá bắt đầu có hiệu lực > ngày hiện tại => lấy thời gian từ dtb
+                if ($startDate->greaterThanOrEqualTo(Carbon::now())) {
+                    $time_remaining = $coupon->coupon->limited_time;
+                } else {
+                    $time_remaining = $expires->diffInDays(Carbon::now());
+                }
+
+                $coupon->time_remaining = $time_remaining;
 
                 $coupon->expires = Carbon::parse($expires)
-                    ->isoFormat('DD/MM/YYYY HH:mm A zz');
+                    ->isoFormat('DD/MM/YYYY HH:mm A');
+                $coupon->created_at = Carbon::parse($coupon->created_at)
+                    ->isoFormat('DD/MM/YYYY HH:mm A');
 
                 return $coupon;
             });
@@ -56,7 +123,15 @@ class PromotionsController extends Controller
 
     function getCouponTypes()
     {
-        return response(['couponTypes' => Coupon::all()]);
+        $arrCoupons = Coupon::all();
+        $arrCoupons->transform(function ($coupon) {
+            if ($coupon->type === 'CUSTOM_PRICE') {
+                $coupon->discountConst = $this->discountConst;
+            }
+
+            return $coupon;
+        });
+        return response(['couponTypes' => $arrCoupons]);
     }
 
     function getInformationCreateCoupon($course_id)
@@ -77,7 +152,7 @@ class PromotionsController extends Controller
         return response(compact('couponsCreationRemaining', 'maxCouponInAMonth', 'canCreate', 'isFreeCourse'));
     }
 
-    private function  couponsInMonth($course_id)
+    private function couponsInMonth($course_id)
     {
         $couponInMonth =
             $this->queryCouponByCourseId($course_id)

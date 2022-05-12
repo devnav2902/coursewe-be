@@ -184,6 +184,10 @@ function course()
       'category' => ['html', 'css', 'jquery', 'bootstrap'],
     ],
     [
+      'title' => 'Khóa học Lập trình web HTML5, CSS3, jQuery từ cơ bản tới nâng cao',
+      'category' => ['html', 'css', 'jquery'],
+    ],
+    [
       'title' => 'Khóa học HTML và CSS cơ bản',
       'category' => ['html', 'css'],
     ],
@@ -523,6 +527,38 @@ function course()
     [
       'title' => 'Tiếng Hàn BIGMAXX Online - Sơ cấp 1',
       'category' => ['tu-hoc-tieng-han'],
+    ],
+    [
+      'title' => 'Marketing thời đại mới',
+      'category' => ['marketing-co-ban'],
+    ],
+    [
+      'title' => 'Xây dựng mô hình bán hàng - Tiếp thị - Giao hàng và thanh toán cho các chủ doanh nghiệp vừa & nhỏ',
+      'category' => ['marketing-co-ban'],
+    ],
+    [
+      'title' => 'CHIẾN LƯỢC DIGITAL MARKETING - BÙNG NỔ DOANH SỐ BÁN HÀNG',
+      'category' => ['marketing-co-ban'],
+    ],
+    [
+      'title' => '6 bước lập kế hoạch truyền thông marketing từ A đến Z',
+      'category' => ['marketing-co-ban'],
+    ],
+    [
+      'title' => 'Học làm video quảng cáo với smartphone',
+      'category' => ['pr-quang-cao'],
+    ],
+    [
+      'title' => 'Sản xuất Video chuyên nghiệp để Viral Video Marketing đỉnh cao',
+      'category' => ['pr-quang-cao'],
+    ],
+    [
+      'title' => 'Bí quyết livestream bán hàng hiệu quả',
+      'category' => ['pr-quang-cao'],
+    ],
+    [
+      'title' => 'Quảng cáo mạng hiển thị cho người mới',
+      'category' => ['pr-quang-cao'],
     ],
   ];
 }

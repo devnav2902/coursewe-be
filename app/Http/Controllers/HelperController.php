@@ -35,6 +35,38 @@ class HelperController extends Controller
         return $top_level->unique()->values();
     }
 
+    function categoryQueryBase()
+    {
+        return DB::table('categories as t1')
+            ->leftJoin('categories as t2', 't1.category_id', '=', 't2.parent_id')
+            ->leftJoin('categories as t3', 't2.category_id', '=', 't3.parent_id')
+            ->whereNull('t1.parent_id')
+            ->select(
+                't1.title AS level1_title',
+                't1.slug AS level1_slug',
+                't1.category_id AS category_id',
+                't2.title  AS level2_title',
+                't2.slug AS level2_slug',
+                't2.category_id  AS subcategory_id',
+                't3.title AS level3_title',
+                't3.slug AS level3_slug',
+                't3.category_id AS topic_id'
+            );
+    }
+
+    function groupedCategory($slug)
+    {
+        return $this
+            ->categoryQueryBase()
+            ->where(function ($q) use ($slug) {
+                $q
+                    ->where('t1.slug', '=', $slug)
+                    ->orWhere('t2.slug', '=', $slug)
+                    ->orWhere('t3.slug', '=', $slug);
+            })
+            ->get();
+    }
+
     function queryCategory($where)
     {
         return "SELECT t1.title AS level1,t1.slug AS level1_slug,t1.category_id AS category_id,
@@ -43,6 +75,20 @@ class HelperController extends Controller
             FROM categories as t1
             LEFT JOIN categories AS t2 ON t1.category_id = t2.parent_id
             LEFT JOIN categories AS t3 ON t2.category_id = t3.parent_id WHERE " . $where;
+    }
+
+    function getCategoriesIdToGetCourses($groupedCategory)
+    {
+        $categories_id = collect($groupedCategory)
+            ->map(function ($level) {
+                if ($level->topic_id)
+                    return $level->topic_id;
+
+                return $level->subcategory_id;
+            })
+            ->toArray();
+
+        return $categories_id;
     }
 
     function getCoursesByCategorySlug($slug, $pagination = true)
@@ -152,7 +198,6 @@ class HelperController extends Controller
             ->update(['status' => 0]);
     }
 
-
     function niceBytes($bytes)
     {
         $units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
@@ -176,5 +221,15 @@ class HelperController extends Controller
             'playtime_string' => $file['playtime_string'],
             'playtime_seconds' => $file['playtime_seconds']
         ];
+    }
+
+    function isNumberStringWithCommas($string)
+    {
+        return preg_match('/^(\d+,)*\d+$/', $string);
+    }
+
+    function isStringWithCommas($string)
+    {
+        return preg_match('/^([a-z]+,)*[a-z]+$/', $string);
     }
 }

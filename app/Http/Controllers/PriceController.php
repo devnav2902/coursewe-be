@@ -12,9 +12,9 @@ class PriceController extends Controller
 {
     function getPrice()
     {
-        $price = Price::get();
+        $priceList = Price::get();
 
-        return response()->json(['price' => $price]);
+        return response()->json(['priceList' => $priceList]);
     }
 
     function updatePrice(Request $request)
@@ -34,6 +34,21 @@ class PriceController extends Controller
                 ['price_id' => $price_id]
             );
 
-        return response(['success' => true]);
+        $price = Price::find($price_id);
+
+        return response(['success' => true, 'price' => $price]);
+    }
+
+    function getPriceByCourseId($course_id)
+    {
+        $course = Course::setEagerLoads([])
+            ->with('price')
+            ->where('author_id', Auth::user()->id)
+            ->where('id', $course_id)
+            ->select('id', 'price_id')
+            ->first();
+
+        if (!$course) return response(['message' => 'Không tìm thấy giá của khóa học này!'], 400);
+        return response(['price' => $course->price]);
     }
 }

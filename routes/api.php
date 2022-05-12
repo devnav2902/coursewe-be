@@ -20,10 +20,12 @@ use App\Http\Controllers\PriceController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\ProgressLogsController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\PromotionsController;
+use App\Http\Controllers\PublishCourseController;
 use App\Http\Controllers\PurchaseHistoryController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\SearchController;
-use App\Http\Controllers\PromotionsController;
+
 use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\UserController;
 use App\Models\Coupon;
@@ -58,9 +60,11 @@ Route::get('/category/featured-courses/{topLevelCategoryId}', [CategoriesControl
 Route::get('/featured-categories/{limit}', [CategoriesController::class, 'featuredCategories']);
 Route::get('/categories', [CategoriesController::class, 'getCategories']);
 Route::get('/categories/get-courses/{slug}', [CategoriesController::class, 'getCoursesByCategorySlug']);
-Route::get('/categories/types-price/{slug}', [CategoriesController::class, 'getAmountCoursesByTypesPrice']);
 Route::get('/categories/popular-instructors/{slug}', [CategoriesController::class, 'getPopularInstructors']);
-Route::get('/categories/amount-courses-in-topics/{slug}', [CategoriesController::class, 'amountCoursesInTopics']);
+Route::get('/categories/discovery-units/{slug}', [CategoriesController::class, 'discoveryUnits']);
+Route::get('/categories/breadcrumb/{slug}', [CategoriesController::class, 'getBreadcrumbByCategory']);
+Route::get('/categories/courses-beginner/{slug}', [CategoriesController::class, 'coursesBeginner']);
+
 
 // USER
 Route::post('/user/login', [UserController::class, 'login']);
@@ -72,10 +76,8 @@ Route::get('/instructor/profile/{slug}', [InstructorController::class, 'profile'
 Route::get('/admin/submission-courses-list', [AdminController::class, 'reviewCourses']);
 
 // INSTRUCTIONAL LEVEL
-Route::get('/instructional-level/amount-courses/{slug}', [InstructionalLevelController::class, 'amountCoursesByInstructionalLevel']);
 
 // RATING
-Route::get('/rating/filter-rating/{slug}', [RatingController::class, 'filterRatingByCategorySlug']);
 
 //  SEARCH  
 Route::post('/autocomplete/search', [SearchController::class, 'search']);
@@ -93,7 +95,7 @@ Route::patch('/saved-for-later', [CartController::class, 'savedForLater']);
 Route::middleware('auth:sanctum')->group(function () {
     // IMAGE COURSE
     Route::post('/course-image', [CourseImageController::class, 'updateCourseImage']);
-    // IMAGE COURSE
+    // VIDEO COURSE
     Route::post('/course-video', [CourseVideoController::class, 'updateCourseVideo']);
 
     Route::post('/revenue', [OverviewController::class, 'chartJSYear']);
@@ -127,7 +129,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/instructor/course/{id}', [InstructorController::class, 'getCourseById']);
 
     // PRICE
-    Route::get('/get-price', [PriceController::class, 'getPrice']);
+    Route::get('/get-price/{courseId}', [PriceController::class, 'getPriceByCourseId']);
+    Route::get('/get-price-list', [PriceController::class, 'getPrice']);
     Route::patch('/update-price', [PriceController::class, 'updatePrice']);
 
     Route::post('/create-course', [CreateCourseController::class, 'create']);
@@ -153,6 +156,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/user/me/taught-courses/{courseId}/lectures/{lectureId}', [LectureController::class, 'delete']);
     // PROMOTIONS
     Route::get('/promotions/scheduled-coupons/{courseId}', [PromotionsController::class, 'getScheduledCoupons']);
+    Route::get('/promotions/expired-coupons/{courseId}', [PromotionsController::class, 'getExpiredCoupons']);
     Route::get('/promotions/coupon-types', [PromotionsController::class, 'getCouponTypes']);
     Route::get('/promotions/information-create-coupon/{courseId}', [PromotionsController::class, 'getInformationCreateCoupon']);
 
@@ -160,4 +164,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/last-watched/{course_id}', [ProgressLogsController::class, 'lastWatchedByCourseId']);
     Route::get('/last-watched/course/{course_id}/lecture/{lectureId}', [ProgressLogsController::class, 'lastWatchedByLectureId']);
     Route::post('/last-watched/course/{course_id}/lecture/{lecture_id}/last_watched_second/{second}', [ProgressLogsController::class, 'saveLastWatched']);
+    Route::post('/promotions/create-coupon/', [PromotionsController::class, 'createCoupon']);
+    // SUBMIT FOR REVIEW
+    Route::get('/checking-publish-requirements/{courseId}', [PublishCourseController::class, 'checkingPublishRequirements']);
 });
