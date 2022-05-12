@@ -141,6 +141,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/learning/{slug}', [LearningController::class, 'learning']);
     Route::get('/sections/{course_id}', [LearningController::class, 'getSections']);
     Route::post('/progress', [ProgressController::class, 'updateProgress']);
+    Route::get('/course/{course_slug}/lecture/{lectureId}', [LearningController::class, 'getVideo']);
     // RESOURCE
     Route::delete('/user/me/taught-courses/{courseId}/lectures/{lectureId}/resources/{resourceId}/', [ResourceController::class, 'delete']);
     Route::post('/resources/upload', [ResourceController::class, 'upload']);
@@ -154,4 +155,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/promotions/scheduled-coupons/{courseId}', [PromotionsController::class, 'getScheduledCoupons']);
     Route::get('/promotions/coupon-types', [PromotionsController::class, 'getCouponTypes']);
     Route::get('/promotions/information-create-coupon/{courseId}', [PromotionsController::class, 'getInformationCreateCoupon']);
+
+    //Progresslogs
+    Route::get('/last-watched/{course_id}', [ProgressLogsController::class, 'lastWatchedByCourseId']);
+    Route::get('/last-watched/course/{course_id}/lecture/{lectureId}', [ProgressLogsController::class, 'lastWatchedByLectureId']);
+    Route::post('/last-watched/course/{course_id}/lecture/{lecture_id}/last_watched_second/{second}', [ProgressLogsController::class, 'saveLastWatched']);
 });
