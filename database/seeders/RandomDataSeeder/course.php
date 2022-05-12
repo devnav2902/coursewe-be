@@ -231,5 +231,298 @@ function course()
       'title' => 'Thiết kế banner bằng illustrator và photoshop',
       'category' => ['photoshop', 'adobe-illustrator'],
     ],
+    //11-5
+    [
+      'title' => 'Tiếng Anh giao tiếp Four Corners Book 3',
+      'category' => ['tieng-anh-giao-tiep'],
+    ],
+    [
+      'title' => 'Giao tiếp cơ bản bằng tiếng Anh',
+      'category' => ['tieng-anh-giao-tiep'],
+    ],
+    [
+      'title' => 'Giao tiếp tiếng Anh thành thạo',
+      'category' => ['tieng-anh-giao-tiep'],
+    ],
+    [
+      'title' => 'Tiếng Anh giao tiếp Four Corners Book 2',
+      'category' => ['tieng-anh-giao-tiep'],
+    ],
+    [
+      'title' => 'Tiếng Anh giao tiếp trong công việc',
+      'category' => ['tieng-anh-giao-tiep'],
+    ],
+    [
+      'title' => 'Tiếng Anh giao tiếp cơ bản',
+      'category' => ['tieng-anh-giao-tiep'],
+    ],
+    [
+      'title' => 'Tiếng Anh cơ bản cho người mới bắt đầu',
+      'category' => ['tieng-anh-giao-tiep'],
+    ],
+    [
+      'title' => 'Tiếng Anh giao tiếp chuyên sâu (Phần 2)',
+      'category' => ['tieng-anh-giao-tiep'],
+    ],
+    [
+      'title' => 'Chinh phục tiếng Anh giao tiếp căn bản',
+      'category' => ['tieng-anh-giao-tiep'],
+    ],
+    [
+      'title' => 'Giao tiếp trôi chảy trong 90 ngày (Phần 1)',
+      'category' => ['tieng-anh-giao-tiep'],
+    ],
+    [
+      'title' => 'Giao tiếp trôi chảy trong 90 ngày (Phần 2)',
+      'category' => ['tieng-anh-giao-tiep'],
+    ],
+    [
+      'title' => 'Điểm ngữ pháp cơ bản trong bài thi IELTS',
+      'category' => ['ielts'],
+    ],
+    [
+      'title' => 'Lộ trình chinh phục IELTS 6.5 + (Phần 1)',
+      'category' => ['ielts'],
+    ],
+    [
+      'title' => 'Bí quyết học từ vựng IELTS hiệu quả nhất',
+      'category' => ['ielts'],
+    ],
+    [
+      'title' => '[EDUVIP] Giải mã IELTS Writing cùng Izone trong 30 ngày',
+      'category' => ['ielts'],
+    ],
+    [
+      'title' => 'IELTS General',
+      'category' => ['ielts'],
+    ],
+    [
+      'title' => 'Chinh phục IELTS 6.0++ cấp tốc',
+      'category' => ['ielts'],
+    ],
+    [
+      'title' => 'Chinh phục IELTS Speaking 6.0',
+      'category' => ['ielts'],
+    ],
+    [
+      'title' => 'Luyện đề IELTS WRITING Task 1 Online',
+      'category' => ['ielts'],
+    ],
+    [
+      'title' => 'Lộ trình chinh phục IELTS 6.5 + (Phần 2)',
+      'category' => ['ielts'],
+    ],
+    [
+      'title' => 'Chiến lược luyện thi IELTS Reading từ A đến Z',
+      'category' => ['ielts'],
+    ],
+    [
+      'title' => 'NGỮ PHÁP TIẾNG ANH CHO NGƯỜI MỚI BẮT ĐẦU VỀ CHỦ ĐỀ TÂN NGỮ & ĐẠI TỪ SỞ HỮU',
+      'category' => ['ngu-phap-tieng-anh'],
+    ],
+    [
+      'title' => 'NGỮ PHÁP TIẾNG ANH CHO NGƯỜI MỚI BẮT ĐẦU VỀ CHỦ ĐỀ CỤM ĐỘNG TỪ CÓ THE & KHÔNG CÓ THE',
+      'category' => ['ngu-phap-tieng-anh'],
+    ],
+    [
+      'title' => 'NGỮ PHÁP TIẾNG ANH DÀNH CHO NGƯỜI MỚI BẮT ĐẦU CÙNG VỚI GIÁO VIÊN BẢN NGỮ (chủ đề: các thì căn bản trong tiếng Anh)',
+      'category' => ['ngu-phap-tieng-anh'],
+    ],
+    [
+      'title' => 'Ngữ pháp tiếng Anh cho người mới bắt đầu về chủ đề danh từ số ít và số nhiều',
+      'category' => ['ngu-phap-tieng-anh'],
+    ],
+    [
+      'title' => 'Ngữ pháp tiếng  Anh cho người mới bắt đầu về chủ đề tính từ sở hữu',
+      'category' => ['ngu-phap-tieng-anh'],
+    ],
+    [
+      'title' => 'CÁC CHUYÊN ĐỀ NGỮ PHÁP TIẾNG ANH CĂN BẢN DÀNH CHO NGƯỜI MỚI BẮT ĐẦU CÙNG VỚI GIÁO VIÊN BẢN NGỮ',
+      'category' => ['ngu-phap-tieng-anh'],
+    ],
+    [
+      'title' => 'Ngữ pháp tiếng Anh cho người mới bắt đầu về chủ đề This/That/These/Those & There',
+      'category' => ['ngu-phap-tieng-anh'],
+    ],
+    [
+      'title' => 'Ngữ pháp tiếng Anh cho người mới bắt đầu về chủ đề mạo từ a/an/the',
+      'category' => ['ngu-phap-tieng-anh'],
+    ],
+    [
+      'title' => 'NGỮ PHÁP TIẾNG ANH CHO NGƯỜI MỚI BẮT ĐẦU VỀ CHỦ ĐỀ ĐỘNG TỪ TOBE',
+      'category' => ['ngu-phap-tieng-anh'],
+    ],
+    [
+      'title' => 'Ôn thi TOEIC theo dạng đề mới 2019',
+      'category' => ['toeic'],
+    ],
+    [
+      'title' => 'Luyện thi TOEIC mục tiêu 450-750+',
+      'category' => ['toeic'],
+    ],
+    [
+      'title' => 'Luyện thi TOEIC 500+ từ con số 0',
+      'category' => ['toeic'],
+    ],
+    [
+      'title' => 'Đạt 450+ TOEIC trong 3 giờ',
+      'category' => ['toeic'],
+    ],
+    [
+      'title' => 'Luyện TOEIC cấp tốc mục tiêu 650-800+',
+      'category' => ['toeic'],
+    ],
+    [
+      'title' => '40 Tuyệt Chiêu Luyện Thi TOEIC Cấp Tốc',
+      'category' => ['toeic'],
+    ],
+    [
+      'title' => 'Đạt 700 điểm TOEIC là chuyện nhỏ',
+      'category' => ['toeic'],
+    ],
+    [
+      'title' => 'Bí kíp chinh phục TOEIC Nói - Viết',
+      'category' => ['toeic'],
+    ],
+    [
+      'title' => 'Học tiếng Trung hiệu quả cấp tốc (2)',
+      'category' => ['tieng-trung-giao-tiep'],
+    ],
+    [
+      'title' => 'Tiếng Trung mua hàng Taobao siêu tốc',
+      'category' => ['tieng-trung-giao-tiep'],
+    ],
+    [
+      'title' => 'Tiếng Trung đàm thoại theo chủ đề',
+      'category' => ['tieng-trung-giao-tiep'],
+    ],
+    [
+      'title' => 'Tiếng Trung cho người đi làm trong 30 ngày',
+      'category' => ['tieng-trung-giao-tiep'],
+    ],
+    [
+      'title' => 'Tiếng Trung giao tiếp cơ bản cho người mới bắt đầu',
+      'category' => ['tieng-trung-giao-tiep'],
+    ],
+    [
+      'title' => 'Tiếng Trung cơ bản 2',
+      'category' => ['tieng-trung-giao-tiep'],
+    ],
+    [
+      'title' => 'Tiếng Trung Giao Tiếp 2',
+      'category' => ['tieng-trung-giao-tiep'],
+    ],
+    [
+      'title' => 'Tiếng Trung Giao Tiếp 1',
+      'category' => ['tieng-trung-giao-tiep'],
+    ],
+    [
+      'title' => 'Tiếng Trung giao tiếp - Trung cấp 1',
+      'category' => ['tieng-trung-giao-tiep'],
+    ],
+    [
+      'title' => 'Tiếng Trung giao tiếp - Trung cấp 2',
+      'category' => ['tieng-trung-giao-tiep'],
+    ],
+    [
+      'title' => 'Thực chiến HSK 123',
+      'category' => ['chung-chi-tieng-trung'],
+    ],
+    [
+      'title' => 'Nền tảng ngữ pháp tiếng Trung - HSK5',
+      'category' => ['chung-chi-tieng-trung'],
+    ],
+    [
+      'title' => 'Thực chiến HSK 123 (Phần 2)',
+      'category' => ['chung-chi-tieng-trung'],
+    ],
+    [
+      'title' => 'Chinh phục HSK cấp 4 trong 30 ngày',
+      'category' => ['chung-chi-tieng-trung'],
+    ],
+    [
+      'title' => 'Tiếng Nhật N3 - Đọc hiểu cấp tốc',
+      'category' => ['chung-chi-tieng-nhat'],
+    ],
+    [
+      'title' => 'Cách giải và dịch đề thi JLPT N3',
+      'category' => ['chung-chi-tieng-nhat'],
+    ],
+    [
+      'title' => 'Học tiếng Nhật - Hướng dẫn cách giải và dịch đề thi JLPT N5',
+      'category' => ['chung-chi-tieng-nhat'],
+    ],
+    [
+      'title' => 'Cách giải và dịch đề thi JLPT N4',
+      'category' => ['chung-chi-tieng-nhat'],
+    ],
+    [
+      'title' => 'Luyện thi ngữ pháp tiếng Nhật N5',
+      'category' => ['chung-chi-tieng-nhat'],
+    ],
+    [
+      'title' => 'Luyện tiếng Nhật ngữ pháp N4 (Phần 1)',
+      'category' => ['chung-chi-tieng-nhat'],
+    ],
+    [
+      'title' => 'Học Kanji Tiếng Nhật cực dễ thi N5 (JLPT-Nattest-TopJ)',
+      'category' => ['chung-chi-tieng-nhat'],
+    ],
+    [
+      'title' => 'Chinh phục 60/60 nghe hiểu JLPT N3',
+      'category' => ['chung-chi-tieng-nhat'],
+    ],
+    [
+      'title' => 'Luyện tiếng Nhật ngữ pháp N2 (Phần 1)',
+      'category' => ['chung-chi-tieng-nhat'],
+    ],
+    [
+      'title' => 'Bí kíp tăng 50% điểm nghe JLPT trong vòng 1 tháng- cấp độ N5',
+      'category' => ['chung-chi-tieng-nhat'],
+    ],
+    [
+      'title' => 'Luyện thi tiếng Nhật N3',
+      'category' => ['chung-chi-tieng-nhat'],
+    ],
+    [
+      'title' => 'Tiếng Nhật sơ cấp 3',
+      'category' => ['tieng-nhat-co-ban'],
+    ],
+    [
+      'title' => 'Tiếng Nhật sơ cấp 5',
+      'category' => ['tieng-nhat-co-ban'],
+    ],
+    [
+      'title' => 'Tiếng Nhật sơ cấp 2',
+      'category' => ['tieng-nhat-co-ban'],
+    ],
+    [
+      'title' => 'Tiếng Nhật sơ cấp 4',
+      'category' => ['tieng-nhat-co-ban'],
+    ],
+    [
+      'title' => 'Bí quyết học Kanji',
+      'category' => ['tieng-nhat-co-ban'],
+    ],
+    [
+      'title' => 'Tiếng Nhật giao tiếp cho người bắt đầu',
+      'category' => ['tieng-nhat-co-ban'],
+    ],
+    [
+      'title' => 'MỘT SỐ MẪU CÂU TIẾNG NHẬT CƠ BẢN (PHẦN 1)',
+      'category' => ['tieng-nhat-co-ban'],
+    ],
+    [
+      'title' => 'Tiếng Nhật sơ cấp 1',
+      'category' => ['tieng-nhat-co-ban'],
+    ],
+    [
+      'title' => 'Tiếng Nhật sơ cấp',
+      'category' => ['tieng-nhat-co-ban'],
+    ],
+    [
+      'title' => 'Tiếng Hàn BIGMAXX Online - Sơ cấp 1',
+      'category' => ['tu-hoc-tieng-han'],
+    ],
   ];
 }
