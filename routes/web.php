@@ -1,22 +1,19 @@
 <?php
 
-use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\HelperController;
-use App\Http\Controllers\LearningController;
 use App\Http\Controllers\PromotionsController;
-use App\Http\Controllers\PurchaseHistoryController;
-use App\Models\Cart;
-use App\Models\CartType;
-use App\Models\Categories;
+use App\Http\Controllers\PublishCourseController;
 use App\Models\Course;
 use App\Models\CourseCoupon;
 use App\Models\InstructionalLevel;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Price;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Session;
-
+use Illuminate\Support\Facades\Validator;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,570 +26,171 @@ use Illuminate\Support\Facades\Session;
 |
 */
 
-Route::get('/course/latest', function () {
-    $query = Course::without(['section', 'course_bill'])
-        ->where('isPublished', 1)
-        ->orderBy('created_at', 'desc')
-        ->select('title', 'id', 'author_id', 'slug', 'price_id', 'thumbnail', 'created_at')
-        ->withCount(['course_bill', 'rating'])
-        ->withAvg('rating', 'rating')
-        ->take(6);
 
-    $queryLatestCourses = clone $query;
-    $latestCourses = $queryLatestCourses->get();
+Route::get('/check-price', function () {
+    $input = ['289.000.k'];
+    $original_price = 289.000;
 
-    return response()->json(compact('latestCourses'));
-});
-
-Route::get('/filter-rating/{slug}', function ($slug) {
-    $helperController = new HelperController();
-    $coursesBySlug = $helperController->getCoursesByCategorySlug($slug, false);
-
-    $ratingArr = $coursesBySlug->pluck('rating_avg_rating');
-
-    $data = [
-        '4.5' => ['amount' => 0],
-        '4.0' => ['amount' => 0],
-        '3.5' => ['amount' => 0],
-        '3.0' => ['amount' => 0],
-    ];
-
-    foreach ($ratingArr as $valueRating) {
-        $value = floatval($valueRating);
-        if ($value >= 4.5) {
-            $data['4.5']['amount'] += 1;
-        } else if ($value >= 4) {
-            $data['4.0']['amount'] += 1;
-        } else if ($value >= 3.5) {
-            $data['3.5']['amount'] += 1;
-        } else if ($value >= 3.0) {
-            $data['3.0']['amount'] += 1;
-        }
-    }
-
-    return $data;
-});
-
-Route::get('/category-managing', function () {
-    $category_query =
-        "SELECT t1.title AS level1,t1.slug AS level1_slug,
-        t2.title  AS level2,t2.slug AS level2_slug,
-        t3.title AS level3,t3.slug AS level3_slug
-    FROM categories as t1
-    LEFT JOIN categories AS t2 ON t1.category_id = t2.parent_id
-    LEFT JOIN categories AS t3 ON t2.category_id = t3.parent_id
-    WHERE t1.parent_id IS NULL";
-
-    $result = DB::select($category_query);
-
-    $grouped_categories  = collect($result)
-        ->groupBy(['level1', 'level2', 'level3']);
-
-    $slug_categories = collect($result)->mapWithKeys(function ($item) {
-        return [
-            $item->level1 => $item->level1_slug,
-            $item->level2 => $item->level2_slug,
-            $item->level3 => $item->level3_slug,
-        ];
-    });
-
-    $sample = [
-        'Ngoai ngu' => [
-            'slug' => 'ngoai-ngu',
-            'subcategory' => [
-                'tienganh' => [
-                    'slug' => 'tieng-anh',
-                    'topics' => [
-                        'toeic' => ['slug' => 'toeic'],
-                        'ielts' => ['slug' => 'ielts']
-                    ]
-                ],
-                'tiengphap' => [
-                    'slug' => 'tieng-phap',
-                    'topics' => [
-                        'giaotiep' => ['slug' => 'giao-tiep'],
-                    ]
-                ],
-            ],
+    Validator::make($input, [
+        'discount_price' => [
+            'regex:/^(\d{1}\.\d{3}\.0{3})$|^(\d{3}\.0{3})$/',
+            'numeric|gt:0|lt:' . $original_price
         ],
-        'CNTT' => [
-            'slug' => 'CNTT',
-            'subcategory' => [
-                'web' => [
-                    'slug' => 'web',
-                    'topics' => null
-                ],
-            ],
-        ],
-    ];
-    dd($sample);
-    // $categories = $grouped_categories->map(function ($top_level, $key) use ($slug_categories) {
-
-    //     $slug_top_level = $slug_categories[$key];
-    //     $data_subcategory = $top_level->map(function ($subcategory, $key) use ($slug_categories) {
-    //         // key can be null because level 3 may be not exist
-    //         $array_keys_subcategory = array_keys($subcategory->all()); // get keys
-    //         $arrayRemovedEmptyKey = array_filter($array_keys_subcategory); // remove "" key
-    //         $topics =
-    //             collect($arrayRemovedEmptyKey)
-    //             ->map(function ($topic) use ($slug_categories) {
-    //                 $dataTopic = [
-    //                     $topic => [
-    //                         'name' => $topic,
-    //                         'slug' => $slug_categories[$topic],
-    //                     ]
-    //                 ];
-
-    //                 return $dataTopic;
-    //             });
-
-
-    //         $slug_subcategory = $slug_categories[$key];
-    //         $data_subcategory = [
-    //             'slug' => $slug_subcategory,
-    //             'topics' => count($topics) ? $topics : null
-    //         ];
-
-    //         return $data_subcategory;
-    //     });
-
-
-    //     $data_top_level =  [
-    //         'slug' => $slug_top_level,
-    //         'subcategory' => $data_subcategory
-    //     ];
-
-    //     return $data_top_level;
-    // });
-
-    $categories = [];
-
-    foreach ($grouped_categories as $key => $top_level) {
-        $slug_top_level = $slug_categories[$key];
-
-        // subcategory(level 2)
-        $data_subcategory = [];
-
-        foreach ($top_level as $key => $subcategory) {
-            // key can be null because level 3 may be not exist
-            $array_keys_subcategory = array_keys($subcategory->all()); // get keys
-            $arrayRemovedEmptyKey = array_filter($array_keys_subcategory); // remove "" key
-            // topics(level 3)
-            $topics =
-                collect($arrayRemovedEmptyKey)
-                ->map(function ($topic) use ($slug_categories) {
-                    $dataTopic =  [
-                        'name' => $topic,
-                        'slug' => $slug_categories[$topic],
-                    ];
-
-                    return $dataTopic;
-                });
-            $slug_subcategory = $slug_categories[$key];
-
-            $data_topics = [
-                'name' => $key,
-                'slug' => $slug_subcategory,
-                'topics' => count($topics) ? $topics : null
-            ];
-
-            array_push($data_subcategory, $data_topics);
-        }
-
-        $data_top_level =  [
-            'name' => $key,
-            'slug' => $slug_top_level,
-            'subcategory' => $data_subcategory
-        ];
-
-        array_push($categories, $data_top_level);
-    }
-
-
-    return $categories;
-
-    return $grouped_categories;
-
-    // return response()->json(compact('slug_categories', 'grouped_categories'));
+    ])->validate();
+    return $input;
 });
+Route::get('/check-coupon', function () {
 
-Route::get('/get-categories/{slug}', function ($slug) {
-    $courses = Categories::with(['course'])
-        ->firstWhere('slug', $slug);
-
-    $courses->setRelation('course', $courses->course()->paginate(10));
-
-    return $courses;
-});
-
-Route::get('/get-topics/{slug}', function ($slug) {
-    function queryCategory($where)
-    {
-        return "SELECT t1.title AS level1_title,t1.slug AS level1_slug,
-                    t2.title  AS level2_title,t2.slug AS level2_slug,
-                    t3.title AS level3_title,t3.slug AS level3_slug
-                FROM categories as t1
-                LEFT JOIN categories AS t2 ON t1.category_id = t2.parent_id
-                LEFT JOIN categories AS t3 ON t2.category_id = t3.parent_id WHERE " . $where;
-    }
-
-    $where = "t1.slug = '" . $slug . "' OR " . "t2.slug = '" . $slug . "' OR " . "t3.slug = '" . $slug . "'";
-    $category_query = queryCategory($where);
-    $result = DB::select($category_query);
-
-    $topics_slug = collect($result)->map(function ($level) {
-        if ($level->level3_slug)
-            return $level->level3_slug;
-
-        return $level->level2_slug;
-    });
-
-    // $courses = Course::whereHas('categories', function ($query) use ($topics_slug) {
-    //     $query->whereIn('slug', $topics_slug);
-    // })
-    //     ->withCount(['course_bill', 'rating', 'section', 'lecture'])
-    //     ->withAvg('rating', 'rating')
-
-    //     ->paginate(5);
     DB::enableQueryLog();
-    $courses = Course::whereHas('categories', function ($query) {
-        $query->whereIn('categories_course.category_id', [23, 32]);
-    })
-        // ->withCount(['course_bill', 'rating', 'section', 'lecture'])
-        // ->withAvg('rating', 'rating')
-
-        // ->paginate(5);
-        ->setEagerLoads([])
-        ->select('id')
-        ->get();
-    return DB::getQueryLog();
-
-    // return DB::select('SELECT * FROM `categories_course` WHERE category_id IN (23,32)');
-    return $courses;
-    // return $topics_slug;
-    // $courses->setRelation('course', $courses->course()->paginate(10));
-
-    return $topics_slug;
-});
-
-Route::get('/level/{slug}', function ($slug) {
-    $helperController = new HelperController();
-    $coursesBySlug = $helperController->getCoursesByCategorySlug($slug, false);
-
-    $levels = InstructionalLevel::get();
-    $levelInCourses = $coursesBySlug->pluck('instructional_level');
-    $countCoursesByLevel = $levelInCourses->countBy('level');
-
-    $levels->transform(function ($level) use ($countCoursesByLevel) {
-        $name = $level['level'];
-        $amount = 0;
-
-        $data = ['name' => $name, 'id' => $level['id'], 'amount' => $amount];
-
-        if (isset($countCoursesByLevel[$name])) {
-            $amount = $countCoursesByLevel[$name];
-            $data['amount'] = $amount;
-        }
-
-        return $data;
-    });
-
-    return $levels;
-});
-
-// Route::get('/price/{slug}', function ($slug) {
-//     $helperController = new HelperController();
-//     $courses = $helperController->getCoursesByCategorySlug($slug, false);
-//     $priceArr = $courses->pluck('price');
-
-//     $amountCoursesByTypesPrice = [
-//         'free' => ['amount' => 0, 'price_id' => null],
-//         'paid' => ['amount' => 0]
-//     ];
-
-//     foreach ($priceArr as $value) {
-//         if (intval($value['original_price']) !== 0)
-//             $amountCoursesByTypesPrice['paid']['amount'] += 1;
-//         else {
-//             $amountCoursesByTypesPrice['free']['amount'] += 1;
-//             $amountCoursesByTypesPrice['free']['price_id'] = $value['id'];
-//         }
-//     }
-
-//     return response()->json(compact('amountCoursesByTypesPrice'));
-// Route::get('/topics/{slug}', function ($slug) {
-//     $helperController = new HelperController();
-//     $coursesBySlug = $helperController->getCoursesByCategorySlug($slug, false);
-
-//     $arr = $coursesBySlug
-//         ->pluck('categories');
-
-//     $arrCategories = [];
-
-//     foreach ($arr as $category) {
-//         foreach ($category as $value) array_push($arrCategories, $value);
-//     }
-
-//     $counted = collect($arrCategories)->countBy(function ($category) {
-//         return $category['slug'];
-//     });
-
-//     $unique = collect($arrCategories)->unique('category_id');
-
-//     return $unique->map(function ($category) use ($counted) {
-//         $category['amount'] = $counted[$category['slug']];
-
-//         return $category;
-//     })->values();
-// });
-
-Route::get('/courses/featured', function () {
-    $queryGetCourses = Course::setEagerLoads([])
-        ->select('id', 'title', 'thumbnail')
-        ->withCount(['course_bill', 'rating', 'section', 'lecture'])
-        ->withAvg('rating', 'rating')
-        ->having('rating_avg_rating', '>=', 4.0);
-
-    $courses = $queryGetCourses->get();
-
-    return response()->json(compact('courses'));
-});
-
-Route::get('/courses/{topLevelCategoryId}', function ($topLevelCategoryId) {
-    $where = "t1.category_id = " . $topLevelCategoryId;
-    $helperController = new HelperController();
-    $category_query = $helperController->queryCategory($where);
-    $result = DB::select($category_query);
-
-    $topics_id = collect($result)->map(function ($level) {
-        if ($level->topic_id) return $level->topic_id;
-
-        return $level->subcategory_id;
-    });
-
-    $queryGetCourses = Course::whereHas('categories', function ($query) use ($topics_id) {
-        $query->whereIn('categories_course.category_id', $topics_id);
-    })
-        ->setEagerLoads([])
-        // ->with(['categories:category_id,parent_id,title,slug'])
-        ->select('id', 'slug', 'thumbnail')
-        ->withCount(['section', 'lecture'])
-        ->withAvg('rating', 'rating')
-        ->having('rating_avg_rating', 4.0)
-        ->take(10);
-
-    return response()->json(['courses' => $queryGetCourses->get()]);
-});
-
-
-Route::get('/best-selling-courses', function () {
-    return Course::select('id')
-        ->orderBy('updated_at', 'desc')
-        ->setEagerLoads([])
-        ->withCount(['course_bill'])
-        ->having('course_bill_count', '>=', 5)
-        ->take(10)
-        ->get();
-});
-Route::get('/best-instructor/{slug}', function ($slug) {
-    $helperController = new HelperController();
-    $courses = $helperController->getCoursesByCategorySlug($slug, false);
-    $collectionCourses = collect($courses)->where("rating_avg_rating", '>=', 4)->values();
-    $author = $collectionCourses->pluck('author')->unique('id')->values();
-    // $authorId = $author->pluck('id');
-    // return $collectionCourses;
-    $rating = $collectionCourses->groupBy('author_id');
-    $avgRating = $rating->map(function ($course, $key) use ($author, $collectionCourses) {
-        $avgRating = $course->avg('rating_avg_rating');
-        $amountSudents = $course->sum('course_bill_count');
-        $infoAuthor = collect($author)->where('id', $key)->first();
-        $totalCourses = collect($collectionCourses)->where('author_id', $key)->count();
-        return ['infoAuthor' => $infoAuthor, 'avgRating' => $avgRating, 'amountSudents' => $amountSudents, 'totalCourses' => $totalCourses];
-    });
-
-    //    $authorAndCourse = User::with(['course'=>function($query){
-    //        return $query->setEagerLoads([])
-    //        ->select('id', 'slug', 'thumbnail','author_id')
-    //        ->withCount(['course_bill'])
-    //        ->withAvg('rating', 'rating');
-    //    }])->whereIn('id',$authorId)->get();
-    //    $courseOfAuthor= $authorAndCourse->pluck('course')->map(function($course){
-    //            $avgRating=$course->avg('rating_avg_rating');
-    //            $amountSudents=$course->sum('course_bill_count');
-    //            return ['avgRating'=>$avgRating,'amountSudents'=>$amountSudents];
-    //    });
-
-
-    return $avgRating->values();
-    return $author;
-});
-
-Route::get('/cart/me/{id}', function ($id) {
-    if (!Auth::check()) {
-        return response(null);
-    }
-
-    $cart = Cart::where('user_id', Auth::user()->id)
-        ->setEagerLoads([])
-        ->with(['course' => function ($q) {
-            $q
-                ->select('id', 'author_id', 'price_id', 'slug', 'thumbnail', 'instructional_level_id')
-                ->setEagerLoads([])
-                ->with(['author' => function ($q) {
-                    $q->setEagerLoads([])->select('id', 'fullname', 'slug');
-                }])
-                ->withAvg('rating', 'rating')
-                ->withCount(['rating', 'lecture']);
-        }])
-        ->get(["user_id", "cart_type_id", "course_id", "coupon_code"]);
-
-    $cartType = CartType::get();
-
-    $list = [];
-    $cartType->each(function ($item) use ($cart, &$list) {
-        $data = [];
-
-        $dataCart = $cart->where('cart_type_id', $item->id);
-        $dataCart->each(function ($item) use (&$data) {
-            $filtered = $item->only(['coupon_code']);
-            $course = $item->course->toArray();
-            $merge = array_merge($course, $filtered);
-
-            array_push($data, $merge);
-        });
-
-        $list[] = ['cartType' => $item, 'data' => $data, 'user_id' => Auth::user()->id];
-    });
-
-    return response()->json(['shoppingCart' => $list]);
-});
-
-Route::get('/coupon/check/{code}', function ($coupon_code) {
-    // $request->validate([
-    //     'courses' => 'array|required',
-    //     'coupon_code' => 'required'
-    // ]);
-
-    $courses = [1, 2, 3, 4, 28];
-
-    $dataCourseWithCoupon = CourseCoupon::whereIn('course_id', $courses)
-        ->where('code', $coupon_code)
-        ->where('status', 1)
-        ->get();
-
-
-    if (Auth::check()) {
-        $cartType = CartType::firstWhere('type', 'cart');
-        $cart = Cart::where('user_id', Auth::user()->id)
-            ->where('cart_type_id', $cartType->id)
-            ->get();
-    }
-
-    return $dataCourseWithCoupon->map(function ($item) {
-        return [
-            'coupon_code' => $item->code,
-            'course_id' => $item->course_id,
-            'discount_price' => $item->discount_price
-        ];
-    });
-    return $dataCourseWithCoupon;
-});
-
-
-Route::get('/session', function () {
-    // if (!Session::has('nav')) {
-    // $session_id = Session::getId();
-    // Session::put('anonymous_cart', $session_id);
-    // return Session::get('nav');
-    // return $session_id;
-    //     return ['created' => $session_id];
-    // }
-    return Session::all();
-});
-
-Route::get('/progress/{course_id}', function ($course_id) {
-    $course = Course::setEagerLoads([])
-        ->with(
-            [
-                'lecture',
-                'lecture.progress' => function ($q) {
-                    $q->select('lecture_id', 'progress');
-                },
-                'section' => function ($q) {
-                    $q->withCount('progressInLectures');
-                },
-            ]
-        )
-        // ->select('id')
-        ->withCount('lecture')
-        ->firstWhere('id', $course_id);
-
-    $data_progress = $course->lecture
-        ->map(function ($lecture) {
-            return $lecture->progress;
-        })
-        ->filter()
-        ->values(); // reset key
-
-    $total = $course->lecture_count;
-    $complete = count($data_progress);
-
-    return response()->json(compact(
-        ['total', 'data_progress', 'complete', 'course']
-    ));
-});
-
-Route::get('/delete-resource/{courseId}/{lectureId}/{resourceId}', function ($courseId, $lectureId, $resourceId) {
-    $result = Course::where('course.id', $courseId)
-        // ->where('author_id', $userId)
-        ->setEagerLoads([])
-        ->whereHas('lecture', function ($q) use ($lectureId, $resourceId) {
-            $q->where('lectures.id', $lectureId)
-                ->whereHas('resource', function ($q) use ($resourceId) {
-                    $q->where('id', $resourceId);
+    $coupons = CourseCoupon::where("status", 1)
+        ->whereHas('coupon', function ($queryCoupon) {
+            $queryCoupon
+                ->where(function ($q) {
+                    $q
+                        ->where('enrollment_limit', '<>', 0)
+                        ->whereColumn('course_coupon.currently_enrolled', 'enrollment_limit');
+                })
+                ->orWhere(function ($q) {
+                    $q
+                        ->whereDate('course_coupon.expires', '<=', Carbon::now('Asia/Ho_Chi_Minh'))
+                        ->whereTime('course_coupon.expires', '<=', Carbon::now('Asia/Ho_Chi_Minh'));
                 });
         })
-        ->first();
+        ->update(['status' => 0]);
+    // ->get();
+    // return DB::getQueryLog();
+    return $coupons;
+});
+Route::get('/get-coupon', function () {
+    $controller = new PromotionsController();
+    return $controller->getExpiredCoupons(5);
+});
+Route::get('/checking-course/{courseId}', function ($courseId) {
+    $controller = new PublishCourseController();
+    return $controller->checkingPublishRequirements($courseId);
+});
+Route::get('/get-category/{slug}', function ($slug) {
+    DB::enableQueryLog();
+    $categories = DB::table('categories as t1')
+        ->leftJoin('categories as t2', 't1.category_id', '=', 't2.parent_id')
+        ->leftJoin('categories as t3', 't2.category_id', '=', 't3.parent_id')
+        ->whereNull('t1.parent_id')
+        ->where(function ($q) use ($slug) {
+            $q
+                ->where('t1.slug', '=', $slug)
+                ->orWhere('t2.slug', '=', $slug)
+                ->orWhere('t3.slug', '=', $slug);
+        })
+        ->get(
+            [
+                't1.title AS level1_title', 't1.slug AS level1_slug', 't1.category_id AS category_id',
+                't2.title  AS level2_title', 't2.slug AS level2_slug', 't2.category_id  AS subcategory_id',
+                't3.title AS level3_title', 't3.slug AS level3_slug', 't3.category_id AS topic_id'
+            ]
+        );
 
-    if ($result) {
-        // Resource::destroy($resourceId);
-        return response(['success' => true]);
+    if (count($categories) === 1) {
+        return $categories[0];
     }
 
-    return $result ? 'co' : 'khong';
+    $uniqueSubcategory = collect($categories)->unique('subcategory_id');
+    if (count($uniqueSubcategory) === 1) {
+        $subcategory = $uniqueSubcategory->first();
+        return collect($subcategory)->except(['topic_id', 'level3_slug', 'level3_title']);
+    } else {
+        $topLevel = $uniqueSubcategory->unique('category_id')->first();
+        return collect($topLevel)->only(['level1_title', 'level1_slug', 'category_id']);
+    }
 });
 
-Route::get('/get-user', function () {
-    Auth::attempt(['email' => 'nguyenthithuha577@gmail.com', 'password' => '123']);
+Route::get('/get-courses/{category_slug}', function ($slug) {
+    // $helper = new HelperController();
+    DB::enableQueryLog();
 
-    return Auth::user();
+    $controller = new HelperController();
+    $categoryQueryBase = $controller->categoryQueryBase();
+    $groupedCategory = $categoryQueryBase
+        ->where(function ($q) use ($slug) {
+            $q
+                ->where('t1.slug', '=', $slug)
+                ->orWhere('t2.slug', '=', $slug)
+                ->orWhere('t3.slug', '=', $slug);
+        })
+        ->get();
+
+    $categories_id = $controller->getCategoriesIdToGetCourses($groupedCategory);
+
+    // Lỗi ONLY_FULL_GROUP_BY => Xuất hiện column(select) kh nằm trong groupBy
+    DB::statement("SET sql_mode=''");
+    $authors = Course::setEagerLoads([])
+        ->whereHas(
+            'categories',
+            function ($query) use ($categories_id) {
+                $query
+                    ->select('categories.category_id', 'parent_id', 'title', 'slug')
+                    ->whereIn('categories.category_id', $categories_id);
+            }
+        )
+        ->select('author_id')
+        ->withAvg('rating', 'rating')
+        ->groupBy('author_id')
+        ->having('rating_avg_rating', '>=', 4)
+        ->take(10)
+        ->get()
+        ->pluck(['author_id']);
+
+    $popularInstructors = User::with(
+        [
+            'course' => function ($q) use ($categories_id) {
+                $q
+                    ->setEagerLoads([])
+                    ->whereHas(
+                        'categories',
+                        function ($query) use ($categories_id) {
+                            $query
+                                ->select('categories.category_id', 'parent_id')
+                                ->whereIn('categories.category_id', $categories_id);
+                        }
+                    )
+                    ->select('id', 'author_id')
+                    ->withCount(['course_bill'])
+                    ->withAvg('rating', 'rating')
+                    ->having('rating_avg_rating', '>=', 4);
+            }
+        ]
+    )
+        ->without(['role'])
+        ->whereIn('id', $authors)
+        ->get(["id", "fullname", "slug", "avatar"]);
+
+    return $popularInstructors->map(function ($author) {
+        $author->totalStudents = $author->course->sum('course_bill_count');
+        $avgCourses = $author->course->avg('rating_avg_rating');
+        $author->roundedAvgCourses = round($avgCourses, 1);
+        $author->numberOfCourses = $author->course->count();
+
+        unset($author->course);
+        return $author;
+    });
+
+    return DB::getQueryLog();
 });
 
-Route::get('/get-cart', function () {
-    $cartController = new CartController();
-    return $cartController->get();
+Route::get('/test-query/{slug}', function (Request $request, $slug) {
+    $controller = new CategoriesController;
+    $helperController = new HelperController;
+    $groupedCategory = $helperController->groupedCategory($slug);
+    return $groupedCategory;
+    return $controller->getBreadcrumbByCategory($slug);
 });
 
-Route::get('/featured-courses', function () {
-    $cat = new CategoriesController();
-    return $cat->featuredCourses(5);
-});
-
-Route::get('/featured-categories', function () {
-    $cat = new CategoriesController();
-    return $cat->featuredCategories(5);
-});
-Route::get('/course-bill', function () {
-    $cat = new PurchaseHistoryController();
-    return $cat->purchaseHistory();
-});
-
-Route::get('/learning', function () {
-    $learningController = new LearningController();
-    return $learningController->myLearning();
-    return $learningController->learning('nha-lanh-dao-phai-biet-dao-tao-159');
-});
-Route::get('/get-active-coupons/{courseId}', function ($id) {
-    $Controller = new PromotionsController();
-    return $Controller->getScheduledCoupons($id);
-});
+// Khóa học featured, rated >= 4
+// ->select('title', 'id', 'author_id', 'slug', 'price_id', 'thumbnail', 'updated_at', 'instructional_level_id', 'subtitle')
+//         ->withCount(['course_bill', 'rating', 'section', 'lecture'])
+//         ->withAvg('rating', 'rating')
+//         ->with([
+//             'categories:category_id,parent_id,title,slug',
+//             'course_outcome:id,course_id,order,description',
+//             'author:id,fullname,avatar,slug,role_id',
+//             'course_requirements:id,course_id,order,description'
+//         ])
