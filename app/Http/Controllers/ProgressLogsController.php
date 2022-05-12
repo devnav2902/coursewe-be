@@ -25,4 +25,35 @@ class ProgressLogsController extends Controller
             ->firstWhere('lecture_id', $lecture_id);
         return response(['dataLastWatched' => $dataLastWatched]);
     }
+    function saveLastWatched($course_id, $lecture_id, $second)
+    {
+        try {
+            $exist = ProgressLogs::firstWhere([
+                'course_id' => $course_id,
+                'lecture_id' => $lecture_id,
+                'user_id' => Auth::user()->id,
+            ]);
+            if ($exist) {
+                ProgressLogs::where([
+                    'lecture_id' => $lecture_id,
+                    'user_id' => Auth::user()->id,
+                ])->update([
+                    'last_watched_second' => round($second, 0)
+                ]);
+            } else {
+                ProgressLogs::create(
+                    [
+                        'course_id' => $course_id,
+                        'user_id' => Auth::user()->id,
+                        'lecture_id' => $lecture_id,
+                        'last_watched_second' => round($second, 0)
+                    ],
+                );
+            }
+
+            return response('success');
+        } catch (\Throwable $th) {
+            return response($th, 400);
+        }
+    }
 }
