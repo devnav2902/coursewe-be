@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CategoriesCourse;
 use App\Models\Course;
 use App\Models\CourseOutcome;
 use App\Models\CourseRequirements;
@@ -149,13 +150,51 @@ class CourseController extends Controller
         }
     }
 
-    function updateInformation($id, Request $req)
+    function updateInformation(Request $req, $courseId)
     {
         // Thêm validation instructor
-        $data  = $req->only(['author_id', 'title', 'subtitle', 'description', 'slug', 'thumbnail', 'video_demo', 'isPublished', 'instructional_level_id']);
+
+        $data = $req->only(['author_id', 'title', 'subtitle', 'description', 'slug', 'thumbnail', 'video_demo', 'isPublished', 'instructional_level_id']);
+
+        Validator::make($req->all(), [
+            "description" => function ($attribute, $value, $fail) {
+                if (str_word_count($value) < 200) {
+                    $fail('Mô tả khóa học cần tối thiểu 200 từ.');
+                }
+            },
+            "topic" => function ($attribute, $value, $fail) {
+                if ((is_array($value) && count($value) < 1) || empty($value)) {
+                    $fail('Bạn chưa chọn chủ đề dạy trong khóa học!');
+                }
+            },
+        ])
+            ->validate();
 
         // $data = collect($req->input())->except(['thumbnail', 'video_demo'])->filter();
-        Course::where('id', $id)->update($data);
+        Course::where('id', $courseId)->update($data);
+
+        if ($req->has('topic')) {
+            $topic = $req->input('topic');
+
+            CategoriesCourse::where('course_id', $courseId)->delete();
+            if (!is_array($topic)) {
+                CategoriesCourse::insert([
+                    'course_id' => $courseId,
+                    'category_id' => $topic,
+                ]);
+            } else {
+                $dataToCreate = collect($topic)
+                    ->map(function ($topic_id) use ($courseId) {
+                        return [
+                            'category_id' => $topic_id,
+                            'course_id' => $courseId
+                        ];
+                    })
+                    ->toArray();
+
+                CategoriesCourse::insert($dataToCreate);
+            }
+        }
 
         return response('success');
 

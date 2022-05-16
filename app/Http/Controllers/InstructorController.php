@@ -12,7 +12,6 @@ class InstructorController extends Controller
     public function profile($slug)
     {
         $author = User::where('slug', $slug)
-            ->with(['bio'])
             ->first(['id', 'avatar', 'fullname']);
 
         if (!$author) return abort(404);
@@ -56,7 +55,8 @@ class InstructorController extends Controller
                     'section',
                     'lecture',
                     'course_outcome',
-                    'course_requirements'
+                    'course_requirements',
+                    'categories'
                 ]
             )
             ->firstWhere('id', $id);
@@ -67,10 +67,10 @@ class InstructorController extends Controller
     function getCoursesByCurrentUser()
     {
         $data = Course::where('author_id', Auth::user()->id)
+            ->orderBy('updated_at', 'desc')
             ->setEagerLoads([])
             ->with(['author'])
-            ->where('isPublished', 1)
-            ->paginate(6);
+            ->paginate(12);
 
         return response(['coursesData' => $data]);
     }

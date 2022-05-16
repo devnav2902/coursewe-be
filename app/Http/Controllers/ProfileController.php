@@ -2,62 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bio;
 use App\Models\User;
-use GrahamCampbell\ResultType\Success;
+use App\Rules\AuthorBiography;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
 {
-    public function uploadAvatar($request)
+    function uploadAvatar($request)
     {
-
         $request->validate(['file' => 'image']);
+
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $user = Auth::user();
             $filename = $user->id . '_avatar' . time() . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('profile_picture', $filename);
 
-
             User::where('id', $user->id)->update(['avatar' => $path]);
-
 
             return response(['success' => true, 'path' => $path]);
         };
     }
-    public function save(Request $request)
-    {
-        $this->uploadAvatar($request);
 
-        $request->validate([
-
-            'fullname' => [
-                'min:3',
-                'max:256',
-                'string',
-            ],
-
-        ]);
-        User::where('id', Auth::user()->id)
-            ->update([
-                'fullname' => $request->input('fullname'),
-
-            ]);
-        if ($request->has(['old_password', 'new_password'])) {
-            $this->changePassword($request);
-        }
-        $this->changeBio($request);
-
-        return response(['success' => true]);
-    }
-
-
-
-    public function changePassword($request)
+    function changePassword($request)
     {
         $request->validate([
             'old_password' => ['max:30'],
@@ -81,41 +52,64 @@ class ProfileController extends Controller
                 );
         }
     }
-    public function changeBio($request)
+
+    function changeProfile(Request $request)
     {
-        $request->validate([
-            'bio' => [],
-            'headline' => [],
-            'youtube' => 'url|nullable',
-            'facebook' => 'url|nullable',
-            'twitter' => 'url|nullable',
-            'website' => 'url|nullable',
-            'linkedin' => 'url|nullable'
+        Validator::make(
+            $request->all(),
+            [
+                'bio' => function ($attribute, $value, $fail) {
+                    if (str_word_count($value) < 15) {
+                        $fail('Mô tả khóa học cần tối thiểu 15 từ.');
+                    }
+                },
+                'headline' => 'string|nullable',
+                'youtube' => 'string|nullable',
+                'facebook' => 'string|nullable',
+                'twitter' => 'string|nullable',
+                'website' => 'nullable|url',
+                'linkedin' => 'string|nullable',
+                'fullname' => [
+                    'nullable',
+                    'min:3',
+                    'max:256',
+                    'string',
+                ],
+            ],
+            [
+                'fullname.min' => 'Tên của bạn phải đạt ít nhất :min kí tự',
+                'fullname.max' => 'Tên của bạn đã vượt quá :max kí tự cho phép.',
+                'website.url' => 'Bạn phải nhập một URL hợp lệ.'
+            ]
+        )
+            ->validate();
 
-        ]);
-
-        $data = collect($request->only(['headline', 'website', 'youtube', 'twitter', 'instagram', 'bio', 'linkedIn', 'facebook']))
+        $data = collect($request->only(['headline', 'website', 'youtube', 'twitter', 'instagram', 'bio', 'linkedIn', 'facebook', 'fullname']))
             ->filter()
             ->toArray();
 
-        $user = Bio::select('user_id')
-            ->firstWhere('user_id', Auth::user()->id);
-
-        if ($user) {
-            Bio::where('user_id', $user->user_id)
+        if (count($data)) {
+            User::where('id', Auth::user()->id)
                 ->update($data);
-            // return back();
+
             return response(['success' => true]);
         }
-
-        $data['user_id'] = Auth::user()->id;
-        Bio::create($data);
-        // return back();
-        return response(['success' => true]);
     }
-    public function getBio()
+
+    function checkInstructorProfileBeforePublishCourse()
     {
-        $bio = Bio::where('user_id', Auth::user()->id)->first();
-        return response(['bio' => $bio]);
+        $missingRequirements = Validator::make(
+            collect(Auth::user())->toArray(),
+            [
+                'avatar' => 'required',
+                'bio' => new AuthorBiography,
+            ],
+            [
+                'avatar.required' => 'Mỗi giảng viên cần upload một hình ảnh đại diện.'
+            ]
+        )
+            ->errors();
+
+        return response(compact('missingRequirements'));
     }
 }

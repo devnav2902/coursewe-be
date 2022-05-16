@@ -422,63 +422,66 @@ class CategoriesController extends Controller
     function getCategories()
     {
         $helperController = new HelperController();
-        $category_query = $helperController->queryCategory("t1.parent_id IS NULL");
 
-        $result = DB::select($category_query);
+        $result = $helperController->categoryQueryBase()->get();
 
-        $grouped_categories  = collect($result)
-            ->groupBy(['level1', 'level2', 'level3']);
+        $level1 = array();
+        $level2 = array();
+        $level3 = array();
 
-        $slug_categories = collect($result)->mapWithKeys(function ($item) {
-            return [
-                $item->level1 => $item->level1_slug,
-                $item->level2 => $item->level2_slug,
-                $item->level3 => $item->level3_slug,
-            ];
-        });
+        $result->map(function ($category) use (&$level1, &$level2, &$level3) {
+            // LEVEL 1
+            $lv1_id =  $category->category_id;
 
-        $categories = [];
-
-        foreach ($grouped_categories as $key_top_level => $top_level) {
-            $slug_top_level = $slug_categories[$key_top_level];
-
-            // subcategory(level 2)
-            $data_subcategory = [];
-
-            foreach ($top_level as $key => $subcategory) {
-                // key can be null because level 3 may be not exist
-                $array_keys_subcategory = array_keys($subcategory->all()); // get keys
-                $arrayRemovedEmptyKey = array_filter($array_keys_subcategory); // remove "" key
-                // topics(level 3)
-                $topics =
-                    collect($arrayRemovedEmptyKey)
-                    ->map(function ($topic) use ($slug_categories) {
-                        $dataTopic =  [
-                            'name' => $topic,
-                            'slug' => $slug_categories[$topic],
-                        ];
-
-                        return $dataTopic;
-                    });
-                $slug_subcategory = $slug_categories[$key];
-
-                $data_topics = [
-                    'name' => $key,
-                    'slug' => $slug_subcategory,
-                    'subcategory' => count($topics) ? $topics : null
+            if (empty($level1[$lv1_id])) {
+                $level1[$lv1_id] = [
+                    'name' => $category->level1_title,
+                    'slug' => $category->level1_slug,
+                    'id' => $lv1_id
                 ];
-
-                array_push($data_subcategory, $data_topics);
             }
 
-            $data_top_level =  [
-                'name' => $key_top_level,
-                'slug' => $slug_top_level,
-                'subcategory' => $data_subcategory
-            ];
+            // LEVEL 2
+            $lv2_id =  $category->subcategory_id;
 
-            array_push($categories, $data_top_level);
+            if (empty($level2[$lv2_id])) {
+                $level2[$lv2_id] = [
+                    'name' => $category->level2_title,
+                    'slug' => $category->level2_slug,
+                    'id' => $lv2_id,
+                    'parent_id' => $lv1_id
+                ];
+            }
+
+            // LEVEL 3
+            $lv3_id = $category->topic_id;
+
+            if (empty($level3[$lv3_id])) {
+                $level3[$lv3_id] = [
+                    'name' => $category->level3_title,
+                    'slug' => $category->level3_slug,
+                    'id' => $lv3_id,
+                    'parent_id' => $lv2_id
+                ];
+            }
+        });
+
+        foreach ($level3 as $attr) {
+            $parentId = $attr['parent_id'];
+            if (isset($level2[$parentId])) {
+                empty($attr['name'])
+                    ? ($level2[$parentId]['subcategory'] = null)
+                    : ($level2[$parentId]['subcategory'][] = $attr);
+            }
         }
+
+        foreach ($level2 as $attr) {
+            $parentId = $attr['parent_id'];
+            if (isset($level1[$parentId]))
+                $level1[$parentId]['subcategory'][] = $attr;
+        }
+
+        $categories = collect($level1)->values()->toArray();
 
         return response()->json(compact('categories'));
     }

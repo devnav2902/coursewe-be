@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -77,5 +78,9 @@ class Course extends Model
     function progress_logs()
     {
         return $this->hasMany(ProgressLogs::class, 'course_id');
+    }
+    function getUpdatedAtAttribute($date)
+    {
+        return Carbon::parse($date)->isoFormat('DD/MM/YYYY');
     }
 }

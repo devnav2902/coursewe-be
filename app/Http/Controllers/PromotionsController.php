@@ -144,7 +144,7 @@ class PromotionsController extends Controller
 
         if (!$course) return response(['message' => 'not exist this course'], 400);
 
-        $isFreeCourse = $course->price->original_price === 0 ? true : false;
+        $isFreeCourse = intval($course->price->original_price) === 0 ? true : false;
         $maxCouponInAMonth = $this->maxCouponInAMonth;
         $couponsCreationRemaining = $this->maxCouponInAMonth - $this->couponsInMonth($course_id);
         $canCreate = ($couponsCreationRemaining > 0 ? true : false) && !$isFreeCourse;

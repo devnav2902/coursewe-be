@@ -57,9 +57,7 @@ class CreateForeignKey extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->foreign('role_id')->references('id')->on('role');
         });
-        Schema::table('bio', function (Blueprint $table) {
-            $table->foreign('user_id')->references('id')->on('users');
-        });
+
         Schema::table('notification_course', function (Blueprint $table) {
             $table->foreign('course_id')->references('id')->on('course');
 

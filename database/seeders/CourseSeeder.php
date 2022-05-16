@@ -61,18 +61,6 @@ class CourseSeeder extends Seeder
                 ]
             );
 
-            DB::table('bio')->insert(
-                [
-                    'headline' =>
-                    'Học và làm việc tại trường Giao Thông Vận Tải TP.Hồ Chí Minh',
-                    'bio' => ' Mình là một Frontend Developer, ngoài ra mình còn viết blog và làm youtube nữa. Mình thích chia sẻ kiến thức tới cộng đồng, giúp đỡ các bạn theo ngành này có thể học hỏi nâng cao trình độ hơn mỗi ngày. Hi vọng khoá học của mình sẽ giúp các bạn cải thiện được trình độ nhiều nhất có thể.',
-                    'youtube' => 'https://www.youtube.com/channel/UCLphTurxkwnUZpOAPXSjw0g',
-                    'facebook' => 'https://www.facebook.com',
-                    'linkedin' => 'https://www.linkedin.com',
-                    'user_id' => $author_id
-                ]
-            );
-
             foreach ($course['category'] as $cat) {
                 $cat_id = db::table('categories')
                     ->where('slug', 'LIKE', '%' . $cat . '%')

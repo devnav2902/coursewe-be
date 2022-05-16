@@ -24,6 +24,13 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('account_status')->default(1);
             $table->string('password');
+            $table->string('headline', 100)->nullable();
+            $table->string('bio', 5000)->nullable();
+            $table->string('website')->nullable();
+            $table->string('youtube')->nullable();
+            $table->string('facebook')->nullable();
+            $table->string('linkedin')->nullable();
+            $table->string('twitter')->nullable();
             $table->rememberToken();
 
             $table->timestamp('created_at')->useCurrent();

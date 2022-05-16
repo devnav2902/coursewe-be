@@ -52,7 +52,13 @@ class UserSeeder extends Seeder
             'avatar' => !empty($user['avatar']) ? $user['avatar'] : 'https://randomuser.me/api/portraits/' . $data . '/' . random_int(1, 50) . '.jpg',
             'role_id' => $role_id,
             'password' => Hash::make('123'),
-            'email' => $email
+            'email' => $email,
+            'headline' =>
+            'Học và làm việc tại trường Giao Thông Vận Tải TP.Hồ Chí Minh',
+            'bio' => ' Mình là một Frontend Developer, ngoài ra mình còn viết blog và làm youtube nữa. Mình thích chia sẻ kiến thức tới cộng đồng, giúp đỡ các bạn theo ngành này có thể học hỏi nâng cao trình độ hơn mỗi ngày. Hi vọng khoá học của mình sẽ giúp các bạn cải thiện được trình độ nhiều nhất có thể.',
+            'youtube' => 'UCLphTurxkwnUZpOAPXSjw0g',
+            'facebook' => 'devnav2902',
+            'linkedin' => 'devnav2902',
         ];
     }
 }

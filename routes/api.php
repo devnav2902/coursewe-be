@@ -109,9 +109,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/purchase/history', [PurchaseHistoryController::class, 'purchaseHistory']);
     //ProFile
     Route::get('/user/profile', [ProfileController::class, 'index'])->name('profile');
-    Route::get('/user/bio', [ProfileController::class, 'getBio'])->name('bio');
-    Route::patch('/change-profile', [ProfileController::class, 'save'])->name('saveProfile');
-
+    Route::patch('/change-profile', [ProfileController::class, 'changeProfile'])->name('changeProfile');
+    Route::get('/check-instructor-profile-before-publish-course', [ProfileController::class, 'checkInstructorProfileBeforePublishCourse']);
 
     Route::delete(
         '/course/delete-course-outcome/{id}',
@@ -123,7 +122,7 @@ Route::middleware('auth:sanctum')->group(function () {
         [CourseController::class, 'deleteCourseRequirements']
     );
     Route::patch('/course/update-course-requirements/{id}', [CourseController::class, 'updateCourseRequirements']);
-    Route::post('/course/update-information/{id}', [CourseController::class, 'updateInformation']);
+    Route::patch('/course/update-information/{id}', [CourseController::class, 'updateInformation']);
     Route::get('/user/logout', [UserController::class, 'logout']);
     Route::get('/purchase/history', [PurchaseHistoryController::class, 'purchaseHistory']);
     Route::get('/instructor/course/{id}', [InstructorController::class, 'getCourseById']);
