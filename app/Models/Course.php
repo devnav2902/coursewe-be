@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -73,5 +74,9 @@ class Course extends Model
     function categories()
     {
         return $this->belongsToMany(Categories::class, CategoriesCourse::class, 'course_id', 'category_id');
+    }
+    function getUpdatedAtAttribute($date)
+    {
+        return Carbon::parse($date)->isoFormat('DD/MM/YYYY');
     }
 }
