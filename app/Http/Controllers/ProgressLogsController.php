@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
 use App\Models\ProgressLogs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,21 @@ class ProgressLogsController extends Controller
             ->orderBy('updated_at', 'desc')
             ->where('user_id', Auth::user()->id)
             ->firstWhere('course_id', $course_id);
+
+        if (!$dataLastWatched) {
+            $course = Course::setEagerLoads([])->with(['lecture' => function ($query) {
+                $query->select('lectures.id');
+            }])->firstWhere('id', $course_id);
+
+            $lecture_id = $course->lecture->max('id');
+
+            return response(['dataLastWatched' => [
+                'lecture_id' => $lecture_id,
+                'course_id' => $course_id,
+                'last_watched_second' => 0,
+            ]]);
+        };
+
         return response(['dataLastWatched' => $dataLastWatched]);
     }
     function lastWatchedByLectureId($course_id, $lecture_id)

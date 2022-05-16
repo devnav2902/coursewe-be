@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use App\Models\CourseBill;
 use App\Models\CourseCoupon;
 use Illuminate\Http\Request;
@@ -11,20 +12,21 @@ class PurchaseController extends Controller
 {
     function purchase(Request $request)
     {
-        return $request->all();
-        $request->validate(['courses' => 'required|json']);
 
-        $courses = json_decode($request->input('courses'));
+        // $request->validate(['courses' => 'required|json']);
+
+        $courses = $request->input('courses');
 
         foreach ($courses as $course) {
-            $purchase = $course->price->price;
-            $price = $course->price->price;
+
+            $purchase = $course['price']['original_price'];
+            $price = $course['price']['original_price'];
             $code = '';
 
-            if (!empty($course->coupon)) {
-                $coupon = $course->coupon;
-                $code = $coupon->code;
-                $purchase = $coupon->discount_price;
+            if (!empty($course['coupon'])) {
+                $coupon = $course['coupon'];
+                $code = $coupon['code'];
+                $purchase = $coupon['discount_price'];
 
                 $query = CourseCoupon::where('code', $code)
                     ->where('course_id', $course->id);
@@ -45,14 +47,15 @@ class PurchaseController extends Controller
             CourseBill::create(
                 [
                     'user_id' => Auth::user()->id,
-                    'course_id' => $course->id,
-                    'title' => $course->title,
-                    'thumbnail' => $course->thumbnail,
+                    'course_id' => $course['id'],
+                    'title' => $course['title'],
+                    'thumbnail' => $course['thumbnail'],
                     'purchase' => $purchase,
                     'price' => $price,
                     'promo_code' => $code
                 ]
             );
+            Cart::where('course_id', $course['id'])->delete();
         }
 
         return 'success';
