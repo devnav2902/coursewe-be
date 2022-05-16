@@ -529,6 +529,30 @@ function course()
       'category' => ['tu-hoc-tieng-han'],
     ],
     [
+      'title' => 'Tiếng Hàn giao tiếp cho người bắt đầu',
+      'category' => ['tu-hoc-tieng-han'],
+    ],
+    [
+      'title' => 'Tiếng Hàn sơ cấp',
+      'category' => ['tu-hoc-tieng-han'],
+    ],
+    [
+      'title' => 'Mỗi ngày một ngữ pháp tiếng Hàn',
+      'category' => ['tu-hoc-tieng-han'],
+    ],
+    [
+      'title' => 'Khóa học tiếng Hàn BIGMAXX Online - Sơ cấp 2',
+      'category' => ['tu-hoc-tieng-han'],
+    ],
+    [
+      'title' => 'Tiếng Hàn BIGMAXX Online - Trung cấp 1',
+      'category' => ['tu-hoc-tieng-han'],
+    ],
+    [
+      'title' => 'Tiếng Hàn sơ cấp 1',
+      'category' => ['tu-hoc-tieng-han'],
+    ],
+    [
       'title' => 'Marketing thời đại mới',
       'category' => ['marketing-co-ban'],
     ],
@@ -560,5 +584,78 @@ function course()
       'title' => 'Quảng cáo mạng hiển thị cho người mới',
       'category' => ['pr-quang-cao'],
     ],
+    [
+      'title' => 'Tiếng Hàn sơ cấp: Topik 2',
+      'category' => ['chung-chi-tieng-han'],
+    ],
+    [
+      'title' => 'Luyện thi tiếng Hàn KLPT 1',
+      'category' => ['chung-chi-tieng-han'],
+    ],
+    [
+      'title' => 'Tiếng Hàn TOPIK 4',
+      'category' => ['chung-chi-tieng-han'],
+    ],
+    [
+      'title' => 'Tiếng Hàn TOPIK 3',
+      'category' => ['chung-chi-tieng-han'],
+    ],
+    [
+      'title' => 'Tiếng Hàn sơ cấp: TOPIK 1',
+      'category' => ['chung-chi-tieng-han'],
+    ],
+    [
+      'title' => 'Học guitar đệm hát cấp tốc trong 30 ngày',
+      'category' => ['dan-guitar'],
+    ],
+    [
+      'title' => 'Guitar đệm hát Bolero trong vòng 30 ngày',
+      'category' => ['dan-guitar'],
+    ],
+    [
+      'title' => 'Guitar từ cơ bản đến chuyên nghiệp',
+      'category' => ['dan-guitar'],
+    ],
+    [
+      'title' => 'Guitar đệm hát dòng nhạc Bolero nâng cao',
+      'category' => ['dan-guitar'],
+    ],
+    [
+      'title' => 'Guitar cổ điển từ cơ bản đến nâng cao',
+      'category' => ['dan-guitar'],
+    ],
+    [
+      'title' => 'Trở thành chuyên gia hòa âm cho bài hát cực đơn giản.',
+      'category' => ['dan-guitar'],
+    ],
+    [
+      'title' => 'Guitar cổ điển nâng cao',
+      'category' => ['dan-guitar'],
+    ],
+    [
+      'title' => 'Những điệu nhạc căn bản dành cho guitar',
+      'category' => ['dan-guitar'],
+    ],
+    [
+      'title' => 'Khóa học Guitar cổ điển',
+      'category' => ['dan-guitar'],
+    ],
+    [
+      'title' => 'Học guitar đệm hát cấp tốc cùng Haketu',
+      'category' => ['dan-guitar'],
+    ],
+    [
+      'title' => '[EduVIP] Nâng cao trình độ guitar cùng Haketu (đệm hát và fingerstyle)',
+      'category' => ['dan-guitar'],
+    ],
+    [
+      'title' => 'Khóa Học Guitar FingerStyle Cho Người Mới Bắt Đầu',
+      'category' => ['dan-guitar'],
+    ],
+    [
+      'title' => 'Guitar cổ điển cơ bản',
+      'category' => ['dan-guitar'],
+    ],
+    ////16-5
   ];
 }
