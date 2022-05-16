@@ -26,9 +26,15 @@ class User extends Authenticatable
         'password',
         'avatar',
         'email_verified_at',
-        'trangthai_taikhoan',
+        'account_status',
         'role_id',
-        'created_at'
+        'bio',
+        'headline',
+        'youtube',
+        'facebook',
+        'twitter',
+        'website',
+        'linkedin',
     ];
 
     /**
@@ -66,10 +72,5 @@ class User extends Authenticatable
     function cart()
     {
         return $this->hasOne(Cart::class, 'user_id');
-    }
-
-    function bio()
-    {
-        return $this->hasOne(Bio::class, 'user_id');
     }
 }
