@@ -68,7 +68,6 @@ class LearningController extends Controller
     function learning($url)
     {
         $course = Course::without('category', 'course_bill')
-            ->with(['author.bio'])
             ->firstWhere('slug', $url);
 
         return response()->json(compact(

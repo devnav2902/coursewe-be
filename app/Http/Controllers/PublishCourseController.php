@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Rules\AuthorBiography;
 use Illuminate\Support\Facades\Validator;
 
 class PublishCourseController extends Controller
@@ -12,6 +13,7 @@ class PublishCourseController extends Controller
         $course = Course::withCount(
             ['course_outcome', 'course_requirements', 'lecture', 'categories']
         )
+            ->with('author')
             ->find($course_id);
         $course = collect($course)->toArray();
 
@@ -28,7 +30,9 @@ class PublishCourseController extends Controller
             "course_outcome_count" => 'numeric|min:4',
             "course_requirements_count" => 'numeric|min:0',
             "lecture_count" => 'numeric|min:5',
-            'categories_count' => 'numeric|min:1'
+            'categories_count' => 'numeric|min:1',
+            'author.avatar' => 'required',
+            'author.bio' => new AuthorBiography,
         ], [
             'title.required' => 'Bạn chưa nhập tiêu đề khóa học',
             'subtitle.required' => 'Bạn chưa nhập tóm tắt khóa học',
@@ -37,7 +41,8 @@ class PublishCourseController extends Controller
             'course_outcome_count.min' => 'Bạn cần thêm ít nhất :min mục tiêu học tập trong khóa học của bạn',
             'course_requirements_count.min' => 'Bạn có thể thêm bất kỳ yêu cầu khóa học hoặc điều kiện tiên quyết cho khóa học',
             'lecture_count.min' => 'Khóa học cần có tối thiểu :min bài giảng.',
-            'categories_count.min' => 'Bạn chưa chọn danh mục cho khóa học của bạn.'
+            'categories_count.min' => 'Bạn chưa chọn danh mục cho khóa học của bạn.',
+            'author.avatar.required' => 'Mỗi giảng viên cần upload một hình ảnh đại diện.'
         ])
             ->errors();
 

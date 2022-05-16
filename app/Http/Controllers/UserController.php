@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bio;
 use App\Models\Cart;
 use App\Models\Role;
 use App\Models\User;
