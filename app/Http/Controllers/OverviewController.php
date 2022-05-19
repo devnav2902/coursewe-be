@@ -2,20 +2,38 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PerformanceRequest;
 use App\Models\Course;
 use App\Models\CourseBill;
 use App\Models\User;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class OverviewController extends Controller
 {
+    private $dateFormat = 'Y-m-d';
+    private $dateFormatWithoutDay = 'Y-m';
+    private $lastTwelveMonths;
+    private $month;
+    private $year;
+    private $currentMonth;
+    private $currentYear;
+
+    function __construct()
+    {
+        $this->lastTwelveMonths = Carbon::now()->subMonth(12);
+        $this->month = $this->lastTwelveMonths->month;
+        $this->year = $this->lastTwelveMonths->year;
+        $this->currentMonth = Carbon::now()->month;
+        $this->currentYear = Carbon::now()->year;
+    }
+
     function getOverview()
     {
-
-
         $instructorRevenuePercentage = 1;
 
         // INSTRUCTOR
@@ -29,10 +47,9 @@ class OverviewController extends Controller
             ->sum("course_bill_count");
 
         $numberOfStudentsInMonth = $this->numberOfStudentsInMonth();
-        $totalRevenue = $this->getCourseBill()->sum('purchase');
+        $totalRevenue = $this->baseQueryCourseBill()->sum('purchase');
         $totalRevenue = $totalRevenue * $instructorRevenuePercentage;
         $totalRevenue = number_format($totalRevenue, 0, '.', '.');
-
 
         $totalRevenueInMonth = $this->getRevenueInMonth();
         $totalRevenueInMonth = $totalRevenueInMonth * $instructorRevenuePercentage;
@@ -52,12 +69,17 @@ class OverviewController extends Controller
 
         return response()->json(compact(["totalStudents", 'numberOfStudentsInMonth', 'totalRevenue', 'totalRevenueInMonth', 'ratingCourses', 'numberOfRatingsInMonth', 'allCourses', 'allInstructors', 'allStudents', 'allCoursesInMonth', 'allCoursesByInstructor']));
     }
-    function getCourseBill()
+
+    private function baseQueryCourseBill()
     {
-        return DB::table('course_bill')
-            ->join('course', 'course.id', 'course_bill.course_id')
-            ->select('purchase')
-            ->where('course.author_id', Auth::user()->id);
+        return CourseBill::whereHas('course', function ($q) {
+            $q
+                ->setEagerLoads([])
+                ->where('author_id', Auth::user()->id)
+                ->select('id', 'author_id', 'price_id');
+        })
+            ->orderBy('created_at', 'asc')
+            ->select('price', 'purchase', 'course_id', 'user_id', 'created_at');
     }
 
     function numberOfStudentsInMonth()
@@ -81,7 +103,7 @@ class OverviewController extends Controller
         $current_year = Carbon::now()->year;
         $current_month = Carbon::now()->month;
 
-        return $this->getCourseBill()
+        return $this->baseQueryCourseBill()
             ->whereMonth('course_bill.created_at', $current_month)
             ->whereYear('course_bill.created_at',  $current_year)
             ->sum('purchase');
@@ -116,48 +138,181 @@ class OverviewController extends Controller
             ->count('rating');
     }
 
-    function chartJSYear(Request $request)
+    // REVENUE
+    private function revenueLTM()
     {
-        $request->validate([
-            'year' => 'numeric|required',
-            'currentMonth' => 'numeric'
-        ]);
+        $courseBill = $this->baseQueryCourseBill()
+            ->whereMonth('created_at', '>=', $this->month)
+            ->whereMonth('created_at', '<=', $this->currentMonth)
+            ->whereYear('created_at', '>=', $this->year)
+            ->whereYear('created_at', '<=', $this->currentYear)
+            ->get()
+            ->map(function ($bill) {
+                $bill->yearAndMonth = $bill->created_at->format($this->dateFormatWithoutDay);
+                return $bill;
+            });
+        $groupedDate = $courseBill->groupBy('yearAndMonth');
 
-        $currentMonth = $request->input('currentMonth') ? $request->input('currentMonth') : 12;
-        $monthRegistration = [];
+        $carbonPeriod = CarbonPeriod::create(
+            $this->lastTwelveMonths,
+            '1 month',
+            Carbon::now()
+        );
 
-        for ($i = 1; $i <= $currentMonth; $i++) {
-            $total = $this->getCourseBill()
-                ->whereYear('course_bill.created_at', $request->input('year'))
-                ->WhereMonth('course_bill.created_at', $i)
-                ->sum('purchase');
+        $carbonPeriod = collect($carbonPeriod)->map(function (Carbon $date) {
+            return $date->format($this->dateFormatWithoutDay);
+        });
 
-            $monthRegistration[] = $total;
-        }
+        $data = collect($carbonPeriod)->map(function ($date) use ($groupedDate) {
+            if (isset($groupedDate[$date])) {
+                $dataByDate = $groupedDate[$date]->sum('purchase');
+                return [
+                    'date' => $date,
+                    'revenue' => $dataByDate
+                ];
+            }
+            return [
+                'date' => $date,
+                'revenue' => 0
+            ];
+        });
 
-        return response()->json(['chartData' => $monthRegistration]);
+        return $data;
     }
-    function chartEnrollments(Request $request)
+
+    private function revenueByDateRange($fromDate, $toDate)
     {
-        $request->validate([
-            'year' => 'numeric|required',
-            'currentMonth' => 'numeric'
-        ]);
+        $courseBill = $this->baseQueryCourseBill()
+            ->whereBetween('created_at', [$fromDate, $toDate])
+            ->get()
+            ->map(function ($bill) {
+                $bill->date_created = $bill->created_at->format($this->dateFormat);
+                return $bill;
+            });
 
-        $currentMonth = $request->input('currentMonth') ? $request->input('currentMonth') : 12;
-        $monthRegistration = [];
+        $carbonPeriod = CarbonPeriod::create($fromDate, $toDate);
+        $groupedDate = $courseBill->groupBy('date_created');
 
-        for ($i = 1; $i <= $currentMonth; $i++) {
-            $total = $this->getCourseBill()
-                ->whereYear('course_bill.created_at', $request->input('year'))
-                ->WhereMonth('course_bill.created_at', $i)
-                ->select('purchase')
-                ->count('purchase');
+        $data = collect($carbonPeriod)->map(function ($date) use ($groupedDate) {
+            $formattedDate = $date->format($this->dateFormat);
 
-            $monthRegistration[] = $total;
+            if (isset($groupedDate[$formattedDate])) {
+                $dataByDate = $groupedDate[$formattedDate]->sum('purchase');
+                return [
+                    'date' => $formattedDate,
+                    'revenue' => $dataByDate
+                ];
+            }
+            return [
+                'date' => $formattedDate,
+                'revenue' => 0
+            ];
+        });
+
+        return $data;
+    }
+
+    function getRevenue(PerformanceRequest $request)
+    {
+        if ($request->has('LTM')) {
+            return response()->json(['revenueData' => $this->revenueLTM()]);
         }
 
-        return response()->json(['chartEnrollments' => $monthRegistration]);
+        if ($request->has('fromDate') && $request->has('toDate')) {
+            $fromDate = $request->input('fromDate');
+            $toDate = $request->input('toDate');
+
+            return response()->json(['revenueData' => $this->revenueByDateRange($fromDate, $toDate)]);
+        }
+    }
+
+    // ENROLLMENT
+    private function enrollmentLTM()
+    {
+        $courseBill = $this->baseQueryCourseBill()
+            ->whereMonth('created_at', '>=', $this->month)
+            ->whereMonth('created_at', '<=', $this->currentMonth)
+            ->whereYear('created_at', '>=', $this->year)
+            ->whereYear('created_at', '<=', $this->currentYear)
+            ->get()
+            ->map(function ($bill) {
+                $bill->yearAndMonth = $bill->created_at->format($this->dateFormatWithoutDay);
+                return $bill;
+            });
+        $groupedDate = $courseBill->groupBy('yearAndMonth');
+
+        $carbonPeriod = CarbonPeriod::create(
+            $this->lastTwelveMonths,
+            '1 month',
+            Carbon::now()
+        );
+
+        $carbonPeriod = collect($carbonPeriod)->map(function (Carbon $date) {
+            return $date->format($this->dateFormatWithoutDay);
+        });
+
+        $data = collect($carbonPeriod)->map(function ($date) use ($groupedDate) {
+            if (isset($groupedDate[$date])) {
+                $dataByDate = $groupedDate[$date]->count();
+                return [
+                    'date' => $date,
+                    'total' => $dataByDate
+                ];
+            }
+            return [
+                'date' => $date,
+                'total' => 0
+            ];
+        });
+
+        return $data;
+    }
+
+    private function enrollmentByDateRange($fromDate, $toDate)
+    {
+        $courseBill = $this->baseQueryCourseBill()
+            ->select('purchase', 'created_at')
+            ->whereBetween('created_at', [$fromDate, $toDate])
+            ->get()
+            ->map(function ($bill) {
+                $bill->date_created = $bill->created_at->format($this->dateFormat);
+                return $bill;
+            });
+
+        $carbonPeriod = CarbonPeriod::create($fromDate, $toDate);
+        $groupedDate = $courseBill->groupBy('date_created');
+
+        $data = collect($carbonPeriod)->map(function ($date) use ($groupedDate) {
+            $formattedDate = $date->format($this->dateFormat);
+
+            if (isset($groupedDate[$formattedDate])) {
+                $dataByDate = $groupedDate[$formattedDate]->count();
+                return [
+                    'date' => $formattedDate,
+                    'total' => $dataByDate
+                ];
+            }
+            return [
+                'date' => $formattedDate,
+                'total' => 0
+            ];
+        });
+
+        return $data;
+    }
+
+    function getEnrollments(PerformanceRequest $request)
+    {
+        if ($request->has('LTM')) {
+            return response()->json(['enrollmentData' => $this->enrollmentLTM()]);
+        }
+
+        if ($request->has('fromDate') && $request->has('toDate')) {
+            $fromDate = $request->input('fromDate');
+            $toDate = $request->input('toDate');
+
+            return response()->json(['enrollmentData' => $this->enrollmentByDateRange($fromDate, $toDate)]);
+        }
     }
     function chartRating(Request $request)
     {
