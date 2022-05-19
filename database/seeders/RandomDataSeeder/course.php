@@ -656,6 +656,329 @@ function course()
       'title' => 'Guitar cổ điển cơ bản',
       'category' => ['dan-guitar'],
     ],
-    ////16-5
+    [
+      'title' => 'Piano cơ bản Star 1',
+      'category' => ['dan-piano'],
+    ],
+    [
+      'title' => 'Piano cơ bản Star 2',
+      'category' => ['dan-piano'],
+    ],
+    [
+      'title' => 'Kỹ thuật chỉnh dây đàn Piano cơ bản',
+      'category' => ['dan-piano'],
+    ],
+    [
+      'title' => 'Đệm hát Piano trong 30 ngày - Thiện Organ',
+      'category' => ['dan-piano'],
+    ],
+    [
+      'title' => 'Học Piano hiệu quả',
+      'category' => ['dan-piano'],
+    ],
+    [
+      'title' => 'Học Piano chuẩn Quốc tế Elementary 1',
+      'category' => ['dan-piano'],
+    ],
+    [
+      'title' => 'Điệu nhảy của những phím đàn piano',
+      'category' => ['dan-piano'],
+    ],
+    [
+      'title' => 'Học Piano dễ dàng cho người mới bắt đầu',
+      'category' => ['dan-piano'],
+    ],
+    [
+      'title' => 'Learn to play Ukulele (Giáo trình Ukulele toàn tập - All in one)',
+      'category' => ['dan-ukulele'],
+    ],
+    [
+      'title' => 'Chinh phục Ukulele trong 7 ngày',
+      'category' => ['dan-ukulele'],
+    ],
+    [
+      'title' => 'Khóa học Làm Beat Nhạc Bolero - Hòa âm Phối Khí Trên Máy Tính',
+      'category' => ['san-xuat-va-sang-tac'],
+    ],
+    [
+      'title' => 'Audio mastering cơ bản',
+      'category' => ['san-xuat-va-sang-tac'],
+    ],
+    [
+      'title' => 'Mixing Vocal & sản xuất âm nhạc',
+      'category' => ['san-xuat-va-sang-tac'],
+    ],
+    [
+      'title' => 'Sản xuất âm nhạc trên máy tính',
+      'category' => ['san-xuat-va-sang-tac'],
+    ],
+    [
+      'title' => 'Hòa âm phối khí trên máy tính',
+      'category' => ['san-xuat-va-sang-tac'],
+    ],
+    [
+      'title' => 'Sáng Tác Đầu Tay - Tự học sáng tác bài hát hiệu quả',
+      'category' => ['san-xuat-va-sang-tac'],
+    ],
+    [
+      'title' => 'Viết lời bài hát - Không cần giỏi văn',
+      'category' => ['san-xuat-va-sang-tac'],
+    ],
+    [
+      'title' => 'Viết giai điệu bằng nhạc Beat',
+      'category' => ['san-xuat-va-sang-tac'],
+    ],
+    [
+      'title' => 'Viết giai điệu bài hát - không cần biết nhạc',
+      'category' => ['san-xuat-va-sang-tac'],
+    ],
+    [
+      'title' => '5 đấu trường - giúp bạn hát hay sau 5 tuần',
+      'category' => ['luyen-thanh'],
+    ],
+    [
+      'title' => 'Hát Như Thần Tượng',
+      'category' => ['luyen-thanh'],
+    ],
+    [
+      'title' => 'Học hát đúng nhịp - SAU 3 TUẦN',
+      'category' => ['luyen-thanh'],
+    ],
+    [
+      'title' => 'Lồng tiếng phim - kiến thức và kỹ năng sử dụng giọng nói để bắt kịp cảm xúc nhân vật',
+      'category' => ['luyen-thanh'],
+    ],
+    [
+      'title' => 'Học hát chuyên nghiệp trong 7 ngày',
+      'category' => ['luyen-thanh'],
+    ],
+    [
+      'title' => 'Thực hành các bài hát với những điệu nhạc phổ biến',
+      'category' => ['luyen-thanh'],
+    ],
+    [
+      'title' => 'Khoá học thanh nhạc cơ bản và hát karaoke',
+      'category' => ['luyen-thanh'],
+    ],
+    [
+      'title' => 'Học beatbox cùng beatboxer Minh Kiên',
+      'category' => ['luyen-thanh'],
+    ],
+    [
+      'title' => 'Chinh phục Beatbox trong 30 ngày',
+      'category' => ['luyen-thanh'],
+    ],
+    [
+      'title' => 'Phương pháp cảm âm cảm nhịp trong 30 ngày',
+      'category' => ['luyen-thanh'],
+    ],
+    [
+      'title' => '[EduVIP] Học thanh nhạc để tự tin tỏa sáng',
+      'category' => ['luyen-thanh'],
+    ],
+    [
+      'title' => 'Làm Việc Hiệu Quả Với Bộ 3 Công Cụ Marketing',
+      'category' => ['google-ads'],
+    ],
+    [
+      'title' => 'BÍ KÍP QUẢNG CÁO GOOGLE ADS THEO CHIẾN LƯỢC CỦA CHUYÊN GIA GOOGLE',
+      'category' => ['google-ads'],
+    ],
+    [
+      'title' => 'Kiếm tiền với Google Ads',
+      'category' => ['google-ads'],
+    ],
+    [
+      'title' => 'Thấu hiểu và chinh phục khách hàng bằng Google ADS với giao diện mới',
+      'category' => ['google-ads'],
+    ],
+    [
+      'title' => 'Nghệ thuật bán hàng đỉnh cao với Google Adwords gia tốc',
+      'category' => ['google-ads'],
+    ],
+    [
+      'title' => 'Google Ads Marketing toàn tập 2020',
+      'category' => ['google-ads'],
+    ],
+    [
+      'title' => 'Quảng cáo Google Adwords từ A-Z',
+      'category' => ['google-ads'],
+    ],
+    [
+      'title' => 'Bán hàng hiệu quả với Google Adwords',
+      'category' => ['google-ads'],
+    ],
+    [
+      'title' => '70 bí kíp quảng cáo Google Adwords',
+      'category' => ['google-ads'],
+    ],
+    [
+      'title' => 'Làm chủ công cụ bán hàng Tiktok',
+      'category' => ['tiktok'],
+    ],
+    [
+      'title' => 'Phát triển Doanh nghiệp với Content Marketing',
+      'category' => ['content-marketing'],
+    ],
+    [
+      'title' => 'Đào tạo kỹ năng Content viết bài Website từ A-Z',
+      'category' => ['content-marketing'],
+    ],
+    [
+      'title' => '7 ý tưởng Viral Content trên Social Media cho ngành mỹ phẩm',
+      'category' => ['content-marketing'],
+    ],
+    [
+      'title' => 'Content marketing online',
+      'category' => ['content-marketing'],
+    ],
+    [
+      'title' => 'Copywriting: viết sao để thuyết phục người khác muốn đọc',
+      'category' => ['content-marketing'],
+    ],
+    [
+      'title' => 'Bí mật kiếm tiền Youtube Content',
+      'category' => ['content-marketing'],
+    ],
+    [
+      'title' => '12 Bước viết kịch bản bán hàng đỉnh cao',
+      'category' => ['content-marketing'],
+    ],
+    [
+      'title' => 'Viết nội dung social cho SME',
+      'category' => ['content-marketing'],
+    ],
+    [
+      'title' => 'Kỹ năng viết bài PR bán hàng',
+      'category' => ['content-marketing'],
+    ],
+    [
+      'title' => 'Bí quyết chốt đơn hàng facebook',
+      'category' => ['facebook-marketing'],
+    ],
+    [
+      'title' => 'Làm Việc Hiệu Quả Với Bộ 3 Công Cụ Marketing',
+      'category' => ['facebook-marketing'],
+    ],
+    [
+      'title' => 'Facebook Smart Marketing mới nhất 2021',
+      'category' => ['facebook-marketing'],
+    ],
+    [
+      'title' => 'Bùng nổ doanh số với Facebook Marketing',
+      'category' => ['facebook-marketing'],
+    ],
+    [
+      'title' => 'Kinh doanh tự động trên Facebook',
+      'category' => ['facebook-marketing'],
+    ],
+    [
+      'title' => 'Quảng cáo và chăm sóc khách hàng trên Facebook Messenger',
+      'category' => ['facebook-marketing'],
+    ],
+    [
+      'title' => 'Viết quảng cáo trên facebook',
+      'category' => ['facebook-marketing'],
+    ],
+    [
+      'title' => 'Làm chủ chatbot trong 4 giờ',
+      'category' => ['facebook-marketing'],
+    ],
+    [
+      'title' => 'Bí quyết tối ưu target facebook hiệu quả',
+      'category' => ['facebook-marketing'],
+    ],
+    [
+      'title' => 'Xây dựng nội dung trên fanpage từ A-Z',
+      'category' => ['facebook-marketing'],
+    ],
+    [
+      'title' => 'Khóa học Facebook chuyên sâu',
+      'category' => ['facebook-marketing'],
+    ],
+    [
+      'title' => 'Marketing căn bản cấp tốc trong 1 ngày',
+      'category' => ['marketing-co-ban'],
+    ],
+    [
+      'title' => 'Bí mật nghề tác giả',
+      'category' => ['marketing-co-ban'],
+    ],
+    [
+      'title' => 'Marketing cho doanh nghiệp nhỏ',
+      'category' => ['marketing-co-ban'],
+    ],
+    [
+      'title' => '6 công cụ marketing online hot nhất',
+      'category' => ['marketing-co-ban'],
+    ],
+    [
+      'title' => 'Xây dựng chiến lược marketing hoàn hảo',
+      'category' => ['marketing-co-ban'],
+    ],
+    [
+      'title' => 'Quản trị Marketing',
+      'category' => ['marketing-co-ban'],
+    ],
+    [
+      'title' => '[EduVIP] 4 Bước cốt lõi xây dựng team marketing từ zero tới hero',
+      'category' => ['marketing-co-ban'],
+    ],
+    [
+      'title' => 'Giao tiếp và ứng xử trong môi trường Marketing',
+      'category' => ['marketing-co-ban'],
+    ],
+    [
+      'title' => 'Content Vạn Người Like',
+      'category' => ['pr-quang-cao'],
+    ],
+    [
+      'title' => 'KHÁM PHÁ 10 PHƯƠNG THỨC TIẾP THỊ MẠNH MẼ NHẤT',
+      'category' => ['pr-quang-cao'],
+    ],
+    [
+      'title' => 'VIDEO MARKETING 3 GIỜ PRO',
+      'category' => ['pr-quang-cao'],
+    ],
+    [
+      'title' => 'Sản xuất video bán hàng với Smartphone',
+      'category' => ['pr-quang-cao'],
+    ],
+    [
+      'title' => 'VIDEO MARKETING CHỮ VIẾT TAY',
+      'category' => ['pr-quang-cao'],
+    ],
+    [
+      'title' => '70 Ý TƯỞNG LÀM TRUYỀN THÔNG MARKETING TỪ THÁP THÔNG ĐIỆP 4C',
+      'category' => ['pr-quang-cao'],
+    ],
+    [
+      'title' => 'Basic advertising: Sáng tạo 1 cách táo bạo - thử lửa trong ngành quảng cáo sáng tạo',
+      'category' => ['pr-quang-cao'],
+    ],
+    [
+      'title' => 'Xây dựng chiến lược thương hiệu cho doanh nghiệp',
+      'category' => ['pr-quang-cao'],
+    ],
+    [
+      'title' => 'Nhập môn Social Content cho người mới bắt đầu',
+      'category' => ['pr-quang-cao'],
+    ],
+    [
+      'title' => 'Làm video marketing chỉ trong 3 giờ',
+      'category' => ['pr-quang-cao'],
+    ],
+    [
+      'title' => 'Sản xuất Video chuyên nghiệp để Viral Video Marketing đỉnh cao',
+      'category' => ['pr-quang-cao'],
+    ],
+    [
+      'title' => 'Học vẽ thật dễ với Photoshop',
+      'category' => ['photoshop'],
+    ],
+    [
+      'title' => 'Làm chủ  Adobe Photoshop CC trong 3 giờ',
+      'category' => ['photoshop'],
+    ],
   ];
 }
