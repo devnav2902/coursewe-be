@@ -98,10 +98,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // VIDEO COURSE
     Route::post('/course-video', [CourseVideoController::class, 'updateCourseVideo']);
 
-    Route::post('/revenue', [OverviewController::class, 'chartJSYear']);
-    Route::post('/enrollments', [OverviewController::class, 'chartEnrollments']);
-    Route::post('/rating', [OverviewController::class, 'chartRating']);
-    Route::post('/courses', [OverviewController::class, 'chartCourses']);
+    // PERFORMANCE
+    Route::get('/performance/revenue', [OverviewController::class, 'getRevenue']);
+    Route::get('/performance/enrollments', [OverviewController::class, 'getEnrollments']);
+    Route::post('/performance/rating', [OverviewController::class, 'chartRating']);
+    Route::post('/performance/courses', [OverviewController::class, 'chartCourses']);
 
     Route::get('/instructor/overview', [OverviewController::class, 'getOverview']);
     Route::get('/user/courses', [InstructorController::class, 'getCoursesByCurrentUser']);
