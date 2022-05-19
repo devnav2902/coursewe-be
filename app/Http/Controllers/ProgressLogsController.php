@@ -21,13 +21,13 @@ class ProgressLogsController extends Controller
         if (!$dataLastWatched) {
             $course = Course::setEagerLoads([])->with(['lecture' => function ($query) {
                 $query->select('lectures.id');
-            }])->firstWhere('id', $course_id);
+            }])->select('id', 'slug')->firstWhere('id', $course_id);
 
             $lecture_id = $course->lecture->max('id');
 
             return response(['dataLastWatched' => [
                 'lecture_id' => $lecture_id,
-                'course_id' => $course_id,
+                'course' => $course,
                 'last_watched_second' => 0,
             ]]);
         };
@@ -43,12 +43,14 @@ class ProgressLogsController extends Controller
     }
     function saveLastWatched($course_id, $lecture_id, $second)
     {
+
         try {
             $exist = ProgressLogs::firstWhere([
-                'course_id' => $course_id,
-                'lecture_id' => $lecture_id,
-                'user_id' => Auth::user()->id,
+                ['course_id', '=', $course_id],
+                ['lecture_id', '=', $lecture_id],
+                ['user_id', '=', Auth::user()->id],
             ]);
+
             if ($exist) {
                 ProgressLogs::where([
                     'lecture_id' => $lecture_id,
@@ -57,6 +59,14 @@ class ProgressLogsController extends Controller
                     'last_watched_second' => round($second, 0)
                 ]);
             } else {
+                $exist = Course::setEagerLoads([])
+                    ->with(['lecture' => function ($query) use ($lecture_id) {
+                        $query->select('lectures.id')->where('lectures.id', $lecture_id);
+                    }])
+                    ->select('id', 'slug')->firstWhere('id', $course_id);
+                if (!$exist)
+                    return response('Bài giảng không thuộc khóa học này!', 400);
+
                 ProgressLogs::create(
                     [
                         'course_id' => $course_id,

@@ -26,7 +26,7 @@ class LearningController extends Controller
                     $q->where('user_id', Auth::user()->id);
                 }
             )
-            ->paginate(5, ['id', 'title', 'slug', 'author_id', 'thumbnail']);
+            ->paginate(10, ['id', 'title', 'slug', 'author_id', 'thumbnail']);
 
         $courses->transform(function ($course) {
             $totalLecture = $course->lecture->count();
