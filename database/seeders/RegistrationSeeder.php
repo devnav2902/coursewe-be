@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -20,7 +21,7 @@ class RegistrationSeeder extends Seeder
             ->get(['id', 'author_id', 'title', 'thumbnail', 'price_id']);
 
         foreach ($courses as $course) {
-            for ($i = 0; $i < 8; $i++) {
+            for ($i = 0; $i < 100; $i++) {
                 $user = DB::table('users')
                     ->where('id', '<>', $course->author_id)
                     ->get()
@@ -35,6 +36,8 @@ class RegistrationSeeder extends Seeder
                     ->where('course_id', $course->id)
                     ->first(['user_id', 'course_id']);
 
+                $created_at = Carbon::now()->subDays(rand(1, 365));
+
                 if (!$existed) {
                     DB::table('course_bill')->insert(
                         [
@@ -45,6 +48,7 @@ class RegistrationSeeder extends Seeder
                             'thumbnail' => $course->thumbnail,
                             'price' => $price,
                             'purchase' => $price,
+                            'created_at' => $created_at
                         ]
                     );
                 }

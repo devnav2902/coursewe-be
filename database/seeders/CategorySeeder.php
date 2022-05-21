@@ -36,7 +36,7 @@ class CategorySeeder extends Seeder
             'Lập trình - CNTT' => [
                 'Game Development' => ['Unity', 'C#', 'C++'],
                 'Web Development' =>
-                ['Javascript', 'React', 'CSS', 'Angular', 'NodeJS', 'HTML5', 'PHP', 'Bootstrap', 'VueJS', 'NestJS', 'Jquery'],
+                ['Javascript', 'React', 'CSS', 'Angular', 'NodeJS', 'HTML5', 'PHP', 'Bootstrap', 'VueJS', 'NestJS', 'Jquery', 'Typescript'],
                 'Mạng máy tính',
                 'Mobile Development' => ['Kotlin', 'SwiftUI', 'Google Flutter'],
             ],
