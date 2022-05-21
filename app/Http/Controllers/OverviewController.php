@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PerformanceRequest;
+use App\Models\CategoriesCourse;
 use App\Models\Course;
 use App\Models\CourseBill;
 use App\Models\User;
@@ -17,19 +18,22 @@ class OverviewController extends Controller
 {
     private $dateFormat = 'Y-m-d';
     private $dateFormatWithoutDay = 'Y-m';
-    private $lastTwelveMonths;
-    private $month;
-    private $year;
-    private $currentMonth;
-    private $currentYear;
+    public $lastTwelveMonths;
+    public $month;
+    public $year;
+    public $currentMonth;
+    public $currentYear;
+    private $helper;
 
     function __construct()
     {
-        $this->lastTwelveMonths = Carbon::now()->subMonth(12);
+        $this->lastTwelveMonths = Carbon::now()->subMonths(12);
         $this->month = $this->lastTwelveMonths->month;
         $this->year = $this->lastTwelveMonths->year;
         $this->currentMonth = Carbon::now()->month;
         $this->currentYear = Carbon::now()->year;
+
+        $this->helper = new HelperController;
     }
 
     function getOverview()
@@ -39,14 +43,21 @@ class OverviewController extends Controller
         // INSTRUCTOR
         $allCoursesByInstructor = $this->allCoursesByInstructor();
 
-        $totalStudents = Course::with('course_bill')
-            ->where('author_id', Auth::user()->id)
+        $baseQueryTotalStudents = Course::with('course_bill')
             ->select('id')
-            ->withCount('course_bill')
+            ->withCount('course_bill');
+
+        $totalStudents = ($this->helper)->isAdmin()
+            ? $baseQueryTotalStudents->get()
+            ->sum("course_bill_count")
+            : $baseQueryTotalStudents
+            ->where('author_id', Auth::user()->id)
             ->get()
             ->sum("course_bill_count");
 
         $numberOfStudentsInMonth = $this->numberOfStudentsInMonth();
+
+        // INSTRUCTOR
         $totalRevenue = $this->baseQueryCourseBill()->sum('purchase');
         $totalRevenue = $totalRevenue * $instructorRevenuePercentage;
         $totalRevenue = number_format($totalRevenue, 0, '.', '.');
@@ -60,18 +71,23 @@ class OverviewController extends Controller
 
         // ADMIN
         $allCourses = Course::setEagerLoads([])->get(['id'])->count();
-
         $allCoursesInMonth = $this->getAllCoursesInMonth();
+
         $allInstructors = $this->getAllInstructors();
-        DB::enableQueryLog();
-        $allStudents = $this->getAllStudents();
+
         // dd(DB::getQueryLog());
 
-        return response()->json(compact(["totalStudents", 'numberOfStudentsInMonth', 'totalRevenue', 'totalRevenueInMonth', 'ratingCourses', 'numberOfRatingsInMonth', 'allCourses', 'allInstructors', 'allStudents', 'allCoursesInMonth', 'allCoursesByInstructor']));
+        return response()->json(compact(["totalStudents", 'numberOfStudentsInMonth', 'totalRevenue', 'totalRevenueInMonth', 'ratingCourses', 'numberOfRatingsInMonth', 'allCourses', 'allInstructors', 'allCoursesInMonth', 'allCoursesByInstructor']));
     }
 
-    private function baseQueryCourseBill()
+    private function baseQueryCourseBill($checkPermission = false)
     {
+
+        if ($checkPermission && $this->helper->isAdmin()) {
+            return CourseBill::orderBy('created_at', 'asc')
+                ->select('purchase', 'course_id', 'created_at');
+        }
+
         return CourseBill::whereHas('course', function ($q) {
             $q
                 ->setEagerLoads([])
@@ -79,26 +95,33 @@ class OverviewController extends Controller
                 ->select('id', 'author_id', 'price_id');
         })
             ->orderBy('created_at', 'asc')
-            ->select('price', 'purchase', 'course_id', 'user_id', 'created_at');
+            ->select('purchase', 'course_id', 'created_at');
     }
 
-    function numberOfStudentsInMonth()
+    private function numberOfStudentsInMonth()
     {
-        $cur_month = Carbon::now()->month;
-        $cur_year = Carbon::now()->year;
+        $baseQuery = null;
+        if ($this->helper->isAdmin()) {
+            $baseQuery = CourseBill::whereHas('course', function ($q) {
+                $q->setEagerLoads([])->select('id');
+            });
+        } else {
+            $baseQuery = CourseBill::whereHas('course', function ($q) {
+                $q
+                    ->setEagerLoads([])
+                    ->select('author_id', 'id')
+                    ->where('author_id', Auth::user()->id);
+            });
+        }
 
-        return CourseBill::whereHas('course', function ($q) {
-            $q
-                ->setEagerLoads([])
-                ->where('author_id', Auth::user()->id);
-        })
-            ->whereMonth('created_at', $cur_month)
-            ->whereYear('created_at', $cur_year)
+        return $baseQuery
+            ->whereMonth('created_at', $this->currentMonth)
+            ->whereYear('created_at', $this->currentYear)
             ->get()
             ->count();
     }
 
-    function getRevenueInMonth()
+    private function getRevenueInMonth()
     {
         $current_year = Carbon::now()->year;
         $current_month = Carbon::now()->month;
@@ -108,6 +131,7 @@ class OverviewController extends Controller
             ->whereYear('course_bill.created_at',  $current_year)
             ->sum('purchase');
     }
+
     function getRatingByInstructorId()
     {
         return DB::table('course')
@@ -142,10 +166,8 @@ class OverviewController extends Controller
     private function revenueLTM()
     {
         $courseBill = $this->baseQueryCourseBill()
-            ->whereMonth('created_at', '>=', $this->month)
-            ->whereMonth('created_at', '<=', $this->currentMonth)
-            ->whereYear('created_at', '>=', $this->year)
-            ->whereYear('created_at', '<=', $this->currentYear)
+            ->whereDate('created_at', '>=', $this->lastTwelveMonths)
+            ->whereDate('created_at', '<=', Carbon::now())
             ->get()
             ->map(function ($bill) {
                 $bill->yearAndMonth = $bill->created_at->format($this->dateFormatWithoutDay);
@@ -183,7 +205,8 @@ class OverviewController extends Controller
     private function revenueByDateRange($fromDate, $toDate)
     {
         $courseBill = $this->baseQueryCourseBill()
-            ->whereBetween('created_at', [$fromDate, $toDate])
+            ->whereDate('created_at', '>=', $fromDate)
+            ->whereDate('created_at', '<=', $toDate)
             ->get()
             ->map(function ($bill) {
                 $bill->date_created = $bill->created_at->format($this->dateFormat);
@@ -229,11 +252,9 @@ class OverviewController extends Controller
     // ENROLLMENT
     private function enrollmentLTM()
     {
-        $courseBill = $this->baseQueryCourseBill()
-            ->whereMonth('created_at', '>=', $this->month)
-            ->whereMonth('created_at', '<=', $this->currentMonth)
-            ->whereYear('created_at', '>=', $this->year)
-            ->whereYear('created_at', '<=', $this->currentYear)
+        $courseBill = $this->baseQueryCourseBill(true)
+            ->whereDate('created_at', '>=', $this->lastTwelveMonths)
+            ->whereDate('created_at', '<=', Carbon::now())
             ->get()
             ->map(function ($bill) {
                 $bill->yearAndMonth = $bill->created_at->format($this->dateFormatWithoutDay);
@@ -270,9 +291,10 @@ class OverviewController extends Controller
 
     private function enrollmentByDateRange($fromDate, $toDate)
     {
-        $courseBill = $this->baseQueryCourseBill()
+        $courseBill = $this->baseQueryCourseBill(true)
             ->select('purchase', 'created_at')
-            ->whereBetween('created_at', [$fromDate, $toDate])
+            ->whereDate('created_at', '>=', $fromDate)
+            ->whereDate('created_at', '<=', $toDate)
             ->get()
             ->map(function ($bill) {
                 $bill->date_created = $bill->created_at->format($this->dateFormat);
@@ -314,6 +336,135 @@ class OverviewController extends Controller
             return response()->json(['enrollmentData' => $this->enrollmentByDateRange($fromDate, $toDate)]);
         }
     }
+
+    // COURSE
+    private function baseQueryGetCategoriesAndCourses($queryDate)
+    {
+        // parent_id can be lv2 or lv1
+        $query = CategoriesCourse::with([
+            'category' => function ($q) {
+                $q->select('category_id', 'parent_id', 'title');
+            },
+            'course' => function ($q) use ($queryDate) {
+                $q
+                    ->setEagerLoads([])
+                    ->select('created_at', 'id')
+                    ->withSum([
+                        'course_bill' => fn ($q) =>
+                        $q
+                            ->whereDate(
+                                'created_at',
+                                '>=',
+                                $queryDate['fromDate']
+                            )
+                            ->whereDate('created_at', '<=', $queryDate['toDate'])
+                    ], 'purchase');
+            }
+        ])
+            ->select('category_id', 'course_id', 'created_at');
+
+        return $query;
+    }
+
+    public function amountCoursesByCategory(PerformanceRequest $request)
+    {
+        $controller = new HelperController;
+
+        $categories = $controller
+            ->categoryQueryBase()
+            ->get()
+            ->except(["level3_title", "level3_slug", "topic_id"])
+            ->unique('subcategory_id')
+            ->values()
+            ->toArray();
+
+        $groupedByParentId = null;
+        if ($request->has('LTM')) {
+            $dateRange = ['fromDate' => $this->lastTwelveMonths, 'toDate' => Carbon::now()];
+            $groupedByParentId = $this->baseQueryGetCategoriesAndCourses($dateRange);
+        } else if ($request->has('fromDate') && $request->has('toDate')) {
+            $fromDate = $request->input('fromDate');
+            $toDate = $request->input('toDate');
+
+            $dateRange = ['fromDate' => $fromDate, 'toDate' => $toDate];
+            $groupedByParentId = $this->baseQueryGetCategoriesAndCourses($dateRange)
+                ->whereDate('created_at', '>=', $fromDate)
+                ->whereDate('created_at', '<=', $toDate);
+        }
+
+        // parent_id can be lv2 or lv1
+        $groupedByParentId = $groupedByParentId
+            ->get()
+            ->groupBy('category.parent_id')
+            ->map(function ($item) {
+                return $item->unique('course_id')->values();
+            });
+
+        $dataWithCourses = [];
+
+        collect($groupedByParentId)->each(function ($item, $parentCategoryId) use ($categories, &$dataWithCourses) {
+            $existTopic = collect($categories)->where('subcategory_id', $parentCategoryId)->first();
+            if ($existTopic) {
+                $dataWithCourses[] = [
+                    'category_id' => $existTopic->category_id,
+                    'subcategory' => $existTopic->level2_title,
+                    'courses' => $item
+                ];
+            } else {
+                $firstItemToCheck = $item->first();
+                $withoutTopicHasSubcategory = collect($categories)
+                    ->where('category_id', $parentCategoryId)
+                    ->where('subcategory_id', $firstItemToCheck->category_id)
+                    ->first();
+
+                if ($withoutTopicHasSubcategory) {
+                    $dataWithCourses[] = [
+                        'category_id' => $withoutTopicHasSubcategory->category_id,
+                        'subcategory' => $withoutTopicHasSubcategory->level2_title,
+                        'courses' => $item
+                    ];
+                }
+            }
+        });
+
+        $groupedByCategoryId = collect($dataWithCourses)
+            ->groupBy('category_id')
+            ->map(function ($item) {
+                $dataFlatten = $item->pluck('courses')->flatten();
+
+                return [
+                    'amountCourses' => $dataFlatten->count(),
+                    'revenue' => $dataFlatten->sum('course.course_bill_sum_purchase')
+                ];
+            });
+
+        $addedEmptyCategory = [];
+
+        $uniqueCategory = collect($categories)->unique('category_id')->values();
+
+        collect($uniqueCategory)->each(function ($item) use ($groupedByCategoryId, &$addedEmptyCategory) {
+            $category_id = $item->category_id;
+            $exist = isset($groupedByCategoryId[$category_id]);
+
+            if ($exist) {
+                $addedEmptyCategory[] = [
+                    'amountCourses' => $groupedByCategoryId[$category_id]['amountCourses'],
+                    'revenue' => $groupedByCategoryId[$category_id]['revenue'],
+                    'category' => $item->level1_title
+                ];
+            } else {
+                $addedEmptyCategory[] = [
+                    'amountCourses' => 0,
+                    'revenue' => 0,
+                    'category' => $item->level1_title
+                ];
+            }
+        });
+
+        if (Auth::user()->role->name === 'admin')
+            return response()->json(['amountCoursesByCategory' => $addedEmptyCategory]);
+    }
+
     function chartRating(Request $request)
     {
         $request->validate([
@@ -353,36 +504,5 @@ class OverviewController extends Controller
             ->has('course')
             ->get(['id'])
             ->count();
-    }
-
-    public function getAllStudents()
-    {
-        return DB::table('course_bill')
-            ->groupBy('user_id')
-            ->get(['user_id'])
-            ->count();
-    }
-
-    public function chartCourses(Request $request)
-    {
-        $request->validate([
-            'year' => 'numeric|required',
-            'currentMonth' => 'numeric'
-        ]);
-
-        $currentMonth = $request->input('currentMonth') ? $request->input('currentMonth') : 12;
-        $coursesInMonth = [];
-
-        for ($i = 1; $i <= $currentMonth; $i++) {
-            $total = Course::setEagerLoads([])
-                ->whereYear('created_at', $request->input('year'))
-                ->WhereMonth('created_at', $i)
-                ->get(['id'])
-                ->count();
-
-            $coursesInMonth[] = $total;
-        }
-
-        return response()->json(['chartCourses' => $coursesInMonth]);
     }
 }

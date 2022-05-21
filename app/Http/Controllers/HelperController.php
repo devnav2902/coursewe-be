@@ -11,6 +11,16 @@ use Illuminate\Support\Facades\DB;
 
 class HelperController extends Controller
 {
+    function isAdmin()
+    {
+        return !empty(Auth::user()) && Auth::user()->role->name === 'admin' ? true : false;
+    }
+
+    function formatDate($date, $format)
+    {
+        return Carbon::parse($date)->format($format);
+    }
+
     function getCategoriesByCourseId($courses_id)
     {
         return DB::select('SELECT t1.title AS topic_title,t1.category_id AS topic_id,
