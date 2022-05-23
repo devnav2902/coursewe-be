@@ -101,7 +101,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // PERFORMANCE
     Route::get('/performance/revenue', [OverviewController::class, 'getRevenue']);
     Route::get('/performance/enrollments', [OverviewController::class, 'getEnrollments']);
-    Route::post('/performance/rating', [OverviewController::class, 'chartRating']);
+    Route::get('/performance/rating', [OverviewController::class, 'getChartRating']);
     Route::post('/performance/courses', [OverviewController::class, 'chartCourses']);
 
     Route::get('/instructor/overview', [OverviewController::class, 'getOverview']);

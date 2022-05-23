@@ -16,13 +16,14 @@ class Rating extends Model
     protected $with = ['user'];
 
 
-    public function getCreatedAtAttribute($date)
-    {
-        return Carbon::parse($date)->isoFormat('MMMM DD, Y');
-    }
+
 
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+    public function course()
+    {
+        return $this->belongsTo(Course::class, 'course_id');
     }
 }

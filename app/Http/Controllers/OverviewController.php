@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PerformanceRequest;
 use App\Models\Course;
 use App\Models\CourseBill;
+use App\Models\Rating;
 use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -80,6 +81,19 @@ class OverviewController extends Controller
         })
             ->orderBy('created_at', 'asc')
             ->select('price', 'purchase', 'course_id', 'user_id', 'created_at');
+    }
+    private function baseQueryRating()
+    {
+        return Rating::setEagerLoads([])
+            ->with('course', function ($q) {
+                $q
+                    ->setEagerLoads([])
+                    ->select('id')
+                    ->withAvg('rating', 'rating');
+            })
+            ->orderBy('created_at', 'asc')
+            ->where('user_id', Auth::user()->id)
+            ->select('course_id', 'user_id', 'created_at', 'rating');
     }
 
     function numberOfStudentsInMonth()
@@ -183,7 +197,8 @@ class OverviewController extends Controller
     private function revenueByDateRange($fromDate, $toDate)
     {
         $courseBill = $this->baseQueryCourseBill()
-            ->whereBetween('created_at', [$fromDate, $toDate])
+            ->whereDate('created_at', '>=', $fromDate)
+            ->whereDate('created_at', '<=', $toDate)
             ->get()
             ->map(function ($bill) {
                 $bill->date_created = $bill->created_at->format($this->dateFormat);
@@ -272,7 +287,8 @@ class OverviewController extends Controller
     {
         $courseBill = $this->baseQueryCourseBill()
             ->select('purchase', 'created_at')
-            ->whereBetween('created_at', [$fromDate, $toDate])
+            ->whereDate('created_at', '>=', $fromDate)
+            ->whereDate('created_at', '<=', $toDate)
             ->get()
             ->map(function ($bill) {
                 $bill->date_created = $bill->created_at->format($this->dateFormat);
@@ -314,29 +330,107 @@ class OverviewController extends Controller
             return response()->json(['enrollmentData' => $this->enrollmentByDateRange($fromDate, $toDate)]);
         }
     }
-    function chartRating(Request $request)
+    private function chartRatingLTM()
     {
-        $request->validate([
-            'year' => 'numeric|required',
-            'currentMonth' => 'numeric'
-        ]);
+        $rating = $this->baseQueryRating()
+            ->whereMonth('created_at', '>=', $this->month)
+            ->whereMonth('created_at', '<=', $this->currentMonth)
+            ->whereYear('created_at', '>=', $this->year)
+            ->whereYear('created_at', '<=', $this->currentYear)
+            ->get()
+            ->map(function ($bill) {
+                $bill->yearAndMonth = $bill->created_at->format($this->dateFormatWithoutDay);
+                return $bill;
+            });
 
-        $currentMonth = $request->input('currentMonth') ? $request->input('currentMonth') : 12;
-        $monthRating = [];
 
-        for ($i = 1; $i <= $currentMonth; $i++) {
-            $total = $this->getRatingByInstructorId()
-                ->whereYear('rating.created_at', $request->input('year'))
-                ->WhereMonth('rating.created_at', $i)
-                ->select(DB::raw("count(rating.rating) as count_student,avg(rating.rating) as avg_rating"))
-                ->first();
+        $groupedDate = $rating->groupBy('yearAndMonth');
 
-            $monthRating[] = $total;
-        }
+        $carbonPeriod = CarbonPeriod::create(
+            $this->lastTwelveMonths,
+            '1 month',
+            Carbon::now()
+        );
 
-        return response()->json(['chartRating' => $monthRating]);
+        $carbonPeriod = collect($carbonPeriod)->map(function (Carbon $date) {
+            return $date->format($this->dateFormatWithoutDay);
+        });
+
+        $data = collect($carbonPeriod)->map(function ($date) use ($groupedDate) {
+            if (isset($groupedDate[$date])) {
+                $countRating = $groupedDate[$date]->count();
+                $avgRatingByDate =  $groupedDate[$date]
+                    ->unique('course_id')
+                    ->values()
+                    ->pluck('course.rating_avg_rating')
+                    ->avg();
+                return [
+                    'date' => $date,
+                    'avg_rating' => round($avgRatingByDate, 1),
+                    'count_students' => $countRating
+                ];
+            }
+            return [
+                'date' => $date,
+                'avg_rating' => 0,
+                'count_students' => 0
+            ];
+        });
+        return $data;
+    }
+    private function chartRatingByDateRange($fromDate, $toDate)
+    {
+        $rating = $this->baseQueryRating()
+
+            ->whereDate('created_at', '>=', $fromDate)
+            ->whereDate('created_at', '<=', $toDate)
+            ->get()
+            ->map(function ($bill) {
+                $bill->date_created = $bill->created_at->format($this->dateFormat);
+                return $bill;
+            });
+
+        $carbonPeriod = CarbonPeriod::create($fromDate, $toDate);
+        $groupedDate = $rating->groupBy('date_created');
+
+        $data = collect($carbonPeriod)->map(function ($date) use ($groupedDate) {
+            $formattedDate = $date->format($this->dateFormat);
+
+            if (isset($groupedDate[$formattedDate])) {
+                $countRating = $groupedDate[$formattedDate]->count();
+                $avgRatingByDate =  $groupedDate[$formattedDate]
+                    ->unique('course_id')
+                    ->values()
+                    ->pluck('course.rating_avg_rating')
+                    ->avg();
+                return [
+                    'date' => $formattedDate,
+                    'avg_rating' => round($avgRatingByDate, 1),
+                    'count_students' => $countRating
+                ];
+            }
+            return [
+                'date' => $formattedDate,
+                'avg_rating' => 0,
+                'count_students' => 0
+            ];
+        });
+        return $data;
     }
 
+    function getChartRating(PerformanceRequest $request)
+    {
+        if ($request->has('LTM')) {
+            return response()->json(['chartRatingData' => $this->chartRatingLTM()]);
+        }
+
+        if ($request->has('fromDate') && $request->has('toDate')) {
+            $fromDate = $request->input('fromDate');
+            $toDate = $request->input('toDate');
+
+            return response()->json(['chartRatingData' => $this->chartRatingByDateRange($fromDate, $toDate)]);
+        }
+    }
     public function getAllCoursesInMonth()
     {
         $current_month = Carbon::now()->month;
