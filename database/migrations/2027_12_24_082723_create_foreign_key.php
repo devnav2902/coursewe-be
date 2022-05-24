@@ -78,6 +78,11 @@ class CreateForeignKey extends Migration
             $table->foreign('cart_type_id')->references('id')->on('cart_type');
             $table->foreign('course_id')->references('id')->on('course');
         });
+        Schema::table('progress_logs', function (Blueprint $table) {
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('lecture_id')->references('id')->on('lectures');
+            $table->foreign('course_id')->references('id')->on('course');
+        });
     }
 
     /**

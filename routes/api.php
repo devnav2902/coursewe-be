@@ -19,10 +19,14 @@ use App\Http\Controllers\LearningController;
 use App\Http\Controllers\LectureController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\ProgressController;
+use App\Http\Controllers\ProgressLogsController;
+use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PromotionsController;
 use App\Http\Controllers\PublishCourseController;
 use App\Http\Controllers\PurchaseHistoryController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\SearchController;
+
 use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\UserController;
@@ -99,11 +103,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // PERFORMANCE
     Route::get('/performance/revenue', [OverviewController::class, 'getRevenue']);
     Route::get('/performance/enrollments', [OverviewController::class, 'getEnrollments']);
-    Route::post('/performance/rating', [OverviewController::class, 'chartRating']);
+    Route::get('/performance/rating', [OverviewController::class, 'getChartRating']);
     Route::get('/performance/courses', [OverviewController::class, 'amountCoursesByCategory']);
     // EXPORT
     Route::get('/export/revenue', [ExportController::class, 'revenueExport']);
-
 
     Route::get('/instructor/overview', [OverviewController::class, 'getOverview']);
     Route::get('/user/courses', [InstructorController::class, 'getCoursesByCurrentUser']);
@@ -145,6 +148,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/learning/{slug}', [LearningController::class, 'learning']);
     Route::get('/sections/{course_id}', [LearningController::class, 'getSections']);
     Route::post('/progress', [ProgressController::class, 'updateProgress']);
+    Route::get('/course/{course_slug}/lecture/{lectureId}', [LearningController::class, 'getVideo']);
     // RESOURCE
     Route::delete('/user/me/taught-courses/{courseId}/lectures/{lectureId}/resources/{resourceId}/', [ResourceController::class, 'delete']);
     Route::post('/resources/upload', [ResourceController::class, 'upload']);
@@ -170,6 +174,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/promotions/expired-coupons/{courseId}', [PromotionsController::class, 'getExpiredCoupons']);
     Route::get('/promotions/coupon-types', [PromotionsController::class, 'getCouponTypes']);
     Route::get('/promotions/information-create-coupon/{courseId}', [PromotionsController::class, 'getInformationCreateCoupon']);
+
+    //Progresslogs
+    Route::get('/last-watched/{course_id}', [ProgressLogsController::class, 'lastWatchedByCourseId']);
+    Route::get('/last-watched/course/{course_id}/lecture/{lectureId}', [ProgressLogsController::class, 'lastWatchedByLectureId']);
+    Route::post('/last-watched/course/{course_id}/lecture/{lecture_id}/last_watched_second/{second}', [ProgressLogsController::class, 'saveLastWatched']);
     Route::post('/promotions/create-coupon/', [PromotionsController::class, 'createCoupon']);
     // SUBMIT FOR REVIEW
     Route::get('/checking-publish-requirements/{courseId}', [PublishCourseController::class, 'checkingPublishRequirements']);

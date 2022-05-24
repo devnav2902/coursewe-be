@@ -28,14 +28,19 @@ class SearchController extends Controller
             ]
         )
             ->get(['title', 'id', 'slug']);
-        return view('pages.search', compact(['courses', 'keyword', 'categories']));
+        return response()->json(['courses' => $courses, 'keyword' => $keyword, 'categories' => $categories]);
     }
     public function search(Request $request)
     {
+        $request->validate([
+            'inputSearch' => 'min:2'
+        ]);
+        $value = $request->input('inputSearch');
+
         $data = Course::setEagerLoads([])
             ->orderBy('created_at', 'desc')
             ->where('isPublished', 1)
-            ->where('title', 'like', '%' . $request->input('hint') . '%')
+            ->where('title', 'like', '%' . $value . '%')
             ->paginate(5, ['title', 'id', 'slug', 'thumbnail']);
 
         return $data;

@@ -73,4 +73,8 @@ class User extends Authenticatable
     {
         return $this->hasOne(Cart::class, 'user_id');
     }
+    function progress_logs()
+    {
+        return $this->hasMany(ProgressLogs::class, 'user_id');
+    }
 }

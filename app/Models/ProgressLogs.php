@@ -2,21 +2,14 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Rating extends Model
+class ProgressLogs extends Model
 {
     use HasFactory;
-    protected $table = 'rating';
-    protected $fillable =
-    ['user_id', 'course_id', 'content', 'rating'];
-
-    protected $with = ['user'];
-
-
-
+    protected $table = 'progress_logs';
+    protected $fillable = ['lecture_id', 'user_id', 'last_watched_second', 'course_id'];
 
     public function user()
     {

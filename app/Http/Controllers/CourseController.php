@@ -232,7 +232,8 @@ class CourseController extends Controller
         $course = Course::where('id', $id)
             ->with([
                 'lecture',
-                'section'
+                'section',
+                'pprogress_logs'
             ])
             ->withCount(['course_bill', 'rating', 'section', 'lecture'])
             ->firstWhere('author_id', Auth::user()->id);
@@ -247,6 +248,7 @@ class CourseController extends Controller
         validator(['id' => $id], ['id' => 'required'])->validate();
 
         return Course::where('isPublished', 1)
+            ->with(['lecture', 'section'])
             ->withAvg('rating', 'rating')
             ->firstWhere('id', $id);
     }

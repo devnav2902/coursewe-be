@@ -118,6 +118,7 @@ class CartController extends Controller
 
             if (Auth::check()) {
                 $idCourseInCart = Cart::create([
+                    'session_id' => $this->getCartSession(),
                     'course_id' => $course_id,
                     'user_id' => $user_id,
                     'cart_type_id' => $cartType->id

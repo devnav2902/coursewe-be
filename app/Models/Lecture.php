@@ -44,4 +44,8 @@ class Lecture extends Model
     {
         return $this->hasMany(Resource::class, 'lecture_id');
     }
+    public function progress_logs()
+    {
+        return $this->hasMany(ProgressLogs::class, 'lecture_id');
+    }
 }
