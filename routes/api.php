@@ -24,6 +24,7 @@ use App\Http\Controllers\PublishCourseController;
 use App\Http\Controllers\PurchaseHistoryController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ResourceController;
+use App\Http\Controllers\SectionController;
 use App\Http\Controllers\UserController;
 use App\Models\Coupon;
 
@@ -153,6 +154,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/lecture/id/{lectureId}', [LectureController::class, 'getByLectureId']);
     Route::post('/lecture/upload', [LectureController::class, 'upload']);
     Route::delete('/user/me/taught-courses/{courseId}/lectures/{lectureId}', [LectureController::class, 'delete']);
+    Route::post('/lecture/create', [LectureController::class, 'createLecture']);
+    Route::patch('/lecture/update', [LectureController::class, 'updateTitle']);
+    Route::patch('/lecture/re-order/section/{sectionId}/course/{courseId}', [LectureController::class, 'reorder']);
+    // SECTION
+    Route::get('/section/course/{courseId}', [SectionController::class, 'getSectionsByCourseId']);
+    Route::get('/section/{id}', [SectionController::class, 'getSectionById']);
+    Route::delete('/user/me/taught-courses/{courseId}/sections/{sectionId}', [SectionController::class, 'delete']);
+    Route::post('/section/create', [SectionController::class, 'createSection']);
+    Route::patch('/section/update', [SectionController::class, 'updateTitle']);
+    Route::patch('/section/re-order/course/{courseId}', [SectionController::class, 'reorder']);
+
     // PROMOTIONS
     Route::get('/promotions/scheduled-coupons/{courseId}', [PromotionsController::class, 'getScheduledCoupons']);
     Route::get('/promotions/expired-coupons/{courseId}', [PromotionsController::class, 'getExpiredCoupons']);
