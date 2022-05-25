@@ -11,6 +11,7 @@ use App\Http\Controllers\CourseImageController;
 use App\Http\Controllers\CourseVideoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CreateCourseController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\OverviewController;
 use App\Http\Controllers\ProfileController;
@@ -103,6 +104,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/performance/enrollments', [OverviewController::class, 'getEnrollments']);
     Route::get('/performance/rating', [OverviewController::class, 'getChartRating']);
     Route::post('/performance/courses', [OverviewController::class, 'chartCourses']);
+
+    Route::get('/performance/courses', [OverviewController::class, 'amountCoursesByCategory']);
+    // EXPORT
+    Route::get('/export/revenue', [ExportController::class, 'revenueExport']);
+
 
     Route::get('/instructor/overview', [OverviewController::class, 'getOverview']);
     Route::get('/user/courses', [InstructorController::class, 'getCoursesByCurrentUser']);

@@ -16,10 +16,10 @@ class InstructionallevelSeeder extends Seeder
     {
         DB::table('instructional_level')->insert(
             [
-                ['level' => 'Beginner Level', 'id' => 1],
-                ['level' => 'Intermediate Level', 'id' => 2],
-                ['level' => 'Expert Level', 'id' => 3],
-                ['level' => 'All Levels', 'id' => 0],
+                ['level' => 'Cơ bản', 'id' => 1],
+                ['level' => 'Trung cấp', 'id' => 2],
+                ['level' => 'Nâng cao', 'id' => 3],
+                ['level' => 'Tất cả trình độ', 'id' => 0],
             ]
         );
     }

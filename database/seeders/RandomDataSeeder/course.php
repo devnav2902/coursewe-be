@@ -69,7 +69,7 @@ function course()
     ],
     [
       'title' => 'Tiếng Hàn TOPIK 3',
-      'category' => ['tieng-han']
+      'category' => ['chung-chi-tieng-han']
     ],
     [
       'title' => 'Tiếng Hàn sơ cấp cho người mới bắt đầu',
@@ -101,39 +101,39 @@ function course()
     ],
     [
       'title' => 'Tư duy phản biện - giải quyết đến tận cùng vấn đề',
-      'category' => ['tu-duy']
+      'category' => ['ky-nang-tu-duy']
     ],
     [
       'title' => 'Khóa học ý thức tư duy và liên tưởng',
-      'category' => ['tu-duy']
+      'category' => ['ky-nang-tu-duy']
     ],
     [
       'title' => 'Làm chủ tư duy thay đổi vận mệnh',
-      'category' => ['tu-duy']
+      'category' => ['ky-nang-tu-duy']
     ],
     [
       'title' => 'Học làm lãnh đạo',
-      'category' => ['lanh-dao']
+      'category' => ['ky-nang-lanh-dao']
     ],
     [
       'title' => 'Bậc thầy lãnh đạo',
-      'category' => ['lanh-dao']
+      'category' => ['ky-nang-lanh-dao']
     ],
     [
       'title' => 'Nhà Lãnh đạo phải biết đào tạo',
-      'category' => ['lanh-dao']
+      'category' => ['ky-nang-lanh-dao']
     ],
     [
       'title' => 'Học để trở thành lãnh đạo cấp cao',
-      'category' => ['lanh-dao']
+      'category' => ['ky-nang-lanh-dao']
     ],
     [
       'title' => 'Quản trị tài chính cá nhân hiệu quả',
-      'category' => ['ca-nhan']
+      'category' => ['tai-chinh-ca-nhan']
     ],
     [
       'title' => 'Khóa học quản lý tài chính cá nhân một cách hiệu quả',
-      'category' => ['ca-nhan']
+      'category' => ['tai-chinh-ca-nhan']
     ],
     [
       'title' => 'KHÓA HỌC ANGULAR & TYPESCRIPT (FRONT END)',
@@ -181,15 +181,15 @@ function course()
     ],
     [
       'title' => 'Khóa học Lập trình web HTML5, CSS3, jQuery, Bootstrap',
-      'category' => ['html', 'css', 'jquery', 'bootstrap'],
+      'category' => ['html5', 'css', 'jquery', 'bootstrap'],
     ],
     [
       'title' => 'Khóa học Lập trình web HTML5, CSS3, jQuery từ cơ bản tới nâng cao',
-      'category' => ['html', 'css', 'jquery'],
+      'category' => ['html5', 'css', 'jquery'],
     ],
     [
       'title' => 'Khóa học HTML và CSS cơ bản',
-      'category' => ['html', 'css'],
+      'category' => ['html5', 'css'],
     ],
     [
       'title' => 'ReactJS cho người mới bắt đầu',
@@ -225,15 +225,15 @@ function course()
     ],
     [
       'title' => 'Học thiết kế web cùng photoshop',
-      'category' => ['photoshop'],
+      'category' => ['phan-mem-photoshop'],
     ],
     [
       'title' => '22 bí kíp giúp người mới học thành thạo Photoshop',
-      'category' => ['photoshop'],
+      'category' => ['phan-mem-photoshop'],
     ],
     [
       'title' => 'Thiết kế banner bằng illustrator và photoshop',
-      'category' => ['photoshop', 'adobe-illustrator'],
+      'category' => ['phan-mem-photoshop', 'adobe-illustrator'],
     ],
     //11-5
     [

@@ -20,22 +20,13 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             InstructionallevelSeeder::class,
             CourseSeeder::class,
-            // PermissionSeeder::class,
-            // RolePermissionSeeder::class,
             NotificationEntitySeeder::class,
-            // NotificationCourseSeeder::class,
             CouponSeeder::class,
             CourseCouponSeeder::class,
             RegistrationSeeder::class,
             RatingSeeder::class,
             CartTypeSeeder::class,
             CartSeeder::class
-            // CommentSeeder::class,
-            // ReplyCommentSeeder::class,
-            // LikeSeeder::class,
-            // SectionSeeder::class,
-            // LectureSeeder::class,
-            // ResourcesSeeder::class,
         ]);
     }
 }

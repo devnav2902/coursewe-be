@@ -2,13 +2,12 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 
-
-include_once __DIR__ . '/RandomDataSeeder/title.php';
 include_once __DIR__ . '/RandomDataSeeder/thumbnail.php';
 include_once __DIR__ . '/RandomDataSeeder/course.php';
 include_once __DIR__ . '/RandomDataSeeder/course-outcome.php';
@@ -44,8 +43,10 @@ class CourseSeeder extends Seeder
 
         for ($i = 0; $i < 100; $i++) {
             $course = $courses[random_int(1, count($courses) - 1)];
-            $author_id = random_int(1, 10);
+            $author_id = random_int(3, 10);
             $levelId = random_int(0, 3);
+
+            $created_at = $i < 5 ? Carbon::now() : Carbon::now()->subDays(rand(1, 365));
             $id = db::table('course')->insertGetId(
                 [
                     'instructional_level_id' => $levelId,
@@ -57,13 +58,14 @@ class CourseSeeder extends Seeder
                     'slug' => Str::slug($course['title'] . '-' . random_int(1, 1000)),
                     'video_demo' => 'lesson/test.mp4',
                     'isPublished' => 1,
-                    'thumbnail' => $thumbnail[random_int(1, count($thumbnail) - 1)]
+                    'thumbnail' => $thumbnail[random_int(1, count($thumbnail) - 1)],
+                    'created_at' => $created_at
                 ]
             );
 
             foreach ($course['category'] as $cat) {
                 $cat_id = db::table('categories')
-                    ->where('slug', 'LIKE', '%' . $cat . '%')
+                    ->where('slug', '=', $cat)
                     ->first('category_id');
 
                 if ($cat_id) {
