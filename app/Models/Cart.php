@@ -24,6 +24,14 @@ class Cart extends Model
 
     function course_coupon()
     {
-        return $this->belongsTo(CourseCoupon::class, 'course_id')->where('coupon_code', $this->coupon_code);
+        return $this->belongsTo(CourseCoupon::class, 'course_id', 'course_id')
+            ->select(
+                "code",
+                "course_id",
+                "discount_price",
+                "status",
+            )
+            ->without('coupon')
+            ->where('code', $this->coupon_code);
     }
 }
