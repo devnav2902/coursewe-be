@@ -384,7 +384,7 @@ class OverviewController extends Controller
                     ->avg();
                 return [
                     'date' => $date,
-                    'avg_rating' => round($avgRatingByDate, 1),
+                    'avg_rating' => number_format($avgRatingByDate, 1),
                     'count_students' => $countRating
                 ];
             }
@@ -600,7 +600,7 @@ class OverviewController extends Controller
                     ->avg();
                 return [
                     'date' => $formattedDate,
-                    'avg_rating' => round($avgRatingByDate, 1),
+                    'avg_rating' => number_format($avgRatingByDate, 1),
                     'count_students' => $countRating
                 ];
             }
