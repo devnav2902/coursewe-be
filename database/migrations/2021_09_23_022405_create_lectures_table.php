@@ -19,8 +19,8 @@ class CreateLecturesTable extends Migration
             $table->string("title", 100)->nullable();
             $table->unsignedInteger("section_id");
             $table->integer('order');
-            $table->float('playtime_seconds');
-            $table->string('playtime_string');
+            $table->float('playtime_seconds')->nullable();
+            $table->string('playtime_string')->nullable();
             $table->string("src")->nullable();
             $table->string("original_filename")->nullable();
             $table->timestamp('created_at')->useCurrent();

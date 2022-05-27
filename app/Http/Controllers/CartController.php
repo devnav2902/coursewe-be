@@ -41,21 +41,55 @@ class CartController extends Controller
 
         $cart = $cart->get(["user_id", "cart_type_id", "course_id", "coupon_code"]);
 
+        $cart->transform(function ($item) {
+            $item->course_coupon;
+
+            if (isset($item->course->price) && isset($item->course_coupon)) {
+                $original_price = $item->course->price->format_price;
+                $discount_price =  $item->course_coupon->discount_price;
+
+                $result = $original_price - $discount_price;
+                $item->course_coupon->purchase_price = ($discount_price == 0
+                    ? 0
+                    : $result == 0)
+                    ? 0
+                    : number_format($original_price - $discount_price, 3, '.');
+            }
+
+            return $item;
+        });
+
         $cartType = CartType::get();
+
         $list = [];
         $cartType->each(function ($item) use ($cart, &$list) {
             $data = [];
+            $original_price = 0.0; // Tổng giá trong giỏ hàng
+            $current_price = 0.0; // Tổng giá sau khi apply khuyến mãi trong giỏ hàng
 
             $dataCart = $cart->where('cart_type_id', $item->id);
-            $dataCart->each(function ($item) use (&$data) {
-                $filtered = $item->only(['coupon_code']);
+            $dataCart->each(function ($item) use (&$data, &$original_price, &$current_price) {
+                $filtered = $item->only(['coupon_code', 'course_coupon']);
                 $course = $item->course->toArray();
                 $merge = array_merge($course, $filtered);
 
                 array_push($data, $merge);
+
+                $format_price = $merge['price']['format_price'];
+                $original_price += $format_price;
+
+                $has_coupon = isset($merge['course_coupon']) ? true : false;
+                $discount_price = $has_coupon ? $merge['course_coupon']['discount_price'] : 0;
+
+                $current_price +=  $format_price - $discount_price;
             });
 
-            $list[] = ['cartType' => $item, 'data' => $data];
+            $value = ['cartType' => $item, 'data' => $data];
+
+            $value['original_price'] = number_format($original_price, 3, '.', '.');
+            $value['current_price'] = number_format($current_price, 3, '.', '.');
+
+            $list[] = $value;
         });
 
         return $list;

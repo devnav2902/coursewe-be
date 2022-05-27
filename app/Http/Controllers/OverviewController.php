@@ -525,54 +525,8 @@ class OverviewController extends Controller
             return response()->json(['amountCoursesByCategory' => $addedEmptyCategory]);
     }
 
-    function chartRating(Request $request)
-    {
-        $rating = $this->baseQueryRating()
-            ->whereMonth('created_at', '>=', $this->month)
-            ->whereMonth('created_at', '<=', $this->currentMonth)
-            ->whereYear('created_at', '>=', $this->year)
-            ->whereYear('created_at', '<=', $this->currentYear)
-            ->get()
-            ->map(function ($bill) {
-                $bill->yearAndMonth = $bill->created_at->format($this->dateFormatWithoutDay);
-                return $bill;
-            });
 
 
-        $groupedDate = $rating->groupBy('yearAndMonth');
-
-        $carbonPeriod = CarbonPeriod::create(
-            $this->lastTwelveMonths,
-            '1 month',
-            Carbon::now()
-        );
-
-        $carbonPeriod = collect($carbonPeriod)->map(function (Carbon $date) {
-            return $date->format($this->dateFormatWithoutDay);
-        });
-
-        $data = collect($carbonPeriod)->map(function ($date) use ($groupedDate) {
-            if (isset($groupedDate[$date])) {
-                $countRating = $groupedDate[$date]->count();
-                $avgRatingByDate =  $groupedDate[$date]
-                    ->unique('course_id')
-                    ->values()
-                    ->pluck('course.rating_avg_rating')
-                    ->avg();
-                return [
-                    'date' => $date,
-                    'avg_rating' => round($avgRatingByDate, 1),
-                    'count_students' => $countRating
-                ];
-            }
-            return [
-                'date' => $date,
-                'avg_rating' => 0,
-                'count_students' => 0
-            ];
-        });
-        return $data;
-    }
     private function chartRatingByDateRange($fromDate, $toDate)
     {
         $rating = $this->baseQueryRating()

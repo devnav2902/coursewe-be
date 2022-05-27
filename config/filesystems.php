@@ -72,7 +72,7 @@ return [
         public_path('thumbnail') => storage_path('app/thumbnail'),
         public_path('video_demo') => storage_path('app/video_demo'),
         public_path('resources') => storage_path('app/resources'),
-        public_path('lectures') => storage_path('app/lectures'),
+        public_path('lessons') => storage_path('app/lessons'),
     ],
 
 ];

@@ -13,7 +13,7 @@ class PublishCourseController extends Controller
         $course = Course::withCount(
             ['course_outcome', 'course_requirements', 'lecture', 'categories']
         )
-            ->with('author')
+            ->with('author', 'lecture')
             ->find($course_id);
         $course = collect($course)->toArray();
 
@@ -25,6 +25,7 @@ class PublishCourseController extends Controller
                     $fail('Mô tả khóa học cần tối thiểu 200 từ.');
                 }
             },
+            'lecture.*.src' => 'required',
             "thumbnail" => 'required',
             "video_demo" => 'required',
             "course_outcome_count" => 'numeric|min:4',
@@ -41,6 +42,7 @@ class PublishCourseController extends Controller
             'course_outcome_count.min' => 'Bạn cần thêm ít nhất :min mục tiêu học tập trong khóa học của bạn',
             'course_requirements_count.min' => 'Bạn có thể thêm bất kỳ yêu cầu khóa học hoặc điều kiện tiên quyết cho khóa học',
             'lecture_count.min' => 'Khóa học cần có tối thiểu :min bài giảng.',
+            'lecture.*.src' => 'Bạn chưa thêm nội dung cho bài giảng.',
             'categories_count.min' => 'Bạn chưa chọn danh mục cho khóa học của bạn.',
             'author.avatar.required' => 'Mỗi giảng viên cần upload một hình ảnh đại diện.'
         ])

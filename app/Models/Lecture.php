@@ -23,6 +23,11 @@ class Lecture extends Model
     //         ->withPivot('progress');
     // }
 
+    function section()
+    {
+        return $this->belongsTo(Section::class, 'section_id');
+    }
+
     function progress()
     {
         return $this->hasOne(Progress::class, 'lecture_id')

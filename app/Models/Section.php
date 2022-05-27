@@ -22,6 +22,11 @@ class Section extends Model
             ->orderBy('order', 'asc');
     }
 
+    public function course()
+    {
+        return $this->belongsTo(Course::class, 'course_id');
+    }
+
     public function progressInLectures()
     {
         return $this->hasManyThrough(Progress::class, Lecture::class, 'section_id', 'lecture_id')

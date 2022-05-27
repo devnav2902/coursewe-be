@@ -506,6 +506,48 @@
             "time": "2021-12-25T01:21:49+00:00"
         },
         {
+            "name": "evenement/evenement",
+            "version": "v3.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/igorw/evenement.git",
+                "reference": "531bfb9d15f8aa57454f5f0285b18bec903b8fb7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/igorw/evenement/zipball/531bfb9d15f8aa57454f5f0285b18bec903b8fb7",
+                "reference": "531bfb9d15f8aa57454f5f0285b18bec903b8fb7",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Evenement": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": ["MIT"],
+            "authors": [
+                {
+                    "name": "Igor Wiedler",
+                    "email": "igor@wiedler.ch"
+                }
+            ],
+            "description": "Événement is a very simple event dispatching library for PHP",
+            "keywords": ["event-dispatcher", "event-emitter"],
+            "support": {
+                "issues": "https://github.com/igorw/evenement/issues",
+                "source": "https://github.com/igorw/evenement/tree/master"
+            },
+            "time": "2017-07-23T21:35:13+00:00"
+        },
+        {
             "name": "fruitcake/laravel-cors",
             "version": "v2.2.0",
             "source": {
@@ -2446,6 +2488,63 @@
             "time": "2022-01-27T09:35:39+00:00"
         },
         {
+            "name": "phpoffice/phpspreadsheet",
+            "version": "1.18.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
+                "reference": "418cd304e8e6b417ea79c3b29126a25dc4b1170c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/418cd304e8e6b417ea79c3b29126a25dc4b1170c",
+                "reference": "418cd304e8e6b417ea79c3b29126a25dc4b1170c",
+                "shasum": ""
+            },
+            "require": {
+                "ext-ctype": "*",
+                "ext-dom": "*",
+                "ext-fileinfo": "*",
+                "ext-gd": "*",
+                "ext-iconv": "*",
+                "ext-libxml": "*",
+                "ext-mbstring": "*",
+                "ext-simplexml": "*",
+                "ext-xml": "*",
+                "ext-xmlreader": "*",
+                "ext-xmlwriter": "*",
+                "ext-zip": "*",
+                "ext-zlib": "*",
+                "ezyang/htmlpurifier": "^4.13",
+                "maennchen/zipstream-php": "^2.1",
+                "markbaker/complex": "^2.0",
+                "markbaker/matrix": "^2.0",
+                "php": "^7.2 || ^8.0",
+                "psr/http-client": "^1.0",
+                "psr/http-factory": "^1.0",
+                "psr/simple-cache": "^1.0"
+            },
+            "require-dev": {
+                "dealerdirect/phpcodesniffer-composer-installer": "dev-master",
+                "dompdf/dompdf": "^1.0",
+                "friendsofphp/php-cs-fixer": "^2.18",
+                "jpgraph/jpgraph": "^4.0",
+                "mpdf/mpdf": "^8.0",
+                "phpcompatibility/php-compatibility": "^9.3",
+                "phpstan/phpstan": "^0.12.82",
+                "phpstan/phpstan-phpunit": "^0.12.18",
+                "phpunit/phpunit": "^8.5",
+                "squizlabs/php_codesniffer": "^3.5",
+                "tecnickcom/tcpdf": "^6.3"
+            },
+            "suggest": {
+                "dompdf/dompdf": "Option for rendering PDF with PDF Writer (doesn't yet support PHP8)",
+                "jpgraph/jpgraph": "Option for rendering charts, or including charts with PDF or HTML Writers",
+                "mpdf/mpdf": "Option for rendering PDF with PDF Writer",
+                "tecnickcom/tcpdf": "Option for rendering PDF with PDF Writer (doesn't yet support PHP8)"
+            }
+        },
+        {
             "name": "pbmedia/laravel-ffmpeg",
             "version": "7.8.1",
             "source": {
@@ -2556,160 +2655,65 @@
                 "phpunit/phpunit": "^9.5.10"
             },
             "suggest": {
-                "php-ffmpeg/extras": "A compilation of common audio & video drivers for PHP-FFMpeg",
-                "name": "phpoffice/phpspreadsheet",
-                "version": "1.18.0",
-                "source": {
-                    "type": "git",
-                    "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                    "reference": "418cd304e8e6b417ea79c3b29126a25dc4b1170c"
-                },
-                "dist": {
-                    "type": "zip",
-                    "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/418cd304e8e6b417ea79c3b29126a25dc4b1170c",
-                    "reference": "418cd304e8e6b417ea79c3b29126a25dc4b1170c",
-                    "shasum": ""
-                },
-                "require": {
-                    "ext-ctype": "*",
-                    "ext-dom": "*",
-                    "ext-fileinfo": "*",
-                    "ext-gd": "*",
-                    "ext-iconv": "*",
-                    "ext-libxml": "*",
-                    "ext-mbstring": "*",
-                    "ext-simplexml": "*",
-                    "ext-xml": "*",
-                    "ext-xmlreader": "*",
-                    "ext-xmlwriter": "*",
-                    "ext-zip": "*",
-                    "ext-zlib": "*",
-                    "ezyang/htmlpurifier": "^4.13",
-                    "maennchen/zipstream-php": "^2.1",
-                    "markbaker/complex": "^2.0",
-                    "markbaker/matrix": "^2.0",
-                    "php": "^7.2 || ^8.0",
-                    "psr/http-client": "^1.0",
-                    "psr/http-factory": "^1.0",
-                    "psr/simple-cache": "^1.0"
-                },
-                "require-dev": {
-                    "dealerdirect/phpcodesniffer-composer-installer": "dev-master",
-                    "dompdf/dompdf": "^1.0",
-                    "friendsofphp/php-cs-fixer": "^2.18",
-                    "jpgraph/jpgraph": "^4.0",
-                    "mpdf/mpdf": "^8.0",
-                    "phpcompatibility/php-compatibility": "^9.3",
-                    "phpstan/phpstan": "^0.12.82",
-                    "phpstan/phpstan-phpunit": "^0.12.18",
-                    "phpunit/phpunit": "^8.5",
-                    "squizlabs/php_codesniffer": "^3.5",
-                    "tecnickcom/tcpdf": "^6.3"
-                },
-                "suggest": {
-                    "dompdf/dompdf": "Option for rendering PDF with PDF Writer (doesn't yet support PHP8)",
-                    "jpgraph/jpgraph": "Option for rendering charts, or including charts with PDF or HTML Writers",
-                    "mpdf/mpdf": "Option for rendering PDF with PDF Writer",
-                    "tecnickcom/tcpdf": "Option for rendering PDF with PDF Writer (doesn't yet support PHP8)"
-                },
-                "type": "library",
-                "autoload": {
-                    "psr-4": {
-                        "FFMpeg\\": "src/FFMpeg",
-                        "Alchemy\\BinaryDriver\\": "src/Alchemy/BinaryDriver"
-                    }
-                },
-                "notification-url": "https://packagist.org/downloads/",
-                "license": ["MIT"],
-                "authors": [
-                    {
-                        "name": "Romain Neutron",
-                        "email": "imprec@gmail.com",
-                        "homepage": "http://www.lickmychip.com/"
-                    },
-                    {
-                        "name": "Phraseanet Team",
-                        "email": "info@alchemy.fr",
-                        "homepage": "http://www.phraseanet.com/"
-                    },
-                    {
-                        "name": "Patrik Karisch",
-                        "email": "patrik@karisch.guru",
-                        "homepage": "http://www.karisch.guru"
-                    },
-                    {
-                        "name": "Romain Biard",
-                        "email": "romain.biard@gmail.com",
-                        "homepage": "https://www.strime.io/"
-                    },
-                    {
-                        "name": "Jens Hausdorf",
-                        "email": "hello@jens-hausdorf.de",
-                        "homepage": "https://jens-hausdorf.de"
-                    },
-                    {
-                        "name": "Pascal Baljet",
-                        "email": "pascal@protone.media",
-                        "homepage": "https://protone.media"
-                    }
-                ],
-                "description": "FFMpeg PHP, an Object Oriented library to communicate with AVconv / ffmpeg",
-                "keywords": [
-                    "audio",
-                    "audio processing",
-                    "avconv",
-                    "avprobe",
-                    "ffmpeg",
-                    "ffprobe",
-                    "video",
-                    "video processing"
-                ],
-                "support": {
-                    "issues": "https://github.com/PHP-FFMpeg/PHP-FFMpeg/issues",
-                    "source": "https://github.com/PHP-FFMpeg/PHP-FFMpeg/tree/v1.0.1"
-                },
-                "time": "2022-05-18T15:52:06+00:00",
-                "PhpOffice\\PhpSpreadsheet\\": "src/PhpSpreadsheet"
+                "php-ffmpeg/extras": "A compilation of common audio & video drivers for PHP-FFMpeg"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "FFMpeg\\": "src/FFMpeg",
+                    "Alchemy\\BinaryDriver\\": "src/Alchemy/BinaryDriver"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": ["MIT"],
             "authors": [
                 {
-                    "name": "Maarten Balliauw",
-                    "homepage": "https://blog.maartenballiauw.be"
+                    "name": "Romain Neutron",
+                    "email": "imprec@gmail.com",
+                    "homepage": "http://www.lickmychip.com/"
                 },
                 {
-                    "name": "Mark Baker",
-                    "homepage": "https://markbakeruk.net"
+                    "name": "Phraseanet Team",
+                    "email": "info@alchemy.fr",
+                    "homepage": "http://www.phraseanet.com/"
                 },
                 {
-                    "name": "Franck Lefevre",
-                    "homepage": "https://rootslabs.net"
+                    "name": "Patrik Karisch",
+                    "email": "patrik@karisch.guru",
+                    "homepage": "http://www.karisch.guru"
                 },
                 {
-                    "name": "Erik Tilt"
+                    "name": "Romain Biard",
+                    "email": "romain.biard@gmail.com",
+                    "homepage": "https://www.strime.io/"
                 },
                 {
-                    "name": "Adrien Crivelli"
+                    "name": "Jens Hausdorf",
+                    "email": "hello@jens-hausdorf.de",
+                    "homepage": "https://jens-hausdorf.de"
+                },
+                {
+                    "name": "Pascal Baljet",
+                    "email": "pascal@protone.media",
+                    "homepage": "https://protone.media"
                 }
             ],
-            "description": "PHPSpreadsheet - Read, Create and Write Spreadsheet documents in PHP - Spreadsheet engine",
-            "homepage": "https://github.com/PHPOffice/PhpSpreadsheet",
+            "description": "FFMpeg PHP, an Object Oriented library to communicate with AVconv / ffmpeg",
             "keywords": [
-                "OpenXML",
-                "excel",
-                "gnumeric",
-                "ods",
-                "php",
-                "spreadsheet",
-                "xls",
-                "xlsx"
+                "audio",
+                "audio processing",
+                "avconv",
+                "avprobe",
+                "ffmpeg",
+                "ffprobe",
+                "video",
+                "video processing"
             ],
             "support": {
-                "issues": "https://github.com/PHPOffice/PhpSpreadsheet/issues",
-                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/1.18.0"
+                "issues": "https://github.com/PHP-FFMpeg/PHP-FFMpeg/issues",
+                "source": "https://github.com/PHP-FFMpeg/PHP-FFMpeg/tree/v1.0.1"
             },
-            "time": "2021-05-31T18:21:15+00:00"
+            "time": "2022-02-22T15:54:06+00:00"
         },
         {
             "name": "phpoption/phpoption",
