@@ -31,7 +31,7 @@ class CouponController extends Controller
         $cartType = CartType::firstWhere('type', 'cart');
 
         if (Auth::check()) {
-            $cart = Cart::where('user_id', 2)
+            $cart = Cart::where('user_id', Auth::user()->id)
                 ->without(['course', 'cartType'])
                 ->where('cart_type_id', $cartType->id)
                 ->get();
@@ -103,12 +103,13 @@ class CouponController extends Controller
 
         if (!$course) abort(422, 'Không tồn tại khóa học này!');
 
-        $helper = new HelperController;
-
-        $coupon = $helper->getCoupon($code, $course->id);
+        $coupon = CourseCoupon::with('coupon')
+            ->where('code', $code)
+            ->where('course_id', $course->id)
+            ->firstWhere("status", 1);
 
         if (empty($coupon)) {
-            return abort(420, 'Mã vừa nhập không chính xác!');
+            return response(['message' => 'Mã vừa nhập không chính xác!']);
         }
 
         $coupon = collect($coupon)->only(['course_id', 'coupon_id', 'code', 'discount_price']);
@@ -120,11 +121,18 @@ class CouponController extends Controller
             $original_price = $course->price->format_price; // 999.000
             $discount_price = $coupon['discount_price']; // 999.000
 
-            $total = $original_price - $discount_price;
-            if ($total == 0) $isFreeCoupon = true;
-            else $saleOff = round(($total / $original_price) * 100);
+            $current_price = $original_price - $discount_price;
+            if ($current_price == 0) $isFreeCoupon = true;
+            else $saleOff = round(($current_price / $original_price) * 100);
         }
 
-        return response(['saleOff' => $saleOff, 'coupon' => $coupon, 'isFreeCoupon' => $isFreeCoupon]);
+        return response(
+            [
+                'saleOff' => $saleOff,
+                'coupon' => $coupon,
+                'isFreeCoupon' => $isFreeCoupon,
+                'discount' => number_format($current_price, 3, '.', '.')
+            ]
+        );
     }
 }

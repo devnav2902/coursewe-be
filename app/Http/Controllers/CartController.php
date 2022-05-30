@@ -44,18 +44,6 @@ class CartController extends Controller
         $cart->transform(function ($item) {
             $item->course_coupon;
 
-            if (isset($item->course->price) && isset($item->course_coupon)) {
-                $original_price = $item->course->price->format_price;
-                $discount_price =  $item->course_coupon->discount_price;
-
-                $result = $original_price - $discount_price;
-                $item->course_coupon->purchase_price = ($discount_price == 0
-                    ? 0
-                    : $result == 0)
-                    ? 0
-                    : number_format($original_price - $discount_price, 3, '.');
-            }
-
             return $item;
         });
 
@@ -64,30 +52,35 @@ class CartController extends Controller
         $list = [];
         $cartType->each(function ($item) use ($cart, &$list) {
             $data = [];
-            $original_price = 0.0; // Tổng giá trong giỏ hàng
+            $sum_original_price = 0.0; // Tổng giá trong giỏ hàng
             $current_price = 0.0; // Tổng giá sau khi apply khuyến mãi trong giỏ hàng
 
             $dataCart = $cart->where('cart_type_id', $item->id);
-            $dataCart->each(function ($item) use (&$data, &$original_price, &$current_price) {
+            $dataCart->each(function ($item) use (&$data, &$sum_original_price, &$current_price) {
                 $filtered = $item->only(['coupon_code', 'course_coupon']);
                 $course = $item->course->toArray();
                 $merge = array_merge($course, $filtered);
 
                 array_push($data, $merge);
 
-                $format_price = $merge['price']['format_price'];
-                $original_price += $format_price;
+                $original_price = $merge['price']['original_price'];
+                $sum_original_price += $original_price;
 
                 $has_coupon = isset($merge['course_coupon']) ? true : false;
-                $discount_price = $has_coupon ? $merge['course_coupon']['discount_price'] : 0;
+                $discount_price = $has_coupon
+                    ? str_replace('.', '', $merge['course_coupon']['discount_price'])
+                    : $original_price;
 
-                $current_price +=  $format_price - $discount_price;
+                $current_price += ($has_coupon && $discount_price == $original_price ? 0.0 : $discount_price);
             });
 
             $value = ['cartType' => $item, 'data' => $data];
 
-            $value['original_price'] = number_format($original_price, 3, '.', '.');
-            $value['current_price'] = number_format($current_price, 3, '.', '.');
+            $value['original_price'] = number_format($sum_original_price, 0, '.', '.');
+            $value['current_price'] = $current_price == 0
+                ? '0'
+                : number_format($current_price, 0, '.', '.');
+            $value['discount'] = number_format($sum_original_price - $current_price, 0, '.', '.');
 
             $list[] = $value;
         });
