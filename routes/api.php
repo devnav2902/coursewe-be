@@ -11,6 +11,7 @@ use App\Http\Controllers\CourseImageController;
 use App\Http\Controllers\CourseVideoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CreateCourseController;
+use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\OverviewController;
@@ -87,6 +88,8 @@ Route::get('/search', [SearchController::class, 'index'])->name('search');
 // COUPON
 Route::post('/coupon/apply-coupon', [CouponController::class, 'checkCoupon']);
 Route::post('/coupon/courses/apply-coupon', [CouponController::class, 'checkCouponWithCourses']);
+// CURRENCY
+Route::get('/currency/{from}/{to}/{money}', [CurrencyController::class, 'convert']);
 
 // CART
 Route::get('/cart/me', [CartController::class, 'get']);
