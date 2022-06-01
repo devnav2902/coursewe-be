@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CreateCourseController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\FreeEnrollController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\OverviewController;
 use App\Http\Controllers\ProfileController;
@@ -185,4 +186,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/promotions/create-coupon/', [PromotionsController::class, 'createCoupon']);
     // SUBMIT FOR REVIEW
     Route::get('/checking-publish-requirements/{courseId}', [PublishCourseController::class, 'checkingPublishRequirements']);
+
+    // ENROLLMENT
+    Route::post('/free-enroll', [FreeEnrollController::class, 'freeEnroll']);
 });

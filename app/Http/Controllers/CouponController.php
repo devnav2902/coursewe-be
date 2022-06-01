@@ -118,8 +118,8 @@ class CouponController extends Controller
         $isFreeCoupon = false;
 
         if ($coupon) {
-            $original_price = $course->price->format_price; // 999.000
-            $discount_price = $coupon['discount_price']; // 999.000
+            $original_price = $course->price->original_price; // 999000
+            $discount_price = str_replace('.', '', $coupon['discount_price']); // 999000
 
             $current_price = $original_price - $discount_price;
             if ($current_price == 0) $isFreeCoupon = true;
@@ -131,7 +131,7 @@ class CouponController extends Controller
                 'saleOff' => $saleOff,
                 'coupon' => $coupon,
                 'isFreeCoupon' => $isFreeCoupon,
-                'discount' => number_format($current_price, 3, '.', '.')
+                'discount' => number_format($current_price, 0, '.', '.')
             ]
         );
     }
