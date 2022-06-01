@@ -23,7 +23,7 @@ class ProgressLogsController extends Controller
                 $query->select('lectures.id');
             }])->select('id', 'slug')->firstWhere('id', $course_id);
 
-            $lecture_id = $course->lecture->max('id');
+            $lecture_id = $course->lecture->min('id');
 
             return response(['dataLastWatched' => [
                 'lecture_id' => $lecture_id,
@@ -39,6 +39,7 @@ class ProgressLogsController extends Controller
         $dataLastWatched = ProgressLogs::where('course_id', $course_id)
             ->where('user_id', Auth::user()->id)
             ->firstWhere('lecture_id', $lecture_id);
+
         return response(['dataLastWatched' => $dataLastWatched]);
     }
     function saveLastWatched($course_id, $lecture_id, $second)
