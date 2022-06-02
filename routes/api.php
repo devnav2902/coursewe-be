@@ -76,6 +76,7 @@ Route::get('/instructor/profile/{slug}', [InstructorController::class, 'profile'
 
 //ADMIN
 Route::get('/admin/submission-courses-list', [AdminController::class, 'reviewCourses']);
+Route::get('/admin/course/{id}', [AdminController::class, 'getCourseOfAuthorAndAdminById']);
 
 // INSTRUCTIONAL LEVEL
 

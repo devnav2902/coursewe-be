@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\CourseOutcome;
 use App\Models\CourseRequirements;
 use App\Models\Rating;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -233,7 +234,7 @@ class CourseController extends Controller
             ->with([
                 'lecture',
                 'section',
-                'pprogress_logs'
+                'progress_logs'
             ])
             ->withCount(['course_bill', 'rating', 'section', 'lecture'])
             ->firstWhere('author_id', Auth::user()->id);
@@ -243,6 +244,7 @@ class CourseController extends Controller
 
         return response()->json(['course' => $course]);
     }
+
     function getCourseById($id)
     {
         validator(['id' => $id], ['id' => 'required'])->validate();
