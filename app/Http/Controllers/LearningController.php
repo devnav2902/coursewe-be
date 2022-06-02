@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\Lecture;
+use App\Models\ProgressLogs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,7 +27,7 @@ class LearningController extends Controller
                     $q->where('user_id', Auth::user()->id);
                 }
             )
-            ->paginate(10, ['id', 'title', 'slug', 'author_id', 'thumbnail']);
+            ->paginate(12, ['id', 'title', 'slug', 'author_id', 'thumbnail']);
 
         $courses->transform(function ($course) {
             $totalLecture = $course->lecture->count();
@@ -71,6 +72,8 @@ class LearningController extends Controller
         $course = Course::without('category', 'course_bill')
             ->firstWhere('slug', $url);
 
+        if (empty($course)) return response(['Khóa học không tồn tại!'], 404);
+
         return response()->json(compact(
             ['course']
         ));
@@ -106,7 +109,7 @@ class LearningController extends Controller
     }
     function getVideo($course_slug, $lectureId)
     {
-        $video = Course::setEagerLoads([])
+        $course = Course::setEagerLoads([])
             ->with(
                 [
                     'lecture' => function ($query) use ($lectureId) {
@@ -120,9 +123,13 @@ class LearningController extends Controller
             ->select(['id'])
             ->firstWhere('slug', $course_slug);
 
-        $lecture = $video->lecture;
-        if (!count($lecture)) return response(['message' => 'Không có bài giảng này!'], 404);
+        if (!$course || empty($course->lecture[0])) return response(['message' => 'Không có bài giảng này!'], 404);
+        $lecture = $course->lecture[0];
 
-        return response(['lecture' => $lecture[0]]);
+        $dataLastWatched = ProgressLogs::where('course_id', $course->id)
+            ->where('user_id', Auth::user()->id)
+            ->firstWhere('lecture_id', $lecture->id);
+
+        return response(['lecture' => $lecture, 'dataLastWatched' => $dataLastWatched]);
     }
 }

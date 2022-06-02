@@ -15,6 +15,7 @@ class PurchaseHistoryController extends Controller
                 $q->withOnly(['coupon']);
             }
         ])
+            ->orderBy('created_at', 'desc')
             ->where('user_id', Auth::user()->id)
             ->get();
 
