@@ -247,10 +247,13 @@ class CourseController extends Controller
     {
         validator(['id' => $id], ['id' => 'required'])->validate();
 
-        return Course::where('isPublished', 1)
+        $course = Course::where('isPublished', 1)
             ->with(['lecture', 'section'])
             ->withAvg('rating', 'rating')
             ->firstWhere('id', $id);
+
+        if (empty($course)) return response(['Không tồn tại khóa học này'], 403);
+        return response($course);
     }
 
     function getCourseBySlug($slug)
@@ -261,16 +264,17 @@ class CourseController extends Controller
                 'lecture',
                 'section',
                 'course_requirements',
-                'course_outcome'
+                'course_outcome',
+                'rating'
                 // 'lecture.progress' => function ($q) {
                 //     $q->where('progress', 1);
                 // }
             ])
             ->withAvg('rating', 'rating')
             ->withCount(['course_bill', 'rating', 'section', 'lecture'])
-            ->get();
+            ->first();
 
-        if (!count($course)) abort(404);
+        if (empty($course)) abort(404);
 
         // $course->transform(function ($course) {
         //     $course->setRelation('rating', $course->rating()->paginate(10));
@@ -281,7 +285,7 @@ class CourseController extends Controller
         //     return $course;
         // });
 
-        $course = $course[0];
+        $course->setRelation('rating', $course->rating()->paginate(10));
 
         // RATING
         $graph = $this->ratingGraph($course);

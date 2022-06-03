@@ -16,7 +16,7 @@ class CouponController extends Controller
     {
         $request->validate([
             'courses' => 'array|required',
-            'coupon_code' => 'required'
+            'coupon_code' => 'required',
         ]);
 
         $courses = $request->input('courses');
@@ -27,6 +27,8 @@ class CouponController extends Controller
             ->where('status', 1)
             ->get();
 
+        if (count($dataCourseWithCoupon) < 1)
+            return response(['message' => 'Mã giảm giá không tồn tại!'], 400);
 
         $cartType = CartType::firstWhere('type', 'cart');
 
@@ -91,7 +93,7 @@ class CouponController extends Controller
             ['coupon_code']
         );
 
-        return $dataCartToUpdate;
+        return ['message' => 'Áp dụng mã giảm giá thành công!'];
     }
 
     function checkCoupon(Request $request)
