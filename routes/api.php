@@ -82,6 +82,7 @@ Route::get('/admin/submission-courses-list', [AdminController::class, 'reviewCou
 // INSTRUCTIONAL LEVEL
 
 // RATING
+Route::get('/course/{courseId}/rating', [RatingController::class, 'getRatingByCourseId']);
 
 //  SEARCH  
 Route::post('/autocomplete/search', [SearchController::class, 'search']);
