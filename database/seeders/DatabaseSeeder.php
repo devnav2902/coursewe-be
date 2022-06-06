@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\NotificationPurchase;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -26,7 +27,8 @@ class DatabaseSeeder extends Seeder
             RegistrationSeeder::class,
             RatingSeeder::class,
             CartTypeSeeder::class,
-            CartSeeder::class
+            CartSeeder::class,
+            NotificationPurchaseSeeder::class
         ]);
     }
 }
