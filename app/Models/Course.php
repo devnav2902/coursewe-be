@@ -99,6 +99,6 @@ class Course extends Model
     }
     function getUpdatedAtAttribute($date)
     {
-        return Carbon::parse($date)->isoFormat('DD/MM/YYYY');
+        return Carbon::parse($date)->isoFormat('DD/MM/YYYY HH:mm');
     }
 }
