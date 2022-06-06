@@ -32,13 +32,17 @@ class CategoriesController extends Controller
             $query->whereIn('categories_course.category_id', $topics_id);
         })
             ->select('title', 'id', 'author_id', 'slug', 'price_id', 'thumbnail', 'created_at', 'instructional_level_id', 'subtitle')
-            ->withCount(['course_bill', 'rating', 'section', 'lecture'])
+            ->withCount(['course_bill', 'rating'])
             ->withAvg('rating', 'rating')
             ->having('rating_avg_rating', ">=", 4.0)
             ->with([
-                'categories:category_id,parent_id,title,slug',
+                'price',
+                'instructional_level',
                 'course_outcome:order,description,id,course_id',
-                'course_requirements:order,description,id,course_id'
+                'course_requirements:order,description,id,course_id',
+                'author' => function ($q) {
+                    $q->setEagerLoads([])->select('users.id', 'fullname', 'slug');
+                }
             ])
             ->take(10);
 
@@ -48,34 +52,38 @@ class CategoriesController extends Controller
     function featuredCourses($limit = 10)
     {
         $queryGetCourses = Course::select('title', 'id', 'author_id', 'slug', 'price_id', 'thumbnail', 'created_at', 'instructional_level_id', 'subtitle')
+            ->setEagerLoads([])
             ->with([
-                'categories:category_id,parent_id,title,slug',
+                'price',
+                'instructional_level',
                 'course_outcome:order,description,id,course_id',
-                'course_requirements:order,description,id,course_id'
+                'course_requirements:order,description,id,course_id',
+                'author' => fn ($q) =>
+                $q->setEagerLoads([])->select('users.id', 'fullname', 'slug')
             ])
-            ->withCount(['course_bill', 'rating', 'section', 'lecture'])
-            ->without(['course_bill', 'rating'])
+            ->withCount(['course_bill', 'rating'])
             ->withAvg('rating', 'rating')
             ->having('rating_avg_rating', '>=', 4.0)
             ->take($limit);
 
         $courses = $queryGetCourses->get();
 
-        return response()->json(compact('courses'));
+        return response(compact('courses'));
     }
 
     function featuredCategories($limit)
     {
-        $queryGetCourses = CategoriesCourse::whereHas(
-            'course',
-            function ($q) {
-                $q
-                    ->setEagerLoads([])
-                    ->select('id', 'title')
-                    ->withAvg('rating', 'rating')
-                    ->having('rating_avg_rating', '>=', 4.0);
-            }
-        );
+        $queryGetCourses = CategoriesCourse::select('course_id', 'category_id')
+            ->whereHas(
+                'course',
+                function ($q) {
+                    $q
+                        ->setEagerLoads([])
+                        ->select('id', 'title')
+                        ->withAvg('rating', 'rating')
+                        ->having('rating_avg_rating', '>=', 4.0);
+                }
+            );
 
         $featured_courses = $queryGetCourses->get();
 
@@ -87,11 +95,7 @@ class CategoriesController extends Controller
         $helperController = new HelperController();
         $topLevelCategories = $helperController->getTopLevelCategories($categories_id, $limit);
 
-        return response()->json(
-            [
-                'topLevelCategories' => $topLevelCategories
-            ]
-        );
+        return response(compact('topLevelCategories'));
     }
 
     function getCoursesByCategorySlug(Request $request, $slug)

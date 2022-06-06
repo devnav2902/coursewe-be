@@ -43,7 +43,17 @@ class CourseController extends Controller
 
     function bestSellingCourses()
     {
-        $courses = Course::orderBy('updated_at', 'desc')
+        $courses = Course::setEagerLoads([])
+            ->with([
+                'price',
+                'instructional_level',
+                'course_outcome:order,description,id,course_id',
+                'course_requirements:order,description,id,course_id',
+                'author' => fn ($q) =>
+                $q->setEagerLoads([])->select('users.id', 'fullname', 'slug')
+            ])
+            ->where('isPublished', 1)
+            ->orderBy('updated_at', 'desc')
             ->select('title', 'id', 'author_id', 'slug', 'price_id', 'thumbnail', 'created_at', 'instructional_level_id', 'subtitle')
             ->withCount(['course_bill', 'rating'])
             ->having('course_bill_count', '>=', 5)
@@ -51,17 +61,26 @@ class CourseController extends Controller
             ->take(10)
             ->get();
 
-        return response()->json(compact('courses'));
+        return response(compact('courses'));
     }
 
     function getLatestCourses()
     {
         $query = Course::where('isPublished', 1)
+            ->setEagerLoads([])
+            ->with([
+                'price',
+                'instructional_level',
+                'course_outcome:order,description,id,course_id',
+                'course_requirements:order,description,id,course_id',
+                'author' => fn ($q) =>
+                $q->setEagerLoads([])->select('users.id', 'fullname', 'slug')
+            ])
             ->orderBy('created_at', 'desc')
             ->select('title', 'id', 'author_id', 'slug', 'price_id', 'thumbnail', 'created_at', 'instructional_level_id', 'subtitle')
             ->withCount(['course_bill', 'rating'])
             ->withAvg('rating', 'rating')
-            ->take(12);
+            ->take(10);
 
         $queryLatestCourses = clone $query;
         $latestCourses = $queryLatestCourses
@@ -243,6 +262,19 @@ class CourseController extends Controller
 
         return response()->json(['course' => $course]);
     }
+
+    function coursePreview($id)
+    {
+        validator(['id' => $id], ['id' => 'required'])->validate();
+
+        $course = Course::with(['lecture', 'section'])
+            ->withAvg('rating', 'rating')
+            ->firstWhere('id', $id);
+
+        if (empty($course)) return response(['Không tồn tại khóa học này'], 403);
+        return response(compact('course'));
+    }
+
     function getCourseById($id)
     {
         validator(['id' => $id], ['id' => 'required'])->validate();
