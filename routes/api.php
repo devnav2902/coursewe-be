@@ -190,6 +190,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/promotions/create-coupon/', [PromotionsController::class, 'createCoupon']);
     // SUBMIT FOR REVIEW
     Route::get('/checking-publish-requirements/{courseId}', [PublishCourseController::class, 'checkingPublishRequirements']);
+    Route::post('/submit-for-review', [PublishCourseController::class, 'submitForReview']);
 
     //ADMIN
     Route::get('/admin/submission-courses-list', [AdminController::class, 'reviewCourses']);
