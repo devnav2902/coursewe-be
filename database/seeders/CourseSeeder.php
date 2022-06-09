@@ -56,7 +56,7 @@ class CourseSeeder extends Seeder
                     'title' => $course['title'],
                     'description' => $description,
                     'slug' => Str::slug($course['title'] . '-' . random_int(1, 1000)),
-                    'video_demo' => 'lesson/test.mp4',
+                    'video_demo' => 'video_demo/1. Welcome To The Course.mp4',
                     'isPublished' => 1,
                     'thumbnail' => $thumbnail[random_int(1, count($thumbnail) - 1)],
                     'created_at' => $created_at

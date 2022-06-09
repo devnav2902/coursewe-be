@@ -21,15 +21,15 @@ class RatingSeeder extends Seeder
             ->get(['course_id', 'user_id']);
 
 
-        foreach ($courses as $course) {
+        for ($i = 0; $i < count($courses); $i++) {
             $commentRandom =
                 $comment[random_int(0, count($comment) - 1)];
 
             DB::table('rating')->insert([
-                'course_id' => $course->course_id,
-                'user_id' => $course->user_id,
+                'course_id' => $courses[$i]->course_id,
+                'user_id' => $courses[$i]->user_id,
                 'content' => $commentRandom,
-                'rating' => random_int(3, 5),
+                'rating' => random_int(4, 5),
             ]);
         }
     }

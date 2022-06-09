@@ -15,6 +15,7 @@ class CreateCourseBillTable extends Migration
     public function up()
     {
         Schema::create('course_bill', function (Blueprint $table) {
+            $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('course_id');
             $table->char('price');
@@ -24,8 +25,6 @@ class CreateCourseBillTable extends Migration
             $table->string('promo_code')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-
-            $table->primary(['user_id', 'course_id']);
         });
     }
 

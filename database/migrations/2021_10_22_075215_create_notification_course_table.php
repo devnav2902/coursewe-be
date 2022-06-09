@@ -17,11 +17,8 @@ class CreateNotificationCourseTable extends Migration
         Schema::create('notification_course', function (Blueprint $table) {
             $table->increments('id');
 
-            $table->unsignedInteger('entity_id');
+            $table->unsignedInteger('notification_id');
             $table->unsignedInteger('course_id');
-
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
         });
     }
 

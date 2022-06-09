@@ -15,7 +15,7 @@ class CreateNotificationEntityTable extends Migration
     {
         Schema::create('notification_entity', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('option');
+            $table->string('type');
             $table->string('text_start');
             $table->string('text_end');
         });

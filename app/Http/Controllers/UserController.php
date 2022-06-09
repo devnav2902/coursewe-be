@@ -57,6 +57,29 @@ class UserController extends Controller
 
             if (!$existedUserCart) {
                 Cart::where('session_id', $session_id)->update(['user_id' => $user_id]);
+
+                if (Auth::check()) {
+                    $coursePurchased = Cart::with([
+                        'course' => fn ($q) => $q->setEagerLoads([])->select('id', 'author_id'),
+                        'course.course_bill' => fn ($q) => $q->select('course_id')
+                    ])
+                        ->where('user_id', $user_id)
+                        ->where(function ($q) use ($user_id) {
+                            $q
+                                ->whereHas('course', function ($q) use ($user_id) {
+                                    $q->where('author_id', $user_id);
+                                })
+                                ->orWhereHas('course.course_bill', function ($q) use ($user_id) {
+                                    $q->where('user_id', $user_id);
+                                });
+                        })
+                        ->get();
+
+                    $arrCourseId = $coursePurchased->pluck('course_id');
+                    Cart::where('user_id', $user_id)
+                        ->whereIn('course_id', $arrCourseId)
+                        ->delete();
+                }
             }
         }
 

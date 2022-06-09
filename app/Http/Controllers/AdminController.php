@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\ReviewCourse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
@@ -12,9 +11,10 @@ class AdminController extends Controller
     function reviewCourses($limit = 5)
     {
         $courses = ReviewCourse::with(['course' => function ($q) {
-            $q->where('isPublished', 0)->select('id', 'author_id', 'title');
-        }])->paginate($limit);
-        return response()->json(['courses' => $courses]);
+            $q->setEagerLoads([])->with(['author', 'price']);
+        }])->paginate(10);
+
+        return response(['courses' => $courses]);
     }
     public function getCourseOfAuthorAndAdminById($id)
     {

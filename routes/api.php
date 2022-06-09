@@ -19,6 +19,7 @@ use App\Http\Controllers\OverviewController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LearningController;
 use App\Http\Controllers\LectureController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\ProgressLogsController;
@@ -77,13 +78,10 @@ Route::post('/user/sign-up', [UserController::class, 'signUp']);
 Route::get('/user', [UserController::class, 'getCurrentUser']);
 Route::get('/instructor/profile/{slug}', [InstructorController::class, 'profile']);
 
-//ADMIN
-Route::get('/admin/submission-courses-list', [AdminController::class, 'reviewCourses']);
-Route::get('/admin/course/{id}', [AdminController::class, 'getCourseOfAuthorAndAdminById']);
-
 // INSTRUCTIONAL LEVEL
 
 // RATING
+Route::get('/course/{courseId}/rating', [RatingController::class, 'getRatingByCourseId']);
 
 //  SEARCH  
 Route::post('/autocomplete/search', [SearchController::class, 'search']);
@@ -101,6 +99,11 @@ Route::delete('/cart/{id}', [CartController::class, 'delete']);
 Route::patch('/saved-for-later', [CartController::class, 'savedForLater']);
 
 Route::middleware('auth:sanctum')->group(function () {
+    // NOTIFICATION
+    Route::get('/notification', [NotificationController::class, 'get']);
+    Route::patch('/notification/mark-as-read', [NotificationController::class, 'markAsRead']);
+    Route::patch('/notification/mark-all-as-read', [NotificationController::class, 'markAllAsRead']);
+
     // IMAGE COURSE
     Route::post('/course-image', [CourseImageController::class, 'updateCourseImage']);
     // VIDEO COURSE
@@ -192,6 +195,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // SUBMIT FOR REVIEW
     Route::get('/checking-publish-requirements/{courseId}', [PublishCourseController::class, 'checkingPublishRequirements']);
 
+    //ADMIN
+    Route::get('/admin/submission-courses-list', [AdminController::class, 'reviewCourses']);
+
     // ENROLLMENT
     Route::post('/free-enroll', [FreeEnrollController::class, 'freeEnroll']);
+
+    // PREVIEW
+    Route::get('/course/preview/{courseId}', [CourseController::class, 'coursePreview']);
 });

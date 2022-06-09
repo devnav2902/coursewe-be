@@ -30,6 +30,7 @@ class Cart extends Model
                 "course_id",
                 "discount_price",
                 "status",
+                'coupon_id'
             )
             ->without('coupon')
             ->where('code', $this->coupon_code);

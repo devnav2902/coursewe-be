@@ -24,6 +24,8 @@ class RegistrationSeeder extends Seeder
             for ($i = 0; $i < 100; $i++) {
                 $user = DB::table('users')
                     ->where('id', '<>', $course->author_id)
+                    ->where('id', '<>', 1)
+                    ->where('id', '<>', 2)
                     ->get()
                     ->random();
 

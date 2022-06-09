@@ -5,6 +5,8 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Course extends Model
 {
@@ -20,6 +22,22 @@ class Course extends Model
         'course_requirements',
 
     ];
+
+    protected $appends = ['is_purchased'];
+
+    protected function isPurchased(): Attribute
+    {
+        return new Attribute(
+            get: function () {
+                if (!Auth::check()) return false;
+                return $this->course_bill()
+                    ->where('user_id', Auth::user()->id)
+                    ->select('user_id', 'course_id')
+                    ->first();
+            }
+        );
+    }
+
 
     function author()
     {
@@ -82,6 +100,6 @@ class Course extends Model
     }
     function getUpdatedAtAttribute($date)
     {
-        return Carbon::parse($date)->isoFormat('DD/MM/YYYY');
+        return Carbon::parse($date)->isoFormat('DD/MM/YYYY HH:mm');
     }
 }
