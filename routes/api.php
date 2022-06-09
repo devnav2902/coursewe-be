@@ -55,6 +55,7 @@ Route::get('/course/get/{slug}', [CourseController::class, 'getCourseBySlug']);
 Route::get('/instructor/course/{id}', [CourseController::class, 'getCourseOfAuthorById']);
 Route::get('/course/instructional-level', [InstructionalLevelController::class, 'get']);
 Route::get('/course/{id}', [CourseController::class, 'getCourseById']);
+Route::get('/course/draft/{id}', [CourseController::class, 'getDraftCourseById']);
 Route::get('/course/has-purchased/{course_id}', [CourseController::class, 'checkUserHasPurchased']);
 Route::get('/course/has-rated/{course_id}', [CourseController::class, 'checkUserHasRated']);
 

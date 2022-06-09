@@ -15,9 +15,6 @@ class Rating extends Model
 
     protected $with = ['user'];
 
-
-
-
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -25,5 +22,9 @@ class Rating extends Model
     public function course()
     {
         return $this->belongsTo(Course::class, 'course_id');
+    }
+    public function course_bill()
+    {
+        return $this->hasOne(CourseBill::class, 'course_id');
     }
 }

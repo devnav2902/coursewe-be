@@ -17,7 +17,8 @@ class Course extends Model
         'instructional_level',
         'price',
         'course_outcome',
-        'course_requirements'
+        'course_requirements',
+
     ];
 
     function author()

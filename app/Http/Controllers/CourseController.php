@@ -254,6 +254,14 @@ class CourseController extends Controller
             ->withAvg('rating', 'rating')
             ->firstWhere('id', $id);
     }
+    function getDraftCourseById($id)
+    {
+        validator(['id' => $id], ['id' => 'required'])->validate();
+
+        return Course::with(['lecture', 'section'])
+            ->withAvg('rating', 'rating')
+            ->firstWhere('id', $id);
+    }
 
     function getCourseBySlug($slug)
     {

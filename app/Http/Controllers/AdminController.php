@@ -13,7 +13,7 @@ class AdminController extends Controller
     {
         $courses = ReviewCourse::with(['course' => function ($q) {
             $q->where('isPublished', 0)->select('id', 'author_id', 'title');
-        }])->take($limit)->get();
+        }])->paginate($limit);
         return response()->json(['courses' => $courses]);
     }
     public function getCourseOfAuthorAndAdminById($id)
