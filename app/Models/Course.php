@@ -99,6 +99,6 @@ class Course extends Model
     }
     function getUpdatedAtAttribute($date)
     {
-        return Carbon::parse($date)->isoFormat('DD/MM/YYYY HH:mm');
+        return Carbon::parse($date, 'Asia/Ho_Chi_Minh')->isoFormat('DD/MM/YYYY HH:mm A');
     }
 }
