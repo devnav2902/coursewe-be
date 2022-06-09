@@ -252,7 +252,7 @@ class CourseController extends Controller
             ->with([
                 'lecture',
                 'section',
-                'pprogress_logs'
+                'progress_logs'
             ])
             ->withCount(['course_bill', 'rating', 'section', 'lecture'])
             ->firstWhere('author_id', Auth::user()->id);
