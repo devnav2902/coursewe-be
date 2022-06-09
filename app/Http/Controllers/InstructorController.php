@@ -70,7 +70,7 @@ class InstructorController extends Controller
             ->orderBy('updated_at', 'desc')
             ->setEagerLoads([])
             ->with(['author'])
-            ->paginate(12);
+            ->paginate(5);
 
         return response(['coursesData' => $data]);
     }

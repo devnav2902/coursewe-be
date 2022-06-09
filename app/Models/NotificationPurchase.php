@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class NotificationPurchase extends Model
 {
@@ -15,6 +16,7 @@ class NotificationPurchase extends Model
 
     function course_bill()
     {
-        return $this->belongsTo(CourseBill::class, 'course_bill_id');
+        return $this->belongsTo(CourseBill::class, 'course_bill_id')
+            ->select('id', 'title', 'thumbnail');
     }
 }

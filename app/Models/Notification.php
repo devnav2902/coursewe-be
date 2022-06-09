@@ -23,6 +23,11 @@ class Notification extends Model
         return $this->hasOne(NotificationPurchase::class, 'notification_id');
     }
 
+    function notification_quality_review()
+    {
+        return $this->hasOne(NotificationQualityReview::class, 'notification_id');
+    }
+
     function notification_entity()
     {
         return $this->belongsTo(NotificationEntity::class, 'notification_entity_id');
