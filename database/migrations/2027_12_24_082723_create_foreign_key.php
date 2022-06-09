@@ -68,8 +68,17 @@ class CreateForeignKey extends Migration
             $table->foreign('course_bill_id')->references('id')->on('course_bill');
         });
 
+        Schema::table('notification_quality_review', function (Blueprint $table) {
+            $table->foreign('notification_id')->references('id')->on('notification');
+            $table->foreign('admin_id')->references('id')->on('users');
+        });
+
         Schema::table('notification', function (Blueprint $table) {
             $table->foreign('notification_entity_id')->references('id')->on('notification_entity');
+        });
+
+        Schema::table('notification_entity', function (Blueprint $table) {
+            $table->foreign('role_id')->references('id')->on('role');
         });
 
         Schema::table('course_coupon', function (Blueprint $table) {
