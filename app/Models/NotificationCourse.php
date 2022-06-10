@@ -13,6 +13,7 @@ class NotificationCourse extends Model
     protected $table = 'notification_course';
     protected $fillable = ['notification_id', 'course_id'];
     protected $with = ['course'];
+    public $timestamps = false;
 
     function course()
     {

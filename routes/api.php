@@ -194,6 +194,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //ADMIN
     Route::get('/admin/submission-courses-list', [AdminController::class, 'reviewCourses']);
+    Route::post('/admin/quality-review', [AdminController::class, 'qualityReview']);
 
     // ENROLLMENT
     Route::post('/free-enroll', [FreeEnrollController::class, 'freeEnroll']);
