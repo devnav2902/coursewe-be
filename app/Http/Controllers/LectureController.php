@@ -160,8 +160,8 @@ class LectureController extends Controller
                 ->select('id', 'author_id')
                 ->where([['id', $courseId], ['author_id', Auth::user()->id]])
         )
-            ->whereHas('section', function ($q) {
-                $q->setEagerLoads([])->select('sections.id')->where('id', 295);
+            ->whereHas('section', function ($q) use ($sectionId) {
+                $q->setEagerLoads([])->select('sections.id')->where('id', $sectionId);
             })
             ->select('order', 'id', 'section_id')
             ->whereIn('lectures.id', collect($lectureReordered)->pluck('id')->toArray())

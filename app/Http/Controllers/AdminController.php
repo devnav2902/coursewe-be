@@ -43,6 +43,8 @@ class AdminController extends Controller
                     ['submit_for_review' => 0, 'isPublished' => $type === 'approved' ? 1 : 0]
                 );
 
+                ReviewCourse::where('course_id', $courseId)->delete();
+
                 return response(['message' => 'success']);
             }
         } catch (\Throwable $th) {

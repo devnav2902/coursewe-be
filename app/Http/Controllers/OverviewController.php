@@ -67,7 +67,7 @@ class OverviewController extends Controller
         $totalRevenueInMonth = $totalRevenueInMonth * $instructorRevenuePercentage;
         $totalRevenueInMonth = number_format($totalRevenueInMonth, 0, '.', '.');
 
-        $ratingCourses = $this->getRatingByInstructorId()->avg('rating');
+        $ratingCourses = $this->getRatingByInstructorId()->avg('rating') ?? 0;
         $numberOfRatingsInMonth = $this->numberOfRatingsInMonth();
 
         // ADMIN

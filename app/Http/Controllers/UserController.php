@@ -15,11 +15,23 @@ class UserController extends Controller
 {
     function signUp(Request $request)
     {
+        $request->validate([
+            'fullname' => 'string|required',
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
         $roleUserId = Role::select('id')->firstWhere('name', 'user');
         $avatar = 'profile_picture/1024px-User-avatar.png';
 
+        $email = $request->input('email');
+
+        $existUser = User::firstWhere('email', $email);
+
+        if ($existUser) return response(['message' => 'Tài khoản đã tồn tại!'], 400);
+
         $newUser = User::create([
-            'email' => $request->input('email'),
+            'email' => $email,
             'avatar' => $avatar,
             'fullname' => $request->input('fullname'),
             'slug' => Str::slug($request->input('fullname'), ''),

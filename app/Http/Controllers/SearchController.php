@@ -8,27 +8,18 @@ use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request) // page
     {
-        $keyword = $request->input('input-search');
-        $courses = Course::with('category')
+        $keyword = $request->input('inputSearch');
+        $courses = Course::with('categories')
             ->orderBy('title', 'asc')
             ->withAvg('rating', 'rating')
-            ->withCount('rating')
-
+            ->withCount('rating', 'lecture')
             ->where('isPublished', 1)
-            ->where('title', 'like', '%' . $request->input('input-search') . '%')
+            ->where('title', 'like', '%' . $keyword . '%')
             ->paginate(5, ['title', 'id', 'slug', 'thumbnail']);
 
-        $categories = Categories::with(
-            [
-                'course' => function ($q) {
-                    $q->where('isPublished', 1);
-                }
-            ]
-        )
-            ->get(['title', 'id', 'slug']);
-        return response()->json(['courses' => $courses, 'keyword' => $keyword, 'categories' => $categories]);
+        return response()->json(['courses' => $courses, 'keyword' => $keyword]);
     }
     public function search(Request $request)
     {
@@ -38,10 +29,11 @@ class SearchController extends Controller
         $value = $request->input('inputSearch');
 
         $data = Course::setEagerLoads([])
+            ->with(['author:fullname,id,slug'])
             ->orderBy('created_at', 'desc')
             ->where('isPublished', 1)
             ->where('title', 'like', '%' . $value . '%')
-            ->paginate(5, ['title', 'id', 'slug', 'thumbnail']);
+            ->paginate(5, ['title', 'id', 'slug', 'thumbnail', 'author_id']);
 
         return $data;
     }
