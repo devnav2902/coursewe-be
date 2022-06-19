@@ -10,25 +10,24 @@ class SearchController extends Controller
 {
     public function index(Request $request)
     {
-        $keyword = $request->input('input-search');
-        $courses = Course::with('category')
-            ->orderBy('title', 'asc')
+        $keyword = $request->input('inputSearch');
+        $courses = Course::orderBy('title', 'asc')
             ->withAvg('rating', 'rating')
-            ->withCount('rating')
-
+            ->with(['author:role_id,fullname,slug,email,avatar,id'])
+            ->withCount(['course_bill', 'rating', 'section', 'lecture'])
             ->where('isPublished', 1)
-            ->where('title', 'like', '%' . $request->input('input-search') . '%')
+            ->where('title', 'like', '%' . $keyword . '%')
             ->paginate(5, ['title', 'id', 'slug', 'thumbnail']);
 
-        $categories = Categories::with(
-            [
-                'course' => function ($q) {
-                    $q->where('isPublished', 1);
-                }
-            ]
-        )
-            ->get(['title', 'id', 'slug']);
-        return response()->json(['courses' => $courses, 'keyword' => $keyword, 'categories' => $categories]);
+        // $categories = Categories::with(
+        //     [
+        //         'course' => function ($q) {
+        //             $q->where('isPublished', 1);
+        //         }
+        //     ]
+        // )
+        //     ->get(['title', 'id', 'slug']);
+        return response()->json(['courses' => $courses, 'keyword' => $keyword]);
     }
     public function search(Request $request)
     {
