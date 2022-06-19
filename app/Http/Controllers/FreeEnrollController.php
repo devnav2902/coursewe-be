@@ -20,7 +20,7 @@ class FreeEnrollController extends Controller
         ]);
 
         $course_id = $request->input('course_id');
-        $code = $request->input('code');
+        $code = $request->input('code', []);
         $coupon = null;
 
         if (count($code)) {

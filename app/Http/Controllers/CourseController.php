@@ -306,10 +306,6 @@ class CourseController extends Controller
                 'section',
                 'course_requirements',
                 'course_outcome',
-                'rating'
-                // 'lecture.progress' => function ($q) {
-                //     $q->where('progress', 1);
-                // }
             ])
             ->withAvg('rating', 'rating')
             ->withCount(['course_bill', 'rating', 'section', 'lecture'])
@@ -317,16 +313,7 @@ class CourseController extends Controller
 
         if (empty($course)) abort(404);
 
-        // $course->transform(function ($course) {
-        //     $course->setRelation('rating', $course->rating()->paginate(10));
-
-        //     $helper = new HelperController;
-        //     $count = $helper->countProgress($course->lecture);
-        //     $course->count_progress = $count;
-        //     return $course;
-        // });
-
-        $course->setRelation('rating', $course->rating()->paginate(10));
+        // $course->setRelation('rating', $course->rating()->paginate(10));
 
         // RATING
         $graph = $this->ratingGraph($course);

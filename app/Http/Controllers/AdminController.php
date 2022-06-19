@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Notification;
+use App\Models\NotificationCourse;
+use App\Models\NotificationEntity;
 use App\Models\ReviewCourse;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
@@ -16,24 +19,36 @@ class AdminController extends Controller
 
         return response(['courses' => $courses]);
     }
-    public function getCourseOfAuthorAndAdminById($id)
+
+    function qualityReview(Request $request)
     {
-        $isAdmin = Auth::user()->role->name === "admin";
-        if ($isAdmin) {
-            $course = Course::with(['lecture', 'section'])
-                ->firstWhere('id', $id);
-        } else {
-            $course = Course::where('id', $id)
-                ->with([
-                    'lecture',
-                    'section',
-                ])
-                ->firstWhere('author_id', Auth::user()->id);
+        $request->validate([
+            'courseId' => 'required|exists:course,id',
+            'type' => 'required|exists:notification_entity,type'
+        ]);
+
+        $courseId = $request->input('courseId');
+        $type = $request->input('type');
+
+        try {
+            if ($type === 'unapproved' || $type === 'approved') {
+                $typeId = NotificationEntity::firstWhere('type', $type)->id;
+                $notificationId = Notification::create(['notification_entity_id' => $typeId])->id;
+
+                NotificationCourse::create(
+                    ['notification_id' => $notificationId, 'course_id' => $courseId]
+                );
+
+                Course::where('id', $courseId)->update(
+                    ['submit_for_review' => 0, 'isPublished' => $type === 'approved' ? 1 : 0]
+                );
+
+                ReviewCourse::where('course_id', $courseId)->delete();
+
+                return response(['message' => 'success']);
+            }
+        } catch (\Throwable $th) {
+            return response(['message' => 'Lỗi trong quá trình xét duyệt khóa học!'], 400);
         }
-        if (!$course) abort(404);
-
-
-
-        return response()->json(['course' => $course]);
     }
 }

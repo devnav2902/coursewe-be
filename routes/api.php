@@ -33,20 +33,6 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\UserController;
-use App\Models\Coupon;
-
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
-// INSTRUCTOR
-
 
 // COURSE
 Route::get('/course/best-selling', [CourseController::class, 'bestSellingCourses']); // !lấy theo tuần
@@ -84,8 +70,8 @@ Route::get('/instructor/profile/{slug}', [InstructorController::class, 'profile'
 Route::get('/course/{courseId}/rating', [RatingController::class, 'getRatingByCourseId']);
 
 //  SEARCH  
-Route::post('/autocomplete/search', [SearchController::class, 'search']);
-Route::get('/search', [SearchController::class, 'index'])->name('search');
+Route::get('/autocomplete/search', [SearchController::class, 'search']);
+Route::get('/search', [SearchController::class, 'index']);
 // COUPON
 Route::post('/coupon/apply-coupon', [CouponController::class, 'checkCoupon']);
 Route::post('/coupon/courses/apply-coupon', [CouponController::class, 'checkCouponWithCourses']);
@@ -100,9 +86,11 @@ Route::patch('/saved-for-later', [CartController::class, 'savedForLater']);
 
 Route::middleware('auth:sanctum')->group(function () {
     // NOTIFICATION
-    Route::get('/notification', [NotificationController::class, 'get']);
-    Route::patch('/notification/mark-as-read', [NotificationController::class, 'markAsRead']);
-    Route::patch('/notification/mark-all-as-read', [NotificationController::class, 'markAllAsRead']);
+    Route::prefix('notification')->group(function () {
+        Route::get('/', [NotificationController::class, 'get']);
+        Route::patch('mark-as-read', [NotificationController::class, 'markAsRead']);
+        Route::patch('mark-all-as-read', [NotificationController::class, 'markAllAsRead']);
+    });
 
     // IMAGE COURSE
     Route::post('/course-image', [CourseImageController::class, 'updateCourseImage']);
@@ -110,12 +98,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/course-video', [CourseVideoController::class, 'updateCourseVideo']);
 
     // PERFORMANCE
-    Route::get('/performance/revenue', [OverviewController::class, 'getRevenue']);
-    Route::get('/performance/enrollments', [OverviewController::class, 'getEnrollments']);
-    Route::get('/performance/rating', [OverviewController::class, 'getChartRating']);
-    Route::post('/performance/courses', [OverviewController::class, 'chartCourses']);
-
-    Route::get('/performance/courses', [OverviewController::class, 'amountCoursesByCategory']);
+    Route::prefix('performance')->group(function () {
+        Route::get('revenue', [OverviewController::class, 'getRevenue']);
+        Route::get('enrollments', [OverviewController::class, 'getEnrollments']);
+        Route::get('rating', [OverviewController::class, 'getChartRating']);
+        Route::get('courses', [OverviewController::class, 'amountCoursesByCategory']);
+    });
     // EXPORT
     Route::get('/export/revenue', [ExportController::class, 'revenueExport']);
 
@@ -167,41 +155,58 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/resources/lecture-id/{lectureId}', [ResourceController::class, 'getByLectureId']);
     Route::get('/users/me/subscribed-courses/{courseId}/lectures/{lectureId}/assets/{resourceId}/download', [ResourceController::class, 'download']);
     // LECTURE
-    Route::get('/lecture/id/{lectureId}', [LectureController::class, 'getByLectureId']);
-    Route::post('/lecture/upload', [LectureController::class, 'upload']);
     Route::delete('/user/me/taught-courses/{courseId}/lectures/{lectureId}', [LectureController::class, 'delete']);
-    Route::post('/lecture/create', [LectureController::class, 'createLecture']);
-    Route::patch('/lecture/update', [LectureController::class, 'updateTitle']);
-    Route::patch('/lecture/re-order/section/{sectionId}/course/{courseId}', [LectureController::class, 'reorder']);
+
+    Route::prefix('lecture')->group(function () {
+        Route::get('id/{lectureId}', [LectureController::class, 'getByLectureId']);
+        Route::post('upload', [LectureController::class, 'upload']);
+        Route::post('create', [LectureController::class, 'createLecture']);
+        Route::patch('update', [LectureController::class, 'updateTitle']);
+        Route::patch('re-order/section/{sectionId}/course/{courseId}', [LectureController::class, 'reorder']);
+    });
     // SECTION
-    Route::get('/section/course/{courseId}', [SectionController::class, 'getSectionsByCourseId']);
-    Route::get('/section/{id}', [SectionController::class, 'getSectionById']);
     Route::delete('/user/me/taught-courses/{courseId}/sections/{sectionId}', [SectionController::class, 'delete']);
-    Route::post('/section/create', [SectionController::class, 'createSection']);
-    Route::patch('/section/update', [SectionController::class, 'updateTitle']);
-    Route::patch('/section/re-order/course/{courseId}', [SectionController::class, 'reorder']);
+
+    Route::prefix('section')->group(function () {
+        Route::get('/course/{courseId}', [SectionController::class, 'getSectionsByCourseId']);
+        Route::get('/{id}', [SectionController::class, 'getSectionById']);
+        Route::post('/create', [SectionController::class, 'createSection']);
+        Route::patch('/update', [SectionController::class, 'updateTitle']);
+        Route::patch('/re-order/course/{courseId}', [SectionController::class, 'reorder']);
+    });
 
     // PROMOTIONS
-    Route::get('/promotions/scheduled-coupons/{courseId}', [PromotionsController::class, 'getScheduledCoupons']);
-    Route::get('/promotions/expired-coupons/{courseId}', [PromotionsController::class, 'getExpiredCoupons']);
-    Route::get('/promotions/coupon-types', [PromotionsController::class, 'getCouponTypes']);
-    Route::get('/promotions/information-create-coupon/{courseId}', [PromotionsController::class, 'getInformationCreateCoupon']);
+    Route::prefix('promotions')->group(function () {
+        Route::post('create-coupon/', [PromotionsController::class, 'createCoupon']);
+        Route::get('scheduled-coupons/{courseId}', [PromotionsController::class, 'getScheduledCoupons']);
+        Route::get('expired-coupons/{courseId}', [PromotionsController::class, 'getExpiredCoupons']);
+        Route::get('coupon-types', [PromotionsController::class, 'getCouponTypes']);
+        Route::get('information-create-coupon/{courseId}', [PromotionsController::class, 'getInformationCreateCoupon']);
+    });
 
-    //Progresslogs
-    Route::get('/last-watched/{course_id}', [ProgressLogsController::class, 'lastWatchedByCourseId']);
-    Route::get('/last-watched/course/{course_id}/lecture/{lectureId}', [ProgressLogsController::class, 'lastWatchedByLectureId']);
-    Route::post('/last-watched/course/{course_id}/lecture/{lecture_id}/last_watched_second/{second}', [ProgressLogsController::class, 'saveLastWatched']);
-    Route::post('/promotions/create-coupon/', [PromotionsController::class, 'createCoupon']);
+    //PROGRESS LOGS
+    Route::prefix('last-watched')->group(function () {
+        Route::get('/{course_id}', [ProgressLogsController::class, 'lastWatchedByCourseId']);
+        Route::get('/course/{course_id}/lecture/{lectureId}', [ProgressLogsController::class, 'lastWatchedByLectureId']);
+        Route::post('/course/{course_id}/lecture/{lecture_id}/last_watched_second/{second}', [ProgressLogsController::class, 'saveLastWatched']);
+    });
+
     // SUBMIT FOR REVIEW
     Route::get('/checking-publish-requirements/{courseId}', [PublishCourseController::class, 'checkingPublishRequirements']);
     Route::post('/submit-for-review', [PublishCourseController::class, 'submitForReview']);
 
     //ADMIN
-    Route::get('/admin/submission-courses-list', [AdminController::class, 'reviewCourses']);
+    Route::prefix('admin')->group(function () {
+        Route::get('/submission-courses-list', [AdminController::class, 'reviewCourses']);
+        Route::post('/quality-review', [AdminController::class, 'qualityReview']);
+    });
 
     // ENROLLMENT
     Route::post('/free-enroll', [FreeEnrollController::class, 'freeEnroll']);
 
     // PREVIEW
     Route::get('/course/preview/{courseId}', [CourseController::class, 'coursePreview']);
+
+    // RATING
+    Route::post('/course/rate', [RatingController::class, 'rate']);
 });
