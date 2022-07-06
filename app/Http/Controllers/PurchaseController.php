@@ -45,11 +45,11 @@ class PurchaseController extends Controller
                 'title' => $course['title'],
                 'user_id' => Auth::user()->id,
                 'thumbnail' => $course['thumbnail'],
-                'purchase' => (empty($course['coupon'][0])
+                'purchase' => empty($course['coupon'][0])
                     ? $original_price
-                    : $original_price === $removedDot)
-                    ? 0
-                    : $removedDot,
+                    : ($original_price === $removedDot
+                        ? 0
+                        : $removedDot),
                 'price' => $course['price']->original_price,
                 'promo_code' => empty($course['coupon'][0]) ? '' : $course['coupon'][0]->code
             ];
