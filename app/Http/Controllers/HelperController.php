@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class HelperController extends Controller
 {
@@ -183,7 +184,7 @@ class HelperController extends Controller
     function getDuration($video_path)
     {
         $getID3 = new \getID3;
-        $file = $getID3->analyze($video_path);
+        $file = $getID3->analyze(Storage::path($video_path));
 
         return [
             'playtime_string' => $file['playtime_string'],
