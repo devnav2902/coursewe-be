@@ -28,7 +28,8 @@ class DatabaseSeeder extends Seeder
             RatingSeeder::class,
             CartTypeSeeder::class,
             CartSeeder::class,
-            NotificationPurchaseSeeder::class
+            NotificationPurchaseSeeder::class,
+            QualityReviewTeamSeeder::class
         ]);
     }
 }

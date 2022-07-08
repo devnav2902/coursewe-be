@@ -27,6 +27,7 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PromotionsController;
 use App\Http\Controllers\PublishCourseController;
 use App\Http\Controllers\PurchaseHistoryController;
+use App\Http\Controllers\QualityReviewTeamController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\SearchController;
 
@@ -210,4 +211,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // RATING
     Route::post('/course/rate', [RatingController::class, 'rate']);
+
+    // QUALITY REVIEW
+    Route::get('/quality-review-team', [QualityReviewTeamController::class, 'get']);
+    Route::post('/quality-review-team/create', [QualityReviewTeamController::class, 'create']);
+
+    // CATEGORIES
+    Route::get('/categories/get-list', [CategoriesController::class, 'getList']);
 });
