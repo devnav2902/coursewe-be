@@ -20,9 +20,9 @@ class CreateUsersTable extends Migration
             $table->string('fullname', 200);
             $table->string('slug', 100);
             $table->string('email')->unique();
-            $table->string('avatar');
+            $table->string('avatar')->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('account_status')->default(1);
+            $table->char('account_status', 10)->default(1);
             $table->string('password');
             $table->string('headline', 100)->nullable();
             $table->string('bio', 5000)->nullable();
