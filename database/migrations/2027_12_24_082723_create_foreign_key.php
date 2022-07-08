@@ -100,6 +100,14 @@ class CreateForeignKey extends Migration
             $table->foreign('lecture_id')->references('id')->on('lectures');
             $table->foreign('course_id')->references('id')->on('course');
         });
+        Schema::table('cv', function (Blueprint $table) {
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('course_id')->references('id')->on('course');
+        });
+        Schema::table('quality_review_team', function (Blueprint $table) {
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('category_id')->references('category_id')->on('categories');
+        });
     }
 
     /**
