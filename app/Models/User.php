@@ -95,4 +95,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(ProgressLogs::class, 'user_id');
     }
+    function quality_review_team()
+    {
+        return $this->hasMany(QualityReviewTeam::class, 'user_id');
+    }
 }
