@@ -12,17 +12,22 @@ use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
 {
-    function uploadAvatar($request)
+    function uploadAvatar(Request $request)
     {
-        $request->validate(['file' => 'image']);
 
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $user = Auth::user();
-            $filename = $user->id . '_avatar' . time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('profile_picture', $filename);
 
-            User::where('id', $user->id)->update(['avatar' => $path]);
+        $request->validate([
+            'thumbnail' => 'required|file'
+        ]);
+
+
+        if ($request->hasFile('thumbnail')) {
+            $image = $request->file('thumbnail');
+            $name = $image->getClientOriginalName();
+            $user = Auth::user()->id;
+            $path =  $image->storeAs('thumbnail', time() . $name);
+
+            User::where('id', $user)->update(['avatar' => $path]);
 
             return response(['success' => true, 'path' => $path]);
         };
