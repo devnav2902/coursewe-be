@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Categories;
 use App\Models\CategoriesCourse;
 use App\Models\Course;
 use App\Models\InstructionalLevel;
@@ -18,6 +19,11 @@ class CategoriesController extends Controller
     function __construct()
     {
         $this->helperController = new HelperController();
+    }
+
+    function getList()
+    {
+        return response(['items' => Categories::get(['category_id', 'title'])]);
     }
 
     function featuredCoursesByCategoryId($topLevelCategoryId)
