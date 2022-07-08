@@ -34,6 +34,13 @@ class UserSeeder extends Seeder
             DB::table('users')
                 ->insertGetId($this->createUser($user, 2, $user['gender']));
         }
+
+        for ($i = 1; $i <= 25; $i++) {
+            $user = user(random_int(0, 1));
+
+            DB::table('users')
+                ->insertGetId($this->createUser($user, 3, $user['gender']));
+        }
     }
 
     function createUser($user, $role_id, $gender = 'male')

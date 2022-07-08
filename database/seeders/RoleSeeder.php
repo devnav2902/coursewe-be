@@ -20,5 +20,8 @@ class RoleSeeder extends Seeder
         DB::table('role')->insert([
             'name' => 'user'
         ]);
+        DB::table('role')->insert([
+            'name' => 'quality_review'
+        ]);
     }
 }
