@@ -31,6 +31,25 @@ class CreateUsersTable extends Migration
             $table->string('facebook')->nullable();
             $table->string('linkedin')->nullable();
             $table->string('twitter')->nullable();
+            $table->string('phoneNumber')->nullable();
+            $table->string('cityCode')->nullable();
+            $table->string('city')->nullable();
+            $table->string('districtCode')->nullable();
+            $table->string('district')->nullable();
+            $table->string('wardCode')->nullable();
+            $table->string('ward')->nullable();
+            $table->string('address')->nullable();
+            $table->string('nation')->nullable();
+            $table->string('identification')->nullable();
+            $table->string('workCityCode')->nullable();
+            $table->string('workCity')->nullable();
+            $table->string('workDistrictCode')->nullable();
+            $table->string('workDistrict')->nullable();
+            $table->string('workWardCode')->nullable();
+            $table->string('workWard')->nullable();
+            $table->string('workAddress')->nullable();
+            $table->date('dob')->nullable();
+            $table->boolean('gender')->default(1);
             $table->rememberToken();
 
             $table->timestamp('created_at')->useCurrent();
