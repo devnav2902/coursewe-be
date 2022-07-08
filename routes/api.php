@@ -115,6 +115,7 @@ Route::middleware('auth:sanctum')->group(function () {
     //ProFile
     Route::get('/user/profile', [ProfileController::class, 'index'])->name('profile');
     Route::patch('/change-profile', [ProfileController::class, 'changeProfile'])->name('changeProfile');
+    Route::post('/change-avatar', [ProfileController::class, 'uploadAvatar'])->name('uploadAvatar');
     Route::get('/check-instructor-profile-before-publish-course', [ProfileController::class, 'checkInstructorProfileBeforePublishCourse']);
 
     Route::delete(
