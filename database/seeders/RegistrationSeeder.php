@@ -18,6 +18,7 @@ class RegistrationSeeder extends Seeder
 
         $courses = DB::table('course')
             // ->take(40)
+            ->where('isPublished', 1)
             ->get(['id', 'author_id', 'title', 'thumbnail', 'price_id']);
 
         foreach ($courses as $course) {
