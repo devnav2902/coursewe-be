@@ -29,6 +29,7 @@ use App\Http\Controllers\PublishCourseController;
 use App\Http\Controllers\PurchaseHistoryController;
 use App\Http\Controllers\QualityReviewTeamController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\RatingQualityController;
 use App\Http\Controllers\SearchController;
 
 use App\Http\Controllers\ResourceController;
@@ -215,7 +216,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // QUALITY REVIEW
     Route::get('/quality-review-team', [QualityReviewTeamController::class, 'get']);
     Route::post('/quality-review-team/create', [QualityReviewTeamController::class, 'create']);
+    Route::get('/quality-review-team/statistic', [QualityReviewTeamController::class, 'statistic']);
 
     // CATEGORIES
     Route::get('/categories/get-list', [CategoriesController::class, 'getList']);
+
+    // RATING QUALITY
+    Route::get('/rating-quality/list-courses', [RatingQualityController::class, 'listCourses']);
 });
