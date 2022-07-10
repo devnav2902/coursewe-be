@@ -15,6 +15,7 @@ use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\FreeEnrollController;
 use App\Http\Controllers\InstructorController;
+use App\Http\Controllers\InstructorRevenueController;
 use App\Http\Controllers\OverviewController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LearningController;
@@ -33,6 +34,7 @@ use App\Http\Controllers\RatingQualityController;
 use App\Http\Controllers\SearchController;
 
 use App\Http\Controllers\ResourceController;
+use App\Http\Controllers\ReviewFilterController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\UserController;
 
@@ -223,4 +225,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // RATING QUALITY
     Route::get('/rating-quality/list-courses', [RatingQualityController::class, 'listCourses']);
+    Route::post('/rating-quality/me/rate', [RatingQualityController::class, 'rate']);
+
+    // REVIEW FILTER
+    Route::get('/review-filter/get', [ReviewFilterController::class, 'get']);
+
+    // INSTRUCTOR REVENUE
+    Route::get('/instructor-revenue/get', [InstructorRevenueController::class, 'get']);
 });

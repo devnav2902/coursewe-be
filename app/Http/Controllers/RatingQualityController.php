@@ -21,6 +21,16 @@ class RatingQualityController extends Controller
         return response()->json(['ratingQuality' => '']);
     }
 
+    function rate(Request $request)
+    {
+        $request->validate(['rating' => 'required|numeric|digits_between:1,10', 'course_id' => 'required']);
+
+        $arrValues = $request->only(['rating', 'course_id']);
+        RatingQuality::create(array_merge($arrValues, ['user_id' => Auth::user()->id]));
+
+        return response('success');
+    }
+
     function listCourses()
     {
         $categoryByUser  = QualityReviewTeam::where('user_id', Auth::user()->id)
