@@ -20,6 +20,7 @@ use App\Http\Controllers\OverviewController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LearningController;
 use App\Http\Controllers\LectureController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\ProgressController;
@@ -232,4 +233,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // INSTRUCTOR REVENUE
     Route::get('/instructor-revenue/get', [InstructorRevenueController::class, 'get']);
+
+    // LOCATION
+    Route::get('/students/analytics', [LocationController::class, 'getByInstructor']);
 });

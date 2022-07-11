@@ -99,4 +99,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(QualityReviewTeam::class, 'user_id');
     }
+    function location()
+    {
+        return $this->hasOne(Location::class, 'user_id');
+    }
 }
