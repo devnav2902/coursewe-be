@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
             NotificationPurchaseSeeder::class,
             QualityReviewTeamSeeder::class,
             RatingQualitySeeder::class,
+            LocationSeeder::class,
         ]);
     }
 }
