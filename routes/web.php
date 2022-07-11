@@ -4,6 +4,7 @@ use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\HelperController;
 use App\Http\Controllers\PromotionsController;
 use App\Http\Controllers\PublishCourseController;
+use App\Http\Controllers\UserManagementController;
 use App\Models\Course;
 use App\Models\CourseCoupon;
 use App\Models\InstructionalLevel;
@@ -176,12 +177,11 @@ Route::get('/get-courses/{category_slug}', function ($slug) {
     return DB::getQueryLog();
 });
 
-Route::get('/test-query/{slug}', function (Request $request, $slug) {
-    $controller = new CategoriesController;
-    $helperController = new HelperController;
-    $groupedCategory = $helperController->groupedCategory($slug);
-    return $groupedCategory;
-    return $controller->getBreadcrumbByCategory($slug);
+Route::get('/test', function () {
+
+
+
+    return (new UserManagementController())->instructorManagement();
 });
 
 // Khóa học featured, rated >= 4

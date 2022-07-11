@@ -99,4 +99,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(QualityReviewTeam::class, 'user_id');
     }
+    function course_bill()
+    {
+        return $this->hasMany(CourseBill::class, 'user_id');
+    }
 }

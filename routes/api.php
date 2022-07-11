@@ -34,6 +34,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserManagementController;
 
 // COURSE
 Route::get('/course/best-selling', [CourseController::class, 'bestSellingCourses']); // !lấy theo tuần
@@ -201,6 +202,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('admin')->group(function () {
         Route::get('/submission-courses-list', [AdminController::class, 'reviewCourses']);
         Route::post('/quality-review', [AdminController::class, 'qualityReview']);
+        Route::get('/management-instructor', [UserManagementController::class, 'instructorManagement']);
+        Route::get('/management-user', [UserManagementController::class, 'userManagement']);
     });
 
     // ENROLLMENT
