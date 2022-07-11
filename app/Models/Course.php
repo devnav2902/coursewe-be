@@ -102,4 +102,9 @@ class Course extends Model
     {
         return Carbon::parse($date, 'Asia/Ho_Chi_Minh')->isoFormat('DD/MM/YYYY HH:mm A');
     }
+
+    function rating_quality()
+    {
+        return $this->hasMany(RatingQuality::class, 'course_id');
+    }
 }

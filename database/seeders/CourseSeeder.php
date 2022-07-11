@@ -41,7 +41,7 @@ class CourseSeeder extends Seeder
         $course_subtitle = "Khóa học dành cho những bạn mới bắt đầu";
         $description = "<div class='study-benefit__list'><div class='study-benefit__item'><i class='fa fa-check icon'></i>Lượng kiến thức khổng lồ về Javascript được phân bổ hợp lý theo từng video một</div><div class='study-benefit__item'><i class='fa fa-check icon'></i>Có kiến thức nền tảng tốt về Javascript để có thể học cao lên sau này</div><div class='study-benefit__item'><i class='fa fa-check icon'></i>Làm được những chức năng, hiệu ứng trên web từ a-z</div><div class='study-benefit__item'><i class='fa fa-check icon'></i>Biết thế nào là API, xử lý dữ liệu, xử lý logic, tư duy giải quyết vấn đề tốt</div><div class='study-benefit__item'><i class='fa fa-check icon'></i>Mỗi video giải thích kỹ càng và chi tiết, cũng như thời lượng video ngắn giúp bạn học hiệu quả hơn</div><div class='study-benefit__item'><i class='fa fa-check icon'></i>Được chia sẻ nhiều tips, tricks, các nguồn học bổ ích để cải thiện trình độ</div><div class='study-benefit__item'><i class='fa fa-check icon'></i>Và rất nhiều kiến thức khác đang chờ đợi các bạn trong khoá học này</div></div>";
 
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 130; $i++) {
             $course = $courses[random_int(1, count($courses) - 1)];
             $author_id = random_int(3, 10);
             $levelId = random_int(0, 3);
@@ -57,7 +57,8 @@ class CourseSeeder extends Seeder
                     'description' => $description,
                     'slug' => Str::slug($course['title'] . '-' . random_int(1, 1000)),
                     'video_demo' => 'video_demo/1. Welcome To The Course.mp4',
-                    'isPublished' => 1,
+                    'isPublished' => $i <= 100 ? 1 : 0,
+                    'submit_for_review' => $i > 100 ? 1 : 0,
                     'thumbnail' => $thumbnail[random_int(1, count($thumbnail) - 1)],
                     'created_at' => $created_at
                 ]

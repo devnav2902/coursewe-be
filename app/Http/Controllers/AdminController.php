@@ -11,13 +11,43 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
+
     function reviewCourses($limit = 5)
     {
-        $courses = ReviewCourse::with(['course' => function ($q) {
-            $q->setEagerLoads([])->with(['author', 'price']);
-        }])->paginate(10);
+        $courses = Course::where('submit_for_review', 1)
+            ->orderBy('updated_at', 'desc')
+            ->setEagerLoads([])
+            ->with([
+                'rating_quality' => function ($q) {
+                    $q->with(['user' => fn ($q) => $q->without('role')->select('id', 'fullname', 'avatar')])
+                        ->select('id', 'user_id', 'course_id', 'rating');
+                },
+                'price',
+                'categories:category_id,title',
+                'author:fullname,avatar,id,role_id'
+            ])
+            ->select('id', 'title', 'thumbnail', 'updated_at', 'author_id', 'price_id')
+            ->withAvg('rating_quality', 'rating')
+            ->paginate(10);
+
+        $courses->getCollection()->transform(function ($item) {
+            $ratings = $item->rating_quality->groupBy('rating');
+
+            $ratingsData = [];
+            $ratings->each(function ($rating, $key) use (&$ratingsData) {
+                $ratingsData[] = ['rating' => $key, 'votes' => $rating->count()];
+            });
+
+            $item->ratings = $ratingsData;
+
+            return $item;
+        });
 
         return response(['courses' => $courses]);
+    }
+
+    function courseDetails($courseId)
+    {
     }
 
     function qualityReview(Request $request)
