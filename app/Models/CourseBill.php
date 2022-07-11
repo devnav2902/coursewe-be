@@ -21,4 +21,9 @@ class CourseBill extends Model
     {
         return $this->belongsTo(Course::class, 'course_id');
     }
+
+    function location()
+    {
+        return $this->hasOne(Location::class, 'user_id', 'user_id');
+    }
 }
