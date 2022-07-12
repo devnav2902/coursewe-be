@@ -9,9 +9,8 @@ class UserManagementController extends Controller
 {
     function instructorManagement()
     {
-        $item = User::whereHas('course', function ($q) {
-            $q->select();
-        })
+        $item = User::has('course')
+            ->where('role_id', 2)
             ->with(['course' => function ($q) {
                 $q->setEagerLoads([])
                     ->withSum('course_bill', 'purchase')
@@ -33,9 +32,11 @@ class UserManagementController extends Controller
     function userManagement()
     {
         $item = User::where('role_id', 2)
+            ->has('course_bill')
             ->withCount('course_bill')
             ->orderBy('created_at', 'desc')
             ->paginate(15);
+
         return response()->json(['items' => $item]);
     }
 }

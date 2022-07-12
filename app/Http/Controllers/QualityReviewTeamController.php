@@ -31,12 +31,14 @@ class QualityReviewTeamController extends Controller
             'email' => 'email|required|unique:users,email',
             'fullname' => 'required',
             'categories' => 'required|array',
-            'categories.*' => 'required|numeric'
+            'categories.*' => 'required|numeric',
+            'nation' => 'required'
         ]);
 
         $email = $request->input('email');
         $fullname = $request->input('fullname');
         $categories = $request->input('categories');
+        $nation = $request->input('nation');
 
         try {
             $userId = User::insertGetId(
@@ -44,7 +46,8 @@ class QualityReviewTeamController extends Controller
                     'email' => $email,
                     'fullname' => $fullname,
                     'password' => Hash::make('123'), 'role_id' => 3,
-                    'slug' => Str::slug($fullname . '-' . Str::random(5), '-')
+                    'slug' => Str::slug($fullname . '-' . Str::random(5), '-'),
+                    'nation' => $nation
                 ]
             );
 
