@@ -239,4 +239,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // LOCATION
     Route::get('/students/analytics', [LocationController::class, 'getByInstructor']);
+    Route::get('/admin/analytics', [LocationController::class, 'getByAdmin']);
 });

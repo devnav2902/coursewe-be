@@ -50,4 +50,31 @@ class LocationController extends Controller
 
         return response()->json(compact('locationData', 'languageData'));
     }
+
+    function getByAdmin()
+    {
+        DB::statement("SET sql_mode=''");
+
+        $locationData = Location::whereHas(
+            'user',
+            fn ($q) =>
+            $q->has(
+                'enrollment'
+            )
+        )
+            ->groupBy('country')
+            ->get(['country', DB::raw('count(*) as total'), 'country_code', 'language']);
+
+        $languageData = Location::whereHas(
+            'user',
+            fn ($q) =>
+            $q->has(
+                'enrollment',
+            )
+        )
+            ->groupBy('language')
+            ->get([DB::raw('count(*) as total'), 'language']);
+
+        return response()->json(compact('locationData', 'languageData'));
+    }
 }
