@@ -103,4 +103,8 @@ class User extends Authenticatable
     {
         return $this->hasOne(Location::class, 'user_id');
     }
+    function course_bill()
+    {
+        return $this->hasMany(CourseBill::class, 'user_id');
+    }
 }
