@@ -62,6 +62,7 @@ Route::get('/categories/popular-instructors/{slug}', [CategoriesController::clas
 Route::get('/categories/discovery-units/{slug}', [CategoriesController::class, 'discoveryUnits']);
 Route::get('/categories/breadcrumb/{slug}', [CategoriesController::class, 'getBreadcrumbByCategory']);
 Route::get('/categories/courses-beginner/{slug}', [CategoriesController::class, 'coursesBeginner']);
+Route::get('/categories/get-list', [CategoriesController::class, 'getList']);
 
 
 // USER
@@ -223,9 +224,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/quality-review-team', [QualityReviewTeamController::class, 'get']);
     Route::post('/quality-review-team/create', [QualityReviewTeamController::class, 'create']);
     Route::get('/quality-review-team/statistic', [QualityReviewTeamController::class, 'statistic']);
-
-    // CATEGORIES
-    Route::get('/categories/get-list', [CategoriesController::class, 'getList']);
 
     // RATING QUALITY
     Route::get('/rating-quality/list-courses', [RatingQualityController::class, 'listCourses']);

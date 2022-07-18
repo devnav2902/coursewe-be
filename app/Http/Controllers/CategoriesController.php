@@ -111,6 +111,7 @@ class CategoriesController extends Controller
         DB::statement("SET sql_mode=''");
         $coursesQuery =
             Course::select('course.title', 'id', 'author_id', 'course.slug', 'price_id', 'thumbnail', 'course.created_at', 'instructional_level_id', 'subtitle')
+            ->where('isPublished', 1)
             ->selectRaw('COUNT(categories.category_id) as Total')
             ->Join('categories_course', 'course.id', '=', 'categories_course.course_id')
             ->Join('categories', 'categories_course.category_id', '=', 'categories.category_id')
