@@ -8,6 +8,7 @@ use App\Models\CourseBill;
 use App\Models\CourseCoupon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseController extends Controller
 {
@@ -93,6 +94,27 @@ class PurchaseController extends Controller
             Cart::where('user_id', Auth::user()->id)
                 ->whereIn('course_id', $coursesInCourseBill)
                 ->delete();
+
+            $array_course_bill_id = CourseBill::where('user_id', Auth::user()->id)
+                ->whereIn('course_id', $coursesInCourseBill)->get(['id']);
+
+            $purchased_entity = DB::table('notification_entity')
+                ->where('type', 'purchased')
+                ->first();
+
+            foreach ($array_course_bill_id as $value) {
+                $notification_id = DB::table('notification')->insertGetId(
+                    ['notification_entity_id' => $purchased_entity->id]
+                );
+
+                DB::table('notification_purchase')->insert(
+                    [
+                        'course_bill_id' => $value->id,
+                        'notification_id' => $notification_id
+                    ]
+                );
+            }
+
 
             return response(['message' => 'Mua khóa học thành công!']);
         } catch (\Throwable $th) {
